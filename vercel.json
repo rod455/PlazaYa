@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "site/**",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/exclusao-de-dados",
+      "dest": "site/exclusao-de-dados.html"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "site/$1"
+    }
+  ]
+}
