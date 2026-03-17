@@ -1,68 +1,25 @@
 // src/screens/main/HomeScreen.js
-// Tela principal — lista convocatórias do México filtradas por perfil
+// Lista convocatórias em tempo real do Supabase + filtros + navega para WebView
 
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
-  View, Text, StyleSheet, ActivityIndicator, RefreshControl,
-  ScrollView, TouchableOpacity, Linking, Animated,
+  View, Text, StyleSheet, ActivityIndicator,
+  RefreshControl, ScrollView, TouchableOpacity, FlatList,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { RewardedAd, RewardedAdEventType, AdEventType } from 'react-native-google-mobile-ads';
+import { supabase } from '../../services/supabase';
 import { useQuiz } from '../../context/QuizContext';
 import { useAuth } from '../../context/AuthContext';
-import { SALARIO_OPTIONS, ESTADOS_MEXICO, ADMOB_IDS } from '../../constants/data';
+import { ESTADOS_MEXICO, AREA_OPTIONS } from '../../constants/data';
 import { COLORS } from '../../constants/colors';
 import AdBanner from '../../components/AdBanner';
 
-// ─── Ad Rewarded para abrir links ────────────────────────────────────────────
-const rewardedAd = RewardedAd.createForAdRequest(ADMOB_IDS.REWARDED, {
-  keywords: ['oposicion mexico', 'gobierno', 'servidor publico'],
-});
-
-// ─── Dados mock de convocatórias por estado ──────────────────────────────────
-// Substitua por API real quando disponível
-const MOCK_MX = {
-  CMX: [
-    { titulo: 'CDMX — Oficial de Policía', vagas: '1500', salario: 15000, fim: '20/04/2026', previsto: false, link: 'https://www.ssp.cdmx.gob.mx' },
-    { titulo: 'Poder Judicial CDMX — Oficial Judicial', vagas: '80', salario: 18000, fim: '10/05/2026', previsto: false, link: null },
-    { titulo: 'Secretaría de Salud CDMX — Médico General', vagas: '200', salario: 32000, fim: null, previsto: true, link: null },
-    { titulo: 'SAT — Auditor Fiscal Federal', vagas: '120', salario: 28000, fim: '30/04/2026', previsto: false, link: 'https://www.sat.gob.mx' },
-  ],
-  JAL: [
-    { titulo: 'Guardia Nacional — Elemento Operativo Jalisco', vagas: '400', salario: 15000, fim: '25/04/2026', previsto: false, link: null },
-    { titulo: 'IMSS Jalisco — Enfermero General', vagas: '150', salario: 22000, fim: '15/05/2026', previsto: false, link: null },
-    { titulo: 'Poder Judicial de Jalisco — Actuario', vagas: '40', salario: 20000, fim: null, previsto: true, link: null },
-  ],
-  NLE: [
-    { titulo: 'Fuerza Civil NL — Agente', vagas: '500', salario: 14000, fim: '18/04/2026', previsto: false, link: null },
-    { titulo: 'IMSS NL — Médico Especialista', vagas: '80', salario: 45000, fim: '05/05/2026', previsto: false, link: null },
-    { titulo: 'SAT Monterrey — Inspector Fiscal', vagas: '60', salario: 25000, fim: null, previsto: true, link: null },
-  ],
-  MEX: [
-    { titulo: 'Edomex — Agente de Tránsito', vagas: '300', salario: 12000, fim: '22/04/2026', previsto: false, link: null },
-    { titulo: 'ISSEMYM — Trabajador Social', vagas: '90', salario: 18000, fim: '12/05/2026', previsto: false, link: null },
-    { titulo: 'Poder Judicial Edomex — Oficial Judicial', vagas: '60', salario: 19000, fim: null, previsto: true, link: null },
-  ],
-  PUE: [
-    { titulo: 'Secretaría de Seguridad Puebla — Policía', vagas: '600', salario: 13000, fim: '20/04/2026', previsto: false, link: null },
-    { titulo: 'IMSS Puebla — Médico General', vagas: '100', salario: 30000, fim: '08/05/2026', previsto: false, link: null },
-  ],
-  // Fallback para outros estados
-  DEFAULT: [
-    { titulo: 'SAT — Administrador Local de Servicios al Contribuyente', vagas: '200', salario: 25000, fim: '30/04/2026', previsto: false, link: 'https://www.sat.gob.mx' },
-    { titulo: 'IMSS — Médico General (Nacional)', vagas: '1000', salario: 32000, fim: '15/05/2026', previsto: false, link: 'https://www.imss.gob.mx' },
-    { titulo: 'Guardia Nacional — Elemento Operativo', vagas: '2000', salario: 15000, fim: '20/04/2026', previsto: false, link: null },
-    { titulo: 'Poder Judicial de la Federación — Actuario', vagas: '150', salario: 22000, fim: null, previsto: true, link: null },
-    { titulo: 'SRE — Oficial de Cancillería', vagas: '80', salario: 35000, fim: null, previsto: true, link: null },
-    { titulo: 'SEP — Docente Frente a Grupo', vagas: '3000', salario: 12000, fim: null, previsto: true, link: null },
-  ],
+// ─── Mapeamento de área → emoji ───────────────────────────────────────────────
+const AREA_EMOJI = {
+  policia: '👮', juridico: '⚖️', saude: '🏥', fiscal: '📋',
+  ti: '💻', administrativo: '🏛️', educacion: '📚',
 };
-
-function getConvocatorias(estado) {
-  const data = MOCK_MX[estado] ?? MOCK_MX.DEFAULT;
-  return [...data].sort((a, b) => (b.salario || 0) - (a.salario || 0));
-}
 
 // ─── DisclaimerBanner ─────────────────────────────────────────────────────────
 function DisclaimerBanner() {
@@ -74,242 +31,359 @@ function DisclaimerBanner() {
       activeOpacity={0.85}
     >
       <View style={styles.disclaimerRow}>
-        <Text style={styles.disclaimerIcon}>ℹ️</Text>
+        <Text>ℹ️</Text>
         <Text style={styles.disclaimerTitle}>App independiente — no oficial</Text>
         <Text style={styles.disclaimerChevron}>{expanded ? '▲' : '▼'}</Text>
       </View>
       {expanded && (
         <Text style={styles.disclaimerBody}>
-          Esta aplicación es independiente y{' '}
-          <Text style={styles.bold}>no tiene ningún vínculo con el gobierno de México ni con organismos oficiales</Text>.
-          La información es recopilada de fuentes públicas. Confirma siempre los datos en los sitios oficiales antes de inscribirte.
+          Esta app recopila información de fuentes públicas (DOF, TrabajaEn).
+          Confirma siempre los datos directamente en los sitios oficiales antes de inscribirte.
+          No tenemos vínculo con el gobierno de México.
         </Text>
       )}
     </TouchableOpacity>
   );
 }
 
-// ─── Card de convocatória ────────────────────────────────────────────────────
+// ─── Card de convocatória ─────────────────────────────────────────────────────
 function ConvocatoriaCard({ item, onPress }) {
-  const salarioFmt = item.salario
-    ? `$${item.salario.toLocaleString('es-MX')} MXN`
-    : null;
+  const salario = item.salario_min
+    ? `$${Number(item.salario_min).toLocaleString('es-MX')}${item.salario_max ? ` — $${Number(item.salario_max).toLocaleString('es-MX')}` : ''} MXN`
+    : 'Salario a convenir';
+
+  const dias = item.dias_restantes;
+  const esUrgente = dias !== null && dias <= 7;
 
   return (
     <TouchableOpacity style={styles.card} onPress={() => onPress(item)} activeOpacity={0.8}>
+      {/* Topo: área + dependência */}
       <View style={styles.cardTop}>
-        <Text style={styles.cardTitulo} numberOfLines={2}>{item.titulo}</Text>
-        {item.previsto
-          ? <View style={styles.badgePrevisto}><Text style={styles.badgePrevistoTxt}>Previsto</Text></View>
-          : item.fim
-            ? <View style={styles.badgePrazo}><Text style={styles.badgePrazoTxt}>📅 {item.fim}</Text></View>
-            : null
-        }
+        <View style={styles.cardAreaBadge}>
+          <Text style={styles.cardAreaEmoji}>{AREA_EMOJI[item.area] ?? '🏛️'}</Text>
+          <Text style={styles.cardArea}>{item.area}</Text>
+        </View>
+        {item.estado && item.estado !== 'FEDERAL' && (
+          <Text style={styles.cardEstado}>📍 {item.estado}</Text>
+        )}
+        {item.estado === 'FEDERAL' && (
+          <Text style={styles.cardEstado}>🇲🇽 Federal</Text>
+        )}
       </View>
+
+      {/* Título */}
+      <Text style={styles.cardTitulo} numberOfLines={2}>{item.titulo}</Text>
+      <Text style={styles.cardDep} numberOfLines={1}>🏛️ {item.dependencia ?? 'Gobierno'}</Text>
+
+      {/* Rodapé: salário + prazo */}
       <View style={styles.cardBottom}>
-        {item.vagas && <Text style={styles.cardVagas}>👥 {item.vagas} plazas</Text>}
-        {salarioFmt && <Text style={styles.cardSalario}>💰 {salarioFmt}</Text>}
+        <Text style={styles.cardSalario}>💰 {salario}</Text>
+        {dias !== null ? (
+          <View style={[styles.cardPrazoBadge, esUrgente && styles.cardPrazoUrgente]}>
+            <Text style={[styles.cardPrazoTxt, esUrgente && styles.cardPrazoTxtUrgente]}>
+              {dias === 0 ? '⚠️ Hoy' : `📅 ${dias}d`}
+            </Text>
+          </View>
+        ) : (
+          <View style={styles.cardPrazoBadge}>
+            <Text style={styles.cardPrazoTxt}>🔜 Previsto</Text>
+          </View>
+        )}
       </View>
+
+      {item.num_plazas && (
+        <Text style={styles.cardPlazas}>👥 {item.num_plazas} plazas disponibles</Text>
+      )}
     </TouchableOpacity>
   );
 }
 
-// ─── HomeScreen ───────────────────────────────────────────────────────────────
+// ─── Chips de filtro ──────────────────────────────────────────────────────────
+function FilterChip({ label, selected, onPress }) {
+  return (
+    <TouchableOpacity
+      style={[styles.chip, selected && styles.chipSelected]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <Text style={[styles.chipTxt, selected && styles.chipTxtSelected]}>{label}</Text>
+    </TouchableOpacity>
+  );
+}
+
+// ─── HomeScreen principal ─────────────────────────────────────────────────────
 export default function HomeScreen() {
   const { answers } = useQuiz();
   const { user } = useAuth();
   const navigation = useNavigation();
 
-  const estadoSel   = answers.estado || 'CMX';
-  const salarioOpt  = SALARIO_OPTIONS?.find(s => s.id === answers.salario);
-  const estadoNome  = ESTADOS_MEXICO?.find(e => e.uf === estadoSel)?.nome || estadoSel;
+  // Estado dos filtros — inicia com o perfil do usuário
+  const [areaFiltro,   setAreaFiltro]   = useState(answers.area ?? null);
+  const [estadoFiltro, setEstadoFiltro] = useState(answers.estado ?? null);
+  const [soloAbiertas, setSoloAbiertas] = useState(true);
 
   const [lista,      setLista]      = useState([]);
   const [loading,    setLoading]    = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [adReady,    setAdReady]    = useState(false);
-  const pendingLink  = useRef(null);
+  const [total,      setTotal]      = useState(0);
 
-  // ── Ad Rewarded ──────────────────────────────────────────────────────────
-  useEffect(() => {
-    const unsubLoaded = rewardedAd.addAdEventListener(RewardedAdEventType.LOADED, () => setAdReady(true));
-    const unsubEarned = rewardedAd.addAdEventListener(RewardedAdEventType.EARNED_REWARD, () => {
-      if (pendingLink.current) {
-        Linking.openURL(pendingLink.current).catch(() => {});
-        pendingLink.current = null;
-      }
-    });
-    const unsubClosed = rewardedAd.addAdEventListener(AdEventType.CLOSED, () => {
-      setAdReady(false);
-      rewardedAd.load();
-    });
-    const unsubError = rewardedAd.addAdEventListener(AdEventType.ERROR, () => {
-      if (pendingLink.current) {
-        Linking.openURL(pendingLink.current).catch(() => {});
-        pendingLink.current = null;
-      }
-      setAdReady(false);
-      rewardedAd.load();
-    });
-    rewardedAd.load();
-    return () => { unsubLoaded(); unsubEarned(); unsubClosed(); unsubError(); };
-  }, []);
+  // ── Busca dados do Supabase ────────────────────────────────────────────────
+  const buscarConvocatorias = useCallback(async () => {
+    try {
+      let query = supabase
+        .from('convocatorias_activas')  // usa a view com dias_restantes
+        .select('*')
+        .order('fecha_publicacion', { ascending: false })
+        .limit(50);
 
-  // ── Carrega convocatórias ──────────────────────────────────────────────────
-  useEffect(() => { carregar(); }, [estadoSel, answers.salario]);
+      if (areaFiltro)   query = query.eq('area', areaFiltro);
+      if (estadoFiltro) query = query.or(`estado.eq.${estadoFiltro},estado.eq.FEDERAL`);
+      if (soloAbiertas) query = query.neq('status_cierre', 'cerrada');
 
-  function carregar() {
-    setLoading(true);
-    const dados = getConvocatorias(estadoSel);
-    const salMin = salarioOpt?.min ?? 0;
-    const filtrado = salMin > 0 ? dados.filter(c => !c.salario || c.salario >= salMin) : dados;
-    setLista(filtrado);
-    setLoading(false);
-  }
+      const { data, error, count } = await query;
 
-  function onRefresh() {
-    setRefreshing(true);
-    carregar();
-    setRefreshing(false);
-  }
-
-  function handlePressCard(item) {
-    if (!item.link) return;
-    pendingLink.current = item.link;
-    if (adReady) {
-      rewardedAd.show();
-    } else {
-      Linking.openURL(item.link).catch(() => {});
-      pendingLink.current = null;
+      if (error) throw error;
+      setLista(data ?? []);
+      setTotal(count ?? data?.length ?? 0);
+    } catch (e) {
+      console.error('Erro ao buscar convocatórias:', e);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
     }
+  }, [areaFiltro, estadoFiltro, soloAbiertas]);
+
+  // Carga inicial e quando filtros mudam
+  useEffect(() => {
+    setLoading(true);
+    buscarConvocatorias();
+  }, [buscarConvocatorias]);
+
+  // ── Realtime — recebe novas vagas sem precisar dar pull ───────────────────
+  useEffect(() => {
+    const canal = supabase
+      .channel('convocatorias_novas')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'convocatorias' },
+        (payload) => {
+          console.log('🆕 Nova convocatória recebida em tempo real:', payload.new.titulo);
+          // Adiciona no topo da lista se passar nos filtros ativos
+          const nova = payload.new;
+          const passaArea   = !areaFiltro || nova.area === areaFiltro;
+          const passaEstado = !estadoFiltro || nova.estado === estadoFiltro || nova.estado === 'FEDERAL';
+          if (passaArea && passaEstado) {
+            setLista(prev => [{ ...nova, dias_restantes: null, status_cierre: 'abierta' }, ...prev]);
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(canal); };
+  }, [areaFiltro, estadoFiltro]);
+
+  // ── Navega para a tela de WebView da vaga ────────────────────────────────
+  function abrirConvocatoria(item) {
+    navigation.navigate('Convocatoria', { convocatoria: item });
   }
 
-  const abertasHoje  = lista.filter(c => !c.previsto);
-  const previstasHoje = lista.filter(c => c.previsto);
+  // ── Áreas para os chips de filtro ────────────────────────────────────────
+  const areasChips = [
+    { id: null, label: 'Todas' },
+    { id: 'policia',       label: '👮 Seguridad' },
+    { id: 'juridico',      label: '⚖️ Jurídico' },
+    { id: 'saude',         label: '🏥 Salud' },
+    { id: 'fiscal',        label: '📋 Fiscal' },
+    { id: 'ti',            label: '💻 TI' },
+    { id: 'educacion',     label: '📚 Educación' },
+    { id: 'administrativo',label: '🏛️ Admin' },
+  ];
 
+  const estadoNome = ESTADOS_MEXICO.find(e => e.uf === estadoFiltro)?.nome ?? 'Todo México';
+
+  // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <SafeAreaView style={styles.safe}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-      >
-        <AdBanner />
 
-        {/* Header */}
-        <View style={styles.header}>
-          <View>
-            <Text style={styles.headerTitulo}>🏛️ Concursos México</Text>
-            <Text style={styles.headerSub}>
-              📍 {estadoNome}
-              {salarioOpt ? `  ·  💰 ${salarioOpt.label}` : ''}
-            </Text>
-          </View>
-          {user && (
-            <View style={styles.badgeUser}>
-              <Text style={styles.badgeUserTxt}>✅ Pro</Text>
-            </View>
-          )}
+      <AdBanner />
+
+      {/* Header */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.headerTitulo}>🏛️ PlazaYa</Text>
+          <Text style={styles.headerSub}>
+            {total > 0 ? `${total} convocatorias` : 'Buscando...'} · {estadoNome}
+          </Text>
         </View>
+        {user && (
+          <View style={styles.badgeUser}>
+            <Text style={styles.badgeUserTxt}>✅ Pro</Text>
+          </View>
+        )}
+      </View>
 
-        <DisclaimerBanner />
+      {/* Filtros de área — scroll horizontal */}
+      <View>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.chipsWrap}
+        >
+          {areasChips.map(a => (
+            <FilterChip
+              key={String(a.id)}
+              label={a.label}
+              selected={areaFiltro === a.id}
+              onPress={() => setAreaFiltro(a.id)}
+            />
+          ))}
+        </ScrollView>
+      </View>
 
-        {/* CTA Estudar (se não logado) */}
-        {!user && (
+      {/* Filtro rápido: só abertas */}
+      <View style={styles.filtrosRow}>
+        <TouchableOpacity
+          style={[styles.toggleBtn, soloAbiertas && styles.toggleBtnOn]}
+          onPress={() => setSoloAbiertas(v => !v)}
+        >
+          <Text style={[styles.toggleTxt, soloAbiertas && styles.toggleTxtOn]}>
+            {soloAbiertas ? '✅ Solo abiertas' : '📋 Todas (incl. previstas)'}
+          </Text>
+        </TouchableOpacity>
+
+        {estadoFiltro && (
           <TouchableOpacity
-            style={styles.ctaEstudar}
-            onPress={() => navigation.navigate('Auth')}
-            activeOpacity={0.85}
+            style={styles.clearEstado}
+            onPress={() => setEstadoFiltro(null)}
           >
-            <Text style={styles.ctaEstudarTxt}>📚 Crea tu cuenta para estudiar gratis →</Text>
+            <Text style={styles.clearEstadoTxt}>📍 {estadoFiltro} ✕</Text>
           </TouchableOpacity>
         )}
+      </View>
 
-        {loading ? (
-          <ActivityIndicator size="large" color={COLORS.primary} style={{ marginTop: 60 }} />
-        ) : (
-          <>
-            {/* Convocatórias abertas */}
-            {abertasHoje.length > 0 && (
-              <>
-                <Text style={styles.sectionTitle}>
-                  🟢 Convocatorias abiertas ({abertasHoje.length})
-                </Text>
-                {abertasHoje.map((item, i) => (
-                  <ConvocatoriaCard key={i} item={item} onPress={handlePressCard} />
-                ))}
-              </>
-            )}
+      <DisclaimerBanner />
 
-            {/* Previstas */}
-            {previstasHoje.length > 0 && (
-              <>
-                <Text style={styles.sectionTitle}>
-                  🔜 Previstas ({previstasHoje.length})
-                </Text>
-                {previstasHoje.map((item, i) => (
-                  <ConvocatoriaCard key={i} item={item} onPress={handlePressCard} />
-                ))}
-              </>
-            )}
+      {/* Lista */}
+      {loading ? (
+        <View style={styles.loadingBox}>
+          <ActivityIndicator size="large" color={COLORS.primary} />
+          <Text style={styles.loadingTxt}>Buscando convocatorias...</Text>
+        </View>
+      ) : lista.length === 0 ? (
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyEmoji}>🔍</Text>
+          <Text style={styles.emptyTitulo}>Sin resultados</Text>
+          <Text style={styles.emptyTxt}>
+            No encontramos convocatorias con estos filtros.{'\n'}
+            Intenta cambiar el área o estado.
+          </Text>
+          <TouchableOpacity
+            style={styles.btnLimpar}
+            onPress={() => { setAreaFiltro(null); setEstadoFiltro(null); setSoloAbiertas(true); }}
+          >
+            <Text style={styles.btnLimparTxt}>Limpiar filtros</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={lista}
+          keyExtractor={item => item.id}
+          renderItem={({ item }) => (
+            <ConvocatoriaCard item={item} onPress={abrirConvocatoria} />
+          )}
+          contentContainerStyle={styles.lista}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => { setRefreshing(true); buscarConvocatorias(); }}
+              colors={[COLORS.primary]}
+            />
+          }
+          ListFooterComponent={
+            <View style={styles.footer}>
+              <Text style={styles.footerTxt}>
+                Datos recopilados de DOF y TrabajaEn.{'\n'}
+                Confirma siempre en los sitios oficiales.
+              </Text>
+            </View>
+          }
+        />
+      )}
 
-            {lista.length === 0 && (
-              <View style={styles.emptyBox}>
-                <Text style={styles.emptyEmoji}>🔍</Text>
-                <Text style={styles.emptyTxt}>No encontramos convocatorias{'\n'}con estos filtros</Text>
-              </View>
-            )}
-          </>
-        )}
-
-        <View style={{ height: 40 }} />
-      </ScrollView>
     </SafeAreaView>
   );
 }
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const styles = StyleSheet.create({
-  safe:         { flex: 1, backgroundColor: '#f9fafb' },
+  safe:           { flex: 1, backgroundColor: '#f9fafb' },
 
-  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                  padding: 20, paddingBottom: 12 },
-  headerTitulo: { fontSize: 20, fontWeight: '900', color: '#111827' },
-  headerSub:    { fontSize: 13, color: '#6b7280', marginTop: 2 },
-  badgeUser:    { backgroundColor: '#d1fae5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  badgeUserTxt: { fontSize: 12, color: '#065f46', fontWeight: '700' },
+  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                    paddingHorizontal: 16, paddingVertical: 12 },
+  headerTitulo:   { fontSize: 20, fontWeight: '900', color: '#111827' },
+  headerSub:      { fontSize: 12, color: '#6b7280', marginTop: 2 },
+  badgeUser:      { backgroundColor: '#d1fae5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
+  badgeUserTxt:   { fontSize: 12, color: '#065f46', fontWeight: '700' },
 
-  disclaimer:     { backgroundColor: '#FFF8E1', margin: 12, borderRadius: 12, padding: 12,
-                    borderLeftWidth: 4, borderLeftColor: '#f59e0b' },
-  disclaimerRow:  { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  disclaimerIcon: { fontSize: 16 },
-  disclaimerTitle:{ flex: 1, fontSize: 13, fontWeight: '700', color: '#92400e' },
-  disclaimerChevron:{ fontSize: 12, color: '#92400e' },
-  disclaimerBody: { fontSize: 13, color: '#78350f', marginTop: 8, lineHeight: 19 },
-  bold:           { fontWeight: '800' },
+  // Chips de área
+  chipsWrap:      { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+  chip:           { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
+                    backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#e5e7eb' },
+  chipSelected:   { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
+  chipTxt:        { fontSize: 13, color: '#374151', fontWeight: '600' },
+  chipTxtSelected:{ color: '#fff', fontWeight: '700' },
 
-  ctaEstudar:     { backgroundColor: COLORS.primary, marginHorizontal: 12, borderRadius: 12,
-                    padding: 14, alignItems: 'center', marginBottom: 4 },
-  ctaEstudarTxt:  { color: '#fff', fontWeight: '700', fontSize: 14 },
+  // Filtros rápidos
+  filtrosRow:     { flexDirection: 'row', alignItems: 'center', gap: 8,
+                    paddingHorizontal: 12, paddingBottom: 8, flexWrap: 'wrap' },
+  toggleBtn:      { backgroundColor: '#f3f4f6', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  toggleBtnOn:    { backgroundColor: '#dcfce7' },
+  toggleTxt:      { fontSize: 13, color: '#6b7280', fontWeight: '600' },
+  toggleTxtOn:    { color: '#166534' },
+  clearEstado:    { backgroundColor: '#eff6ff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
+  clearEstadoTxt: { fontSize: 13, color: COLORS.primary, fontWeight: '700' },
 
-  sectionTitle:   { fontSize: 15, fontWeight: '800', color: '#111827',
-                    paddingHorizontal: 16, paddingTop: 20, paddingBottom: 8 },
+  // Disclaimer
+  disclaimer:     { marginHorizontal: 12, marginBottom: 8, backgroundColor: '#FFF8E1',
+                    borderRadius: 10, padding: 10, borderLeftWidth: 4, borderLeftColor: '#f59e0b' },
+  disclaimerRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  disclaimerTitle:{ flex: 1, fontSize: 12, fontWeight: '700', color: '#92400e' },
+  disclaimerChevron:{ fontSize: 11, color: '#92400e' },
+  disclaimerBody: { fontSize: 12, color: '#78350f', marginTop: 6, lineHeight: 18 },
 
-  card:           { backgroundColor: '#fff', marginHorizontal: 12, borderRadius: 14,
-                    padding: 16, marginBottom: 10, borderWidth: 1, borderColor: '#e5e7eb',
-                    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
-  cardTop:        { marginBottom: 10 },
-  cardTitulo:     { fontSize: 15, fontWeight: '800', color: '#111827', lineHeight: 21, marginBottom: 6 },
-  badgePrevisto:  { alignSelf: 'flex-start', backgroundColor: '#fef9c3', borderRadius: 6,
-                    paddingHorizontal: 8, paddingVertical: 3 },
-  badgePrevistoTxt:{ fontSize: 11, color: '#854d0e', fontWeight: '700' },
-  badgePrazo:     { alignSelf: 'flex-start', backgroundColor: '#dcfce7', borderRadius: 6,
-                    paddingHorizontal: 8, paddingVertical: 3 },
-  badgePrazoTxt:  { fontSize: 11, color: '#166534', fontWeight: '700' },
-  cardBottom:     { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  cardVagas:      { fontSize: 13, color: '#6b7280' },
-  cardSalario:    { fontSize: 13, fontWeight: '800', color: '#16a34a' },
-
-  emptyBox:       { alignItems: 'center', paddingVertical: 60 },
+  // Loading / empty
+  loadingBox:     { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  loadingTxt:     { color: '#6b7280', marginTop: 12, fontSize: 14 },
+  emptyBox:       { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
   emptyEmoji:     { fontSize: 48, marginBottom: 12 },
-  emptyTxt:       { fontSize: 15, color: '#6b7280', textAlign: 'center', lineHeight: 22 },
+  emptyTitulo:    { fontSize: 18, fontWeight: '800', color: '#111827', marginBottom: 8 },
+  emptyTxt:       { fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 22, marginBottom: 24 },
+  btnLimpar:      { backgroundColor: COLORS.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 },
+  btnLimparTxt:   { color: '#fff', fontWeight: '700', fontSize: 15 },
+
+  // Cards
+  lista:          { paddingHorizontal: 12, paddingBottom: 20 },
+  card:           { backgroundColor: '#fff', borderRadius: 14, padding: 16,
+                    marginBottom: 10, borderWidth: 1, borderColor: '#e5e7eb',
+                    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
+  cardTop:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
+  cardAreaBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4,
+                    backgroundColor: '#eff6ff', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  cardAreaEmoji:  { fontSize: 13 },
+  cardArea:       { fontSize: 11, color: COLORS.primary, fontWeight: '700', textTransform: 'uppercase' },
+  cardEstado:     { fontSize: 12, color: '#6b7280' },
+  cardTitulo:     { fontSize: 15, fontWeight: '800', color: '#111827', lineHeight: 21, marginBottom: 4 },
+  cardDep:        { fontSize: 13, color: '#6b7280', marginBottom: 10 },
+  cardBottom:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  cardSalario:    { fontSize: 13, fontWeight: '800', color: '#16a34a', flex: 1 },
+  cardPrazoBadge: { backgroundColor: '#dcfce7', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  cardPrazoUrgente:{ backgroundColor: '#fee2e2' },
+  cardPrazoTxt:   { fontSize: 12, color: '#166534', fontWeight: '700' },
+  cardPrazoTxtUrgente:{ color: '#991b1b' },
+  cardPlazas:     { fontSize: 12, color: '#6b7280', marginTop: 6 },
+
+  // Footer da lista
+  footer:         { alignItems: 'center', paddingVertical: 20 },
+  footerTxt:      { fontSize: 12, color: '#9ca3af', textAlign: 'center', lineHeight: 18 },
 });
