@@ -76,44 +76,54 @@ function parseSalario(texto: string): { min: number | null; max: number | null }
 // As vagas individuais são públicas em dof.gob.mx/vacantes/NNNNN/NNNNNN.html
 // ─────────────────────────────────────────────────────────────────────────────
 async function scrapeDOF(): Promise<any[]> {
-  console.log('🔍 Iniciando scraping DOF via busca Google...')
+  console.log('🔍 Iniciando scraping DOF vacantes.php...')
   const vagas: any[] = []
 
   try {
-    // Busca via Google as vagas mais recentes do DOF
-    const buscas = [
-      'site:dof.gob.mx/vacantes convocatoria publica abierta 2026',
-      'site:dof.gob.mx/vacantes servicio profesional carrera 2026',
-      'site:dof.gob.mx/vacantes plaza vacante administracion publica 2025',
-    ]
-
     const linksEncontrados = new Set<string>()
 
-    for (const busca of buscas) {
-      try {
-        const googleUrl = `https://www.google.com/search?q=${encodeURIComponent(busca)}&num=20`
-        const res = await fetch(scraperUrl(googleUrl), { signal: AbortSignal.timeout(30000) })
-        if (!res.ok) continue
-
+    // 1. Scraper direto da página de vacantes (funciona via ScraperAPI)
+    try {
+      const res = await fetch(scraperUrl('https://www.dof.gob.mx/vacantes.php'), {
+        signal: AbortSignal.timeout(30000),
+      })
+      if (res.ok) {
         const html = await res.text()
-
-        // Extrai links do DOF dos resultados do Google
-        const linkRegex = /https?:\/\/www\.dof\.gob\.mx\/vacantes\/\d+\/\d+\.html?/g
+        // Links relativos no formato: href="vacantes/21697/013989.html"
+        const linkRelRegex = /href="(vacantes\/\d+\/\d+\.html?)"/g
         let match
-        while ((match = linkRegex.exec(html)) !== null) {
-          linksEncontrados.add(match[0])
+        while ((match = linkRelRegex.exec(html)) !== null) {
+          linksEncontrados.add(`https://www.dof.gob.mx/${match[1]}`)
         }
+        console.log(`📋 DOF vacantes.php: ${linksEncontrados.size} links encontrados`)
+      }
+    } catch (e) {
+      console.warn(`DOF direto falhou: ${e}`)
+    }
 
-        await new Promise(r => setTimeout(r, 2000))
+    // 2. Fallback: Google Search se página direta não retornou links
+    if (linksEncontrados.size === 0) {
+      console.log('🔍 Tentando via Google Search...')
+      const googleUrl = `https://www.google.com/search?q=site:dof.gob.mx/vacantes+convocatoria+2026&num=20`
+      try {
+        const res = await fetch(scraperUrl(googleUrl), { signal: AbortSignal.timeout(30000) })
+        if (res.ok) {
+          const html = await res.text()
+          const linkRegex = /https?:\/\/www\.dof\.gob\.mx\/vacantes\/\d+\/\d+\.html?/g
+          let match
+          while ((match = linkRegex.exec(html)) !== null) {
+            linksEncontrados.add(match[0])
+          }
+        }
       } catch (e) {
-        console.warn(`Busca falhou: ${e}`)
+        console.warn(`Google fallback falhou: ${e}`)
       }
     }
 
-    console.log(`📋 DOF via Google: ${linksEncontrados.size} links encontrados`)
+    console.log(`📋 Total links DOF: ${linksEncontrados.size}`)
 
-    // Processa até 20 vagas por execução
-    const links = [...linksEncontrados].slice(0, 20)
+    // Processa até 30 vagas por execução
+    const links = [...linksEncontrados].slice(0, 30)
 
     for (const url of links) {
       try {
