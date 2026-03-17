@@ -10,29 +10,20 @@
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    :root {
-      --bg: #0B0F1A; --card: #161D2E; --border: rgba(255,255,255,0.07);
-      --accent: #FF6B35; --accent2: #FF9A6C; --text: #F0EDE8; --muted: #8A8FA8;
-    }
+    :root { --bg: #0B0F1A; --card: #161D2E; --border: rgba(255,255,255,0.07); --accent: #FF6B35; --accent2: #FF9A6C; --text: #F0EDE8; --muted: #8A8FA8; }
     html { scroll-behavior: smooth; }
     body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    nav {
-      position: sticky; top: 0; z-index: 100;
-      background: rgba(11,15,26,0.85); backdrop-filter: blur(16px);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px; height: 60px;
-      display: flex; align-items: center; justify-content: space-between;
-    }
-    .nav-logo { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: 20px; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(11,15,26,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid var(--border); padding: 0 24px; height: 62px; display: flex; align-items: center; justify-content: space-between; }
+    .nav-logo { font-family: 'Urbanist', sans-serif; font-weight: 900; font-size: 22px; color: var(--text); text-decoration: none; letter-spacing: -0.8px; }
     .nav-logo span { color: var(--accent); }
-    .nav-back { font-size: 14px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+    .nav-back { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .nav-back:hover { color: var(--text); }
 
     .page-hero { padding: 72px 24px 56px; max-width: 720px; margin: 0 auto; border-bottom: 1px solid var(--border); }
     .page-label { font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
     .page-hero h1 { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: clamp(28px, 4vw, 44px); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 14px; }
-    .page-hero p { font-size: 15px; color: var(--muted); line-height: 1.7; }
+    .page-hero p { font-size: 15px; color: var(--muted); line-height: 1.75; }
 
     .content { max-width: 720px; margin: 0 auto; padding: 56px 24px 96px; display: flex; flex-direction: column; gap: 20px; }
 
@@ -49,23 +40,12 @@
     .cta-card { background: var(--card); border: 1px solid rgba(255,107,53,0.2); border-radius: 16px; padding: 36px 32px; text-align: center; }
     .cta-card h2 { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: -0.5px; margin-bottom: 10px; }
     .cta-card p { font-size: 14px; color: var(--muted); line-height: 1.7; margin-bottom: 24px; max-width: 420px; margin-left: auto; margin-right: auto; }
-
-    .btn-email {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 10px;
-      text-decoration: none; transition: background 0.2s, transform 0.15s;
-    }
+    .btn-email { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 10px; text-decoration: none; transition: background 0.2s, transform 0.15s; }
     .btn-email:hover { background: var(--accent2); transform: translateY(-1px); }
-
     .badge-plazo { display: inline-block; background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.2); color: var(--accent2); font-size: 12px; font-weight: 600; padding: 4px 12px; border-radius: 100px; margin-bottom: 20px; }
 
-    footer {
-      padding: 32px 24px; max-width: 720px; margin: 0 auto;
-      display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px;
-      border-top: 1px solid var(--border);
-    }
-    .footer-logo { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: 16px; color: var(--text); text-decoration: none; }
+    footer { padding: 32px 24px; max-width: 720px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--border); }
+    .footer-logo { font-family: 'Urbanist', sans-serif; font-weight: 900; font-size: 16px; color: var(--text); text-decoration: none; }
     .footer-logo span { color: var(--accent); }
     .footer-links { display: flex; gap: 20px; list-style: none; }
     .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; }
@@ -89,24 +69,31 @@
 
   <div class="info-card">
     <h2>📋 ¿Qué datos recopilamos?</h2>
-    <p>PlazaYa recopila únicamente los datos mínimos necesarios para el funcionamiento de la aplicación:</p>
+    <p>PlazaYa recopila únicamente los datos mínimos y anónimos necesarios para el funcionamiento del app:</p>
     <ul>
-      <li><strong>Datos de uso anónimos</strong> — interacciones con la app para mejorar el servicio.</li>
-      <li><strong>Datos del dispositivo vía AdMob</strong> — identificadores técnicos que usa Google para la personalización de anuncios.</li>
-      <li><strong>Ubicación aproximada</strong> — para mostrarte ofertas cercanas (solo con tu permiso).</li>
+      <li><strong>Token de notificación push</strong> — identificador anónimo del dispositivo para enviarte avisos de nuevas convocatorias.</li>
+      <li><strong>Preferencias del usuario</strong> — estado, área de interés y rango salarial que configuraste en el onboarding. Se guardan localmente en tu dispositivo.</li>
+      <li><strong>Fecha del último acceso</strong> — para evitar notificaciones excesivas.</li>
+      <li><strong>Datos del dispositivo vía AdMob</strong> — identificadores técnicos usados por Google para personalización de anuncios.</li>
     </ul>
+    <p>No recopilamos nombre, correo, CURP, RFC, teléfono ni ningún dato personal identificable.</p>
   </div>
 
   <div class="info-card">
     <h2>🗑️ ¿Qué se elimina?</h2>
-    <p>Al solicitar la eliminación, borramos de forma permanente de nuestros sistemas todos los datos asociados a tu uso de la aplicación, incluyendo datos de uso y preferencias almacenadas.</p>
-    <p>Los datos recopilados por Google AdMob son gestionados directamente por Google. Para eliminarlos, ingresa a la configuración de privacidad de tu cuenta de Google o al <a href="https://myadcenter.google.com/" target="_blank">Centro de Anuncios de Google</a>.</p>
+    <p>Al solicitar la eliminación, borramos permanentemente de nuestros servidores:</p>
+    <ul>
+      <li>Token de notificación push</li>
+      <li>Preferencias guardadas (estado, área, rango salarial)</li>
+      <li>Registro de fecha de instalación y último acceso</li>
+    </ul>
+    <p>Los datos recopilados por Google AdMob son gestionados directamente por Google. Para eliminarlos, accede al <a href="https://myadcenter.google.com/" target="_blank">Centro de Anuncios de Google</a> o a la configuración de privacidad de tu cuenta Google.</p>
   </div>
 
   <div class="cta-card">
     <div class="badge-plazo">Respuesta en máximo 5 días hábiles</div>
     <h2>Solicitar eliminación de datos</h2>
-    <p>Mándanos un correo con el asunto <strong style="color: var(--text);">"Eliminación de datos — PlazaYa"</strong> y procesamos tu solicitud a la brevedad.</p>
+    <p>Mándanos un correo con el asunto <strong style="color:var(--text)">"Eliminación de datos — PlazaYa"</strong> y procesamos tu solicitud a la brevedad.</p>
     <a href="mailto:appfactory.rlm@gmail.com?subject=Eliminación de datos — PlazaYa" class="btn-email">
       ✉ Solicitar eliminación por correo
     </a>
@@ -115,7 +102,7 @@
   <div class="info-card">
     <h2>ℹ️ Más información</h2>
     <p>Para cualquier duda sobre privacidad, consulta nuestro <a href="/privacidad">Aviso de Privacidad completo</a> o escríbenos a <a href="mailto:appfactory.rlm@gmail.com">appfactory.rlm@gmail.com</a>.</p>
-    <p>Tus derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) están protegidos por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares.</p>
+    <p>Tus derechos ARCO (Acceso, Rectificación, Cancelación y Oposición) están protegidos por la Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP).</p>
   </div>
 
 </div>

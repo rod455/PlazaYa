@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>PlazaYa — Ofertas cerca de ti</title>
-  <meta name="description" content="Descubre las mejores ofertas y promociones de tu colonia en segundos. Gratis y sin registro." />
+  <title>PlazaYa — Convocatorias del gobierno cerca de ti</title>
+  <meta name="description" content="Encuentra convocatorias y concursos de gobierno abiertos en México. Filtra por estado, área y salario. Gratis y sin registro." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -17,13 +17,8 @@
       --text: #F0EDE8; --muted: #8A8FA8; --tag: #1E2A40;
     }
     html { scroll-behavior: smooth; }
-    body {
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--bg); color: var(--text);
-      line-height: 1.6; -webkit-font-smoothing: antialiased;
-    }
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; -webkit-font-smoothing: antialiased; }
 
-    /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
       background: rgba(11,15,26,0.85); backdrop-filter: blur(16px);
@@ -31,28 +26,28 @@
       padding: 0 32px; height: 62px;
       display: flex; align-items: center; justify-content: space-between;
     }
-    .nav-logo {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 900;
-      font-size: 22px;
-      color: var(--text);
-      text-decoration: none;
-      letter-spacing: -0.8px;
-    }
+    .nav-logo { font-family: 'Urbanist', sans-serif; font-weight: 900; font-size: 22px; color: var(--text); text-decoration: none; letter-spacing: -0.8px; }
     .nav-logo span { color: var(--accent); }
     .nav-links { display: flex; align-items: center; gap: 28px; list-style: none; }
     .nav-links a { font-size: 14px; font-weight: 500; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .nav-links a:hover { color: var(--text); }
-    .nav-cta {
-      background: var(--accent); color: #fff !important;
-      font-weight: 600; padding: 9px 20px;
-      border-radius: 8px; transition: background 0.2s !important;
-    }
+    .nav-cta { background: var(--accent); color: #fff !important; font-weight: 600; padding: 9px 20px; border-radius: 8px; transition: background 0.2s !important; }
     .nav-cta:hover { background: var(--accent2) !important; }
 
-    /* ── HERO ── */
+    /* DISCLAIMER */
+    .disclaimer {
+      background: rgba(255, 193, 7, 0.08);
+      border-bottom: 1px solid rgba(255, 193, 7, 0.15);
+      padding: 10px 24px;
+      text-align: center;
+      font-size: 13px;
+      color: #C9A83A;
+    }
+    .disclaimer strong { color: #E0BF5A; }
+
+    /* HERO */
     .hero {
-      min-height: 88vh; display: flex; flex-direction: column;
+      min-height: 86vh; display: flex; flex-direction: column;
       align-items: center; justify-content: center;
       text-align: center; padding: 80px 24px 60px;
       position: relative; overflow: hidden;
@@ -63,7 +58,6 @@
       background: radial-gradient(circle, rgba(255,107,53,0.10) 0%, transparent 65%);
       pointer-events: none;
     }
-
     .hero-badge {
       display: inline-flex; align-items: center; gap: 7px;
       background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.25);
@@ -71,156 +65,57 @@
       padding: 6px 14px; border-radius: 100px; margin-bottom: 32px;
     }
     .hero-badge::before { content: '●'; font-size: 8px; color: var(--accent); }
-
     .hero h1 {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 800;
-      font-size: clamp(44px, 6.5vw, 76px);
-      line-height: 1.08;
-      letter-spacing: -3px;
-      max-width: 820px;
-      margin-bottom: 22px;
+      font-family: 'Urbanist', sans-serif; font-weight: 800;
+      font-size: clamp(42px, 6.5vw, 74px); line-height: 1.08;
+      letter-spacing: -3px; max-width: 820px; margin-bottom: 22px;
     }
     .hero h1 em { font-style: normal; color: var(--accent); }
-
-    .hero p {
-      font-size: clamp(15px, 2vw, 18px);
-      font-weight: 400;
-      color: var(--muted); max-width: 460px;
-      margin-bottom: 40px; line-height: 1.75;
-    }
+    .hero p { font-size: clamp(15px, 2vw, 18px); color: var(--muted); max-width: 480px; margin-bottom: 40px; line-height: 1.75; }
 
     .hero-pills { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 36px; }
-    .pill {
-      background: var(--tag); border: 1px solid var(--border);
-      color: var(--muted); font-size: 13px; font-weight: 500;
-      padding: 6px 15px; border-radius: 100px;
-    }
+    .pill { background: var(--tag); border: 1px solid var(--border); color: var(--muted); font-size: 13px; font-weight: 500; padding: 6px 15px; border-radius: 100px; }
 
     .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-bottom: 64px; }
-
-    .btn-primary {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: var(--accent); color: #fff;
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px; font-weight: 600;
-      padding: 14px 28px; border-radius: 10px;
-      text-decoration: none; transition: background 0.2s, transform 0.15s;
-    }
+    .btn-primary { display: inline-flex; align-items: center; gap: 8px; background: var(--accent); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 600; padding: 14px 28px; border-radius: 10px; text-decoration: none; transition: background 0.2s, transform 0.15s; }
     .btn-primary:hover { background: var(--accent2); transform: translateY(-1px); }
-
-    .btn-secondary {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: transparent; border: 1px solid var(--border);
-      color: var(--muted);
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: 15px; font-weight: 500;
-      padding: 14px 28px; border-radius: 10px;
-      text-decoration: none; transition: border-color 0.2s, color 0.2s;
-    }
+    .btn-secondary { display: inline-flex; align-items: center; gap: 8px; background: transparent; border: 1px solid var(--border); color: var(--muted); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 15px; font-weight: 500; padding: 14px 28px; border-radius: 10px; text-decoration: none; transition: border-color 0.2s, color 0.2s; }
     .btn-secondary:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
 
-    .hero-stats {
-      display: flex; flex-wrap: wrap; gap: 48px; justify-content: center;
-      padding-top: 40px; border-top: 1px solid var(--border);
-      width: 100%; max-width: 560px;
-    }
+    .hero-stats { display: flex; flex-wrap: wrap; gap: 48px; justify-content: center; padding-top: 40px; border-top: 1px solid var(--border); width: 100%; max-width: 600px; }
     .stat-item { text-align: center; }
-    .stat-item strong {
-      display: block;
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 800; font-size: 30px;
-      color: var(--text); letter-spacing: -1px;
-    }
+    .stat-item strong { display: block; font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: 30px; color: var(--text); letter-spacing: -1px; }
     .stat-item span { font-size: 13px; color: var(--muted); }
 
-    /* ── FEATURES ── */
+    /* FEATURES */
     .section { padding: 96px 24px; max-width: 1080px; margin: 0 auto; }
-    .section-label {
-      font-size: 12px; font-weight: 600;
-      letter-spacing: 2.5px; text-transform: uppercase;
-      color: var(--accent); margin-bottom: 12px;
-    }
-    .section-title {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 800;
-      font-size: clamp(26px, 4vw, 44px);
-      letter-spacing: -1.5px; line-height: 1.1;
-      margin-bottom: 16px; max-width: 540px;
-    }
-    .section-sub {
-      font-size: 16px; color: var(--muted);
-      max-width: 460px; line-height: 1.75; margin-bottom: 56px;
-    }
+    .section-label { font-size: 12px; font-weight: 600; letter-spacing: 2.5px; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+    .section-title { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: clamp(26px, 4vw, 44px); letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 16px; max-width: 560px; }
+    .section-sub { font-size: 16px; color: var(--muted); max-width: 460px; line-height: 1.75; margin-bottom: 56px; }
 
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
-    .feat-card {
-      background: var(--card); border: 1px solid var(--border);
-      border-radius: 16px; padding: 28px;
-      transition: border-color 0.2s, transform 0.2s;
-    }
+    .feat-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 28px; transition: border-color 0.2s, transform 0.2s; }
     .feat-card:hover { border-color: rgba(255,107,53,0.2); transform: translateY(-2px); }
-    .feat-icon {
-      width: 42px; height: 42px;
-      background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.2);
-      border-radius: 10px; display: flex; align-items: center;
-      justify-content: center; font-size: 18px; margin-bottom: 18px;
-    }
-    .feat-card h3 {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 700; font-size: 17px;
-      margin-bottom: 8px; letter-spacing: -0.3px;
-    }
+    .feat-icon { width: 42px; height: 42px; background: rgba(255,107,53,0.1); border: 1px solid rgba(255,107,53,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; margin-bottom: 18px; }
+    .feat-card h3 { font-family: 'Urbanist', sans-serif; font-weight: 700; font-size: 17px; margin-bottom: 8px; letter-spacing: -0.3px; }
     .feat-card p { font-size: 14px; color: var(--muted); line-height: 1.65; }
 
-    /* ── CTA ── */
-    .cta-section {
-      background: var(--card);
-      border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
-      padding: 80px 24px; text-align: center;
-      position: relative; overflow: hidden;
-    }
-    .cta-section::before {
-      content: ''; position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);
-      width: 500px; height: 300px;
-      background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%);
-      pointer-events: none;
-    }
-    .cta-section h2 {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 800;
-      font-size: clamp(26px, 4vw, 42px);
-      letter-spacing: -1.5px; margin-bottom: 14px;
-    }
-    .cta-section p { font-size: 16px; color: var(--muted); max-width: 420px; margin: 0 auto 36px; line-height: 1.7; }
+    /* CTA */
+    .cta-section { background: var(--card); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 80px 24px; text-align: center; position: relative; overflow: hidden; }
+    .cta-section::before { content: ''; position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%); width: 500px; height: 300px; background: radial-gradient(circle, rgba(255,107,53,0.08) 0%, transparent 70%); pointer-events: none; }
+    .cta-section h2 { font-family: 'Urbanist', sans-serif; font-weight: 800; font-size: clamp(26px, 4vw, 42px); letter-spacing: -1.5px; margin-bottom: 14px; }
+    .cta-section p { font-size: 16px; color: var(--muted); max-width: 440px; margin: 0 auto 36px; line-height: 1.7; }
 
-    /* ── FOOTER ── */
-    footer {
-      padding: 40px 32px; max-width: 1080px; margin: 0 auto;
-      display: flex; flex-wrap: wrap; align-items: center;
-      justify-content: space-between; gap: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .footer-logo {
-      font-family: 'Urbanist', sans-serif;
-      font-weight: 900; font-size: 18px;
-      color: var(--text); text-decoration: none; letter-spacing: -0.5px;
-    }
+    /* FOOTER */
+    footer { padding: 40px 32px; max-width: 1080px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; border-top: 1px solid var(--border); }
+    .footer-logo { font-family: 'Urbanist', sans-serif; font-weight: 900; font-size: 18px; color: var(--text); text-decoration: none; letter-spacing: -0.5px; }
     .footer-logo span { color: var(--accent); }
     .footer-links { display: flex; flex-wrap: wrap; gap: 20px; list-style: none; }
     .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
     .footer-links a:hover { color: var(--text); }
-    .footer-copy {
-      font-size: 13px; color: var(--muted);
-      width: 100%; padding-top: 20px;
-      border-top: 1px solid var(--border); text-align: center;
-    }
+    .footer-copy { font-size: 13px; color: var(--muted); width: 100%; padding-top: 20px; border-top: 1px solid var(--border); text-align: center; }
 
-    @media (max-width: 600px) {
-      .nav-links { display: none; }
-      .hero { padding: 60px 20px 50px; }
-      .hero h1 { letter-spacing: -2px; }
-    }
+    @media (max-width: 600px) { .nav-links { display: none; } .hero { padding: 60px 20px 50px; } .hero h1 { letter-spacing: -2px; } }
   </style>
 </head>
 <body>
@@ -234,16 +129,20 @@
   </ul>
 </nav>
 
+<div class="disclaimer">
+  ⚠️ <strong>App independiente</strong> — No tiene ningún vínculo oficial con el gobierno mexicano ni con ninguna dependencia pública. La información se recopila de fuentes públicas. Confirma siempre en los sitios oficiales antes de postularte.
+</div>
+
 <section class="hero">
   <div class="hero-badge">Disponible en Android</div>
-  <h1>Las mejores ofertas<br><em>cerca de ti</em></h1>
-  <p>Promociones reales de tu colonia, actualizadas en tiempo real. Gratis, sin registro y sin rollos.</p>
+  <h1>Encuentra tu plaza<br><em>en el gobierno</em></h1>
+  <p>Convocatorias y concursos de oposición abiertos en México, filtrados por estado, área y salario. Gratis, sin registro y sin rollos.</p>
 
   <div class="hero-pills">
     <span class="pill">Sin registro</span>
     <span class="pill">100% gratis</span>
-    <span class="pill">Tiempo real</span>
-    <span class="pill">Todas las categorías</span>
+    <span class="pill">Federal · Estatal · Municipal</span>
+    <span class="pill">Mayor salario primero</span>
   </div>
 
   <div class="hero-actions">
@@ -253,53 +152,53 @@
 
   <div class="hero-stats">
     <div class="stat-item"><strong>100%</strong><span>Gratis</span></div>
-    <div class="stat-item"><strong>Real</strong><span>Ofertas de tu zona</span></div>
+    <div class="stat-item"><strong>32</strong><span>Estados cubiertos</span></div>
     <div class="stat-item"><strong>Android</strong><span>Google Play</span></div>
   </div>
 </section>
 
 <section class="section" id="funcionalidades">
   <p class="section-label">Funcionalidades</p>
-  <h2 class="section-title">Todo lo que necesitas para ahorrar más</h2>
-  <p class="section-sub">Sencillo, rápido y hecho para tu bolsillo. Sin complicaciones.</p>
+  <h2 class="section-title">Todo lo que necesitas para encontrar tu plaza</h2>
+  <p class="section-sub">Sencillo, rápido y gratuito. Sin burocracia.</p>
 
   <div class="features-grid">
     <div class="feat-card">
-      <div class="feat-icon">📍</div>
-      <h3>Ofertas en tu colonia</h3>
-      <p>Mira las promociones de los negocios más cercanos a ti, ordenadas por distancia y categoría.</p>
+      <div class="feat-icon">🎯</div>
+      <h3>Filtro personalizado</h3>
+      <p>Elige estado, rango salarial y área de interés para ver solo las convocatorias que te convienen.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <h3>Fechas límite de registro</h3>
+      <p>Consulta claramente la fecha de cierre de cada convocatoria y nunca pierdas el plazo de inscripción.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">⚡</div>
-      <h3>Actualización en tiempo real</h3>
-      <p>Las ofertas se actualizan constantemente para que no te pierdas ninguna promoción.</p>
+      <h3>Información actualizada</h3>
+      <p>Datos recopilados de fuentes confiables, siempre con las convocatorias más recientes disponibles.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🔍</div>
-      <h3>Filtros inteligentes</h3>
-      <p>Filtra por categoría, distancia y rango de precio para encontrar justo lo que andas buscando.</p>
+      <div class="feat-icon">📍</div>
+      <h3>Los 32 estados</h3>
+      <p>Cobertura de plazas federales, estatales y municipales en toda la República Mexicana.</p>
     </div>
     <div class="feat-card">
       <div class="feat-icon">🔔</div>
-      <h3>Avisos de promociones</h3>
-      <p>Recibe notificaciones cuando lleguen ofertas en las categorías que te interesan.</p>
+      <h3>Notificaciones</h3>
+      <p>Recibe avisos cuando salgan nuevas convocatorias en tu área de interés o en tu estado.</p>
     </div>
     <div class="feat-card">
-      <div class="feat-icon">🏷️</div>
-      <h3>Todas las categorías</h3>
-      <p>Súpers, farmacias, restaurantes, tiendas de ropa y mucho más, todo en un solo lugar.</p>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon">🔒</div>
-      <h3>Tu privacidad es lo primero</h3>
-      <p>No vendemos tus datos. Tu ubicación solo se usa para mostrarte ofertas cercanas a ti.</p>
+      <div class="feat-icon">💰</div>
+      <h3>Mayor salario primero</h3>
+      <p>Resultados ordenados de mayor a menor salario para que encuentres las mejores oportunidades rápido.</p>
     </div>
   </div>
 </section>
 
 <section class="cta-section">
-  <h2>Empieza a ahorrar hoy mismo</h2>
-  <p>Descárgala gratis y encuentra las mejores ofertas de tu zona ahorita.</p>
+  <h2>Empieza a buscar tu plaza hoy</h2>
+  <p>Descárgala gratis y encuentra las convocatorias abiertas en tu estado ahorita mismo.</p>
   <a href="https://play.google.com/store" target="_blank" class="btn-primary">▶&nbsp; Descargar en Google Play</a>
 </section>
 
@@ -311,7 +210,7 @@
     <li><a href="/eliminacion-de-datos">Eliminación de Datos</a></li>
     <li><a href="mailto:appfactory.rlm@gmail.com">Contacto</a></li>
   </ul>
-  <p class="footer-copy">© 2026 PlazaYa — Todos los derechos reservados.</p>
+  <p class="footer-copy">© 2026 PlazaYa — App independiente, no oficial. Todos los derechos reservados.</p>
 </footer>
 
 </body>
