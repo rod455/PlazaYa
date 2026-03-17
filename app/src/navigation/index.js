@@ -111,13 +111,14 @@ export default function AppNavigator() {
 }
 
 const tabStyles = StyleSheet.create({
-  tabBar:      { backgroundColor: '#fff', borderTopColor: '#e5e7eb', borderTopWidth: 1, height: 60, paddingBottom: 6 },
-  tabLabel:    { fontSize: 11, fontWeight: '700' },
-  btnFlut:     { position: 'absolute', bottom: 68, alignSelf: 'center', flexDirection: 'row',
-                 alignItems: 'center', gap: 8, backgroundColor: COLORS.primary,
-                 paddingVertical: 11, paddingHorizontal: 20, borderRadius: 30,
-                 shadowColor: '#000', shadowOpacity: 0.25, shadowRadius: 12,
-                 shadowOffset: { width: 0, height: 4 }, elevation: 8 },
-  btnFlutEmoji:{ fontSize: 18 },
-  btnFlutTxt:  { color: '#fff', fontWeight: '800', fontSize: 14 },
+  tabBar:       { backgroundColor: '#fff', borderTopColor: '#e5e7eb', borderTopWidth: 1, height: 60, paddingBottom: 6 },
+  tabLabel:     { fontSize: 11, fontWeight: '700' },
+  btnFlut:      { position: 'absolute', bottom: 66, left: 12, right: 12,
+                  flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
+                  backgroundColor: '#0177b5', paddingVertical: 14, borderRadius: 16,
+                  shadowColor: '#01497a', shadowOpacity: 0.45, shadowRadius: 16,
+                  shadowOffset: { width: 0, height: 6 }, elevation: 10,
+                  borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)' },
+  btnFlutEmoji: { fontSize: 22 },
+  btnFlutTxt:   { color: '#fff', fontWeight: '900', fontSize: 15, letterSpacing: 0.3 },
 });
