@@ -67,15 +67,22 @@ export default function KnowledgeQuizScreen() {
 
   // Intersticial
   useEffect(() => {
-    const ad = InterstitialAd.createForAdRequest(INTERSTITIAL_ID, {
-      requestNonPersonalizedAdsOnly: true,
-    });
-    interstitial.current = ad;
-    const u1 = ad.addAdEventListener(AdEventType.LOADED, () => setAdReady(true));
-    const u2 = ad.addAdEventListener(AdEventType.CLOSED, () => setFase('resultado'));
-    const u3 = ad.addAdEventListener(AdEventType.ERROR,  () => setFase('resultado'));
-    ad.load();
-    return () => { u1(); u2(); u3(); };
+    try {
+      const ad = InterstitialAd.createForAdRequest(INTERSTITIAL_ID, {
+        requestNonPersonalizedAdsOnly: true,
+      });
+      interstitial.current = ad;
+      const u1 = ad.addAdEventListener(AdEventType.LOADED, () => setAdReady(true));
+      const u2 = ad.addAdEventListener(AdEventType.CLOSED, () => setFase('resultado'));
+      const u3 = ad.addAdEventListener(AdEventType.ERROR,  () => {
+        setAdReady(false);
+        setFase('resultado');
+      });
+      ad.load();
+      return () => { try { u1(); u2(); u3(); } catch {} };
+    } catch (e) {
+      console.warn('Ad init error:', e);
+    }
   }, []);
 
   // Timer
@@ -108,9 +115,14 @@ export default function KnowledgeQuizScreen() {
 
     setTimeout(() => {
       if (idx + 1 >= questoes.length) {
-        // Mostra ad antes do resultado
+        // Mostra ad antes do resultado — só se realmente carregado
         if (adReady && interstitial.current) {
-          try { interstitial.current.show(); } catch { setFase('resultado'); }
+          try {
+            interstitial.current.show()
+              .catch(() => setFase('resultado'));
+          } catch {
+            setFase('resultado');
+          }
         } else {
           setFase('resultado');
         }
