@@ -1,0 +1,39 @@
+# ─── Dependências ────────────────────────────────────────────
+node_modules/
+
+# ─── Expo ────────────────────────────────────────────────────
+.expo/
+dist/
+web-build/
+
+# ─── Android build ───────────────────────────────────────────
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+
+# ─── Chaves e credenciais — NUNCA subir! ─────────────────────
+*.keystore
+*.jks
+upload_certificate.pem
+credentials.json
+credentials/
+google-services.json
+
+# ─── Variáveis de ambiente — NUNCA subir! ────────────────────
+.env
+.env.local
+.env*.local
+
+# ─── iOS ─────────────────────────────────────────────────────
+ios/build/
+ios/Pods/
+
+# ─── OS ──────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+
+# ─── Logs ────────────────────────────────────────────────────
+npm-debug.log*
+yarn-error.log*
+*.log
