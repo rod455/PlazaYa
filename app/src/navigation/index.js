@@ -106,7 +106,7 @@ export default function AppNavigator() {
       <Stack.Screen name="Auth"            component={AuthScreen}            options={slideOpts} />
       <Stack.Screen name="Cadastro"         component={CadastroScreen}        options={slideOpts} />
       <Stack.Screen name="MainApp"         component={MainApp}               options={{ gestureEnabled: false }} />
-      <Stack.Screen name="KnowledgeQuiz"   component={KnowledgeQuizScreen}   options={{ headerShown: false, gestureEnabled: false }} />
+      <Stack.Screen name="KnowledgeQuiz"   component={KnowledgeQuizScreen}   options={{ headerShown: false, gestureEnabled: true, presentation: 'modal' }} />
       <Stack.Screen name="Convocatoria"    component={ConvocatoriaScreen}    options={{ headerShown: false, gestureEnabled: true }} />
       <Stack.Screen name="StudyQuiz"       component={StudyQuizScreen}       options={{ headerShown: false, gestureEnabled: false }} />
     </Stack.Navigator>
