@@ -2,11 +2,15 @@
   "version": 2,
   "builds": [
     {
-      "src": "site/**",
+      "src": "site/*.html",
       "use": "@vercel/static"
     }
   ],
   "routes": [
+    {
+      "src": "/",
+      "dest": "/site/index.html"
+    },
     {
       "src": "/privacidad",
       "dest": "/site/privacidad.html"
@@ -14,10 +18,6 @@
     {
       "src": "/eliminacion-de-datos",
       "dest": "/site/eliminacion-de-datos.html"
-    },
-    {
-      "src": "/",
-      "dest": "/site/index.html"
     }
   ]
 }
