@@ -8,12 +8,16 @@
   ],
   "routes": [
     {
-      "src": "/exclusao-de-dados",
-      "dest": "site/exclusao-de-dados.html"
+      "src": "/privacidad",
+      "dest": "/site/privacidad.html"
     },
     {
-      "src": "/(.*)",
-      "dest": "site/$1"
+      "src": "/eliminacion-de-datos",
+      "dest": "/site/eliminacion-de-datos.html"
+    },
+    {
+      "src": "/",
+      "dest": "/site/index.html"
     }
   ]
 }
