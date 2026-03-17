@@ -1,0 +1,58 @@
+{
+  "expo": {
+    "name": "Concursos México",
+    "slug": "concursos-mexico",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "newArchEnabled": false,
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#01497a"
+    },
+    "android": {
+      "package": "com.mycompany.concursosmx",
+      "versionCode": 1,
+      "compileSdkVersion": 35,
+      "targetSdkVersion": 35,
+      "buildToolsVersion": "35.0.0",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#01497a"
+      },
+      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "VIBRATE"]
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/icon.png",
+          "color": "#01497a"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "useLegacyPackaging": false
+          }
+        }
+      ],
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-9316035916536420~2327897668"
+        }
+      ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "SEU-PROJECT-ID-AQUI"
+      }
+    }
+  }
+}

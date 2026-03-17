@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Concursos México — Encuentra tu plaza ideal</title>
+  <meta name="description" content="App gratuita para encontrar convocatorias del gobierno mexicano. Filtra por estado, salario y área. ¡Prepárate y aprueba!" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --blue:   #01497a;
+      --light:  #f9fafb;
+      --gray:   #6b7280;
+      --white:  #ffffff;
+      --green:  #10b981;
+    }
+
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--white); color: #111827; }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, #01497a 0%, #0177b5 50%, #01497a 100%);
+      color: #fff;
+      padding: 80px 24px 60px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 20px;
+      padding: 6px 16px;
+      font-size: 13px;
+      margin-bottom: 24px;
+    }
+    .hero h1 { font-size: 36px; font-weight: 900; line-height: 1.2; margin-bottom: 16px; }
+    .hero h1 span { color: #7dd3fc; }
+    .hero p { font-size: 17px; color: rgba(255,255,255,0.85); line-height: 1.6; max-width: 480px; margin: 0 auto 32px; }
+    .btn-play {
+      display: inline-block;
+      background: #fff;
+      color: var(--blue);
+      font-weight: 800;
+      font-size: 16px;
+      padding: 16px 36px;
+      border-radius: 14px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform .15s;
+    }
+    .btn-play:hover { transform: translateY(-2px); }
+
+    /* DISCLAIMER */
+    .disclaimer {
+      background: #FFF8E1;
+      padding: 14px 20px;
+      text-align: center;
+      font-size: 13px;
+      color: #92400E;
+      border-bottom: 1px solid #FCD34D;
+    }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      padding: 40px 24px;
+      background: var(--blue);
+      color: #fff;
+      flex-wrap: wrap;
+    }
+    .stat-item { text-align: center; }
+    .stat-num { font-size: 32px; font-weight: 900; }
+    .stat-label { font-size: 13px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+
+    /* FEATURES */
+    .section { padding: 60px 24px; max-width: 900px; margin: 0 auto; }
+    .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: var(--blue); text-align: center; margin-bottom: 8px; }
+    .section-title { font-size: 28px; font-weight: 900; text-align: center; margin-bottom: 12px; }
+    .section-sub { font-size: 16px; color: var(--gray); text-align: center; margin-bottom: 40px; }
+
+    .feat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+    .feat-card {
+      background: #fff;
+      border: 1.5px solid #e5e7eb;
+      border-radius: 16px;
+      padding: 24px;
+      transition: box-shadow .2s;
+    }
+    .feat-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+    .feat-icon { font-size: 32px; margin-bottom: 12px; }
+    .feat-card h3 { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+    .feat-card p { font-size: 14px; color: var(--gray); line-height: 1.6; }
+
+    /* HOW IT WORKS */
+    .how { background: var(--light); padding: 60px 24px; }
+    .how-inner { max-width: 700px; margin: 0 auto; }
+    .steps { display: flex; flex-direction: column; gap: 20px; margin-top: 40px; }
+    .step { display: flex; align-items: flex-start; gap: 16px; background: #fff; border-radius: 14px; padding: 20px; border: 1px solid #e5e7eb; }
+    .step-num { background: var(--blue); color: #fff; font-weight: 900; font-size: 16px; width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .step h4 { font-size: 15px; font-weight: 800; margin-bottom: 4px; }
+    .step p { font-size: 13px; color: var(--gray); line-height: 1.5; }
+
+    /* PRIVACIDAD */
+    .privacy { background: var(--light); padding: 60px 24px; }
+    .privacy-box { max-width: 700px; margin: 0 auto; }
+    .privacy-box h3 { font-size: 16px; font-weight: 800; margin: 20px 0 6px; }
+    .privacy-box p { font-size: 14px; color: var(--gray); line-height: 1.7; }
+    .privacy-box ul { padding-left: 20px; margin-top: 6px; }
+    .privacy-box ul li { font-size: 14px; color: var(--gray); line-height: 1.7; margin-bottom: 4px; }
+
+    /* FOOTER */
+    footer { background: var(--blue); color: rgba(255,255,255,0.7); text-align: center; padding: 32px 20px; font-size: 13px; }
+    footer a { color: rgba(255,255,255,0.9); }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 26px; }
+      .stats { gap: 24px; }
+      .stat-num { font-size: 26px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-badge">📱 App gratuita para Android</div>
+  <h1>Encuentra tu<br><span>plaza del gobierno ideal</span></h1>
+  <p>Filtra por estado, salario y área. Estudia con cientos de preguntas reales y no pierdas ninguna convocatoria.</p>
+  <a class="btn-play" href="https://play.google.com/store/apps/details?id=com.mycompany.concursosmx" target="_blank">
+    ▶ Descargar en Google Play
+  </a>
+</section>
+
+<!-- DISCLAIMER -->
+<div class="disclaimer">
+  ⚠️ <strong>App independiente</strong> — No tiene vínculo con el gobierno ni con ningún organismo oficial.
+  La información es recopilada de fuentes públicas. Confirma siempre en los sitios oficiales antes de inscribirte.
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat-item">
+    <div class="stat-num">+500</div>
+    <div class="stat-label">Convocatorias activas</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">32</div>
+    <div class="stat-label">Estados cubiertos</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">+1,000</div>
+    <div class="stat-label">Preguntas de estudio</div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="section">
+  <p class="section-label">Funcionalidades</p>
+  <h2 class="section-title">Todo lo que necesitas en un solo lugar</h2>
+  <p class="section-sub">Simple, rápido y gratuito. Sin burocracia.</p>
+  <div class="feat-grid">
+    <div class="feat-card">
+      <div class="feat-icon">🎯</div>
+      <h3>Filtro personalizado</h3>
+      <p>Elige estado, faixa salarial y área para ver solo las convocatorias que te interesan.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📅</div>
+      <h3>Fechas de registro</h3>
+      <p>Consulta el plazo de inscripción de cada convocatoria y nunca pierdas una oportunidad.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">🧠</div>
+      <h3>Quiz de conocimientos</h3>
+      <p>Evalúa tu nivel con preguntas reales de oposición antes de inscribirte a un curso.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📚</div>
+      <h3>Módulo de estudio</h3>
+      <p>Practica con ejercicios por tema y simulacros completos para llegar preparado al examen.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">📍</div>
+      <h3>Todos los estados</h3>
+      <p>Cobertura de plazas federales, estatales y municipales en toda la República Mexicana.</p>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon">💰</div>
+      <h3>Mejor salario primero</h3>
+      <p>Resultados ordenados del mayor al menor salario para facilitar tu elección.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how">
+  <div class="how-inner">
+    <p class="section-label" style="text-align:center">¿Cómo funciona?</p>
+    <h2 class="section-title" style="text-align:center">En 4 pasos</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div>
+          <h4>Cuéntanos tu perfil</h4>
+          <p>Responde 7 preguntas sobre tu formación, área de interés y estado. Solo tarda 2 minutos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div>
+          <h4>Prueba tus conocimientos</h4>
+          <p>Responde 5 preguntas de oposición de tu área y descubre tu nivel actual.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div>
+          <h4>Crea tu cuenta</h4>
+          <p>Regístrate gratis para acceder a todos los ejercicios y simulacros completos.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div>
+          <h4>¡Prepárate y aprueba!</h4>
+          <p>Estudia con preguntas reales de convocatorias anteriores y sigue tu progreso.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PRIVACIDAD -->
+<section class="privacy" id="privacidad">
+  <div class="privacy-box">
+    <p class="section-label" style="text-align:center">Política de Privacidad</p>
+    <h2 class="section-title" style="text-align:center">Tu privacidad es prioridad</h2>
+
+    <h3>1. Información recopilada</h3>
+    <p>Concursos México recopila únicamente los datos necesarios para el funcionamiento del app:</p>
+    <ul>
+      <li><strong>Perfil de usuario</strong> — nombre y email (solo si creas cuenta)</li>
+      <li><strong>Preferencias del quiz</strong> — área, estado, nivel educativo (para personalizar resultados)</li>
+      <li><strong>Historial de estudio</strong> — preguntas respondidas y sesiones (para seguimiento de progreso)</li>
+    </ul>
+
+    <h3>2. Uso de la información</h3>
+    <p>Los datos son utilizados exclusivamente para personalizar el contenido del app y mejorar la experiencia del usuario. No vendemos ni compartimos datos con terceros.</p>
+
+    <h3>3. Fuente de las convocatorias</h3>
+    <p>Concursos México es una aplicación independiente y <strong>no está afiliada al gobierno mexicano ni a ningún organismo oficial</strong>. La información de convocatorias es recopilada de fuentes públicas (DOF, portales de dependencias, medios especializados). Siempre confirma los datos en los sitios oficiales antes de inscribirte.</p>
+
+    <h3>4. Seguridad</h3>
+    <p>Utilizamos Supabase como base de datos, que implementa cifrado en tránsito (TLS) y en reposo. Las contraseñas son gestionadas con autenticación segura y nunca se almacenan en texto plano.</p>
+
+    <h3>5. Eliminación de datos</h3>
+    <p>Para solicitar la eliminación de tu cuenta y todos tus datos, contáctanos en: <a href="mailto:appfactory.rlm@gmail.com?subject=Eliminación de datos - Concursos México">appfactory.rlm@gmail.com</a></p>
+
+    <h3>6. Contacto</h3>
+    <p>Preguntas sobre privacidad: <a href="mailto:appfactory.rlm@gmail.com">appfactory.rlm@gmail.com</a></p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p>© 2025 Concursos México — App independiente, no oficial.</p>
+  <p style="margin-top:8px">
+    <a href="/">Inicio</a> &nbsp;|&nbsp;
+    <a href="#privacidad">Privacidad</a> &nbsp;|&nbsp;
+    <a href="/exclusion">Eliminar mis datos</a>
+  </p>
+</footer>
+
+</body>
+</html>
