@@ -8,7 +8,13 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 // ── Credenciais (configuradas em Supabase > Settings > Edge Functions > Secrets)
 const SUPABASE_URL        = Deno.env.get('DB_URL') ?? Deno.env.get('SUPABASE_URL')!
 const SUPABASE_SERVICE_KEY = Deno.env.get('DB_SERVICE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const SCRAPER_API_KEY     = Deno.env.get('SCRAPER_API_KEY') ?? '10d2146c64b2996ee444f34212c7f05b'
 const EXPO_PUSH_URL       = 'https://exp.host/--/api/v2/push/send'
+
+// Monta URL do ScraperAPI — bypassa bloqueios do DOF e TrabajaEn
+function scraperUrl(targetUrl: string): string {
+  return `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(targetUrl)}&render=false`
+}'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
@@ -90,12 +96,8 @@ async function scrapeDOF(): Promise<any[]> {
   const vagas: any[] = []
 
   try {
-    const res = await fetch('https://www.dof.gob.mx/vacantes.php', {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; PlazaYaBot/1.0)',
-        'Accept': 'text/html,application/xhtml+xml',
-      },
-      signal: AbortSignal.timeout(20000),
+    const res = await fetch(scraperUrl('https://www.dof.gob.mx/vacantes.php'), {
+      signal: AbortSignal.timeout(30000),
     })
 
     if (!res.ok) {
@@ -140,9 +142,8 @@ async function scrapeDOF(): Promise<any[]> {
 
 // Extrai dados de uma página individual de vaga do DOF
 async function scrapeVagaDOF(url: string): Promise<any | null> {
-  const res = await fetch(url, {
-    headers: { 'User-Agent': 'Mozilla/5.0 (compatible; PlazaYaBot/1.0)' },
-    signal: AbortSignal.timeout(15000),
+  const res = await fetch(scraperUrl(url), {
+    signal: AbortSignal.timeout(20000),
   })
   if (!res.ok) return null
 
@@ -214,12 +215,8 @@ async function scrapeTrabajaEn(): Promise<any[]> {
   try {
     // TrabajaEn tem uma página de busca pública de concursos
     const url = 'https://www.trabajaen.gob.mx/menuini/js_paginad.jsp'
-    const res = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; PlazaYaBot/1.0)',
-        'Accept': 'text/html',
-      },
-      signal: AbortSignal.timeout(15000),
+    const res = await fetch(scraperUrl(url), {
+      signal: AbortSignal.timeout(20000),
     })
 
     if (!res.ok) {
