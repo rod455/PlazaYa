@@ -6,8 +6,8 @@ import { serve } from 'https://deno.land/std@0.168.0/http/server.ts'
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 // ── Credenciais (configuradas em Supabase > Settings > Edge Functions > Secrets)
-const SUPABASE_URL        = Deno.env.get('SUPABASE_URL')!
-const SUPABASE_SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+const SUPABASE_URL        = Deno.env.get('DB_URL') ?? Deno.env.get('SUPABASE_URL')!
+const SUPABASE_SERVICE_KEY = Deno.env.get('DB_SERVICE_KEY') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const EXPO_PUSH_URL       = 'https://exp.host/--/api/v2/push/send'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
@@ -285,8 +285,8 @@ async function scrapeTrabajaEn(): Promise<any[]> {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SALVAR NO SUPABASE
--- Usa upsert para evitar duplicatas (fonte_id é unique)
--- Retorna apenas as vagas que são NOVAS (inseridas agora)
+// Usa upsert para evitar duplicatas (fonte_id e unique)
+// Retorna apenas as vagas que sao NOVAS (inseridas agora)
 // ─────────────────────────────────────────────────────────────────────────────
 async function salvarVagas(vagas: any[]): Promise<any[]> {
   if (vagas.length === 0) return []
