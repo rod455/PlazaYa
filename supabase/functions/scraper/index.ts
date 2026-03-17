@@ -14,7 +14,7 @@ const EXPO_PUSH_URL       = 'https://exp.host/--/api/v2/push/send'
 // Monta URL do ScraperAPI — bypassa bloqueios do DOF e TrabajaEn
 function scraperUrl(targetUrl: string): string {
   return `http://api.scraperapi.com?api_key=${SCRAPER_API_KEY}&url=${encodeURIComponent(targetUrl)}&render=false`
-}'
+}
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
