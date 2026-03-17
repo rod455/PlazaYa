@@ -53,7 +53,7 @@ export default function RewardedAdScreen({ navigation }) {
       // Marca onboarding completo
       await AsyncStorage.setItem('@concurseiro:onboarding_completo', 'true');
       // 🆕 Vai para o Quiz de Conhecimentos (não direto para MainApp)
-      navigation.replace('KnowledgeQuiz');
+      navigation.replace('ResultadoPerfil');
     });
 
     const unsubClosed = rewarded.addAdEventListener(AdEventType.CLOSED, () => {
@@ -67,7 +67,7 @@ export default function RewardedAdScreen({ navigation }) {
       setAdReady(false);
       // Se falhar o ad, vai de qualquer forma
       AsyncStorage.setItem('@concurseiro:onboarding_completo', 'true').then(() => {
-        navigation.replace('KnowledgeQuiz');
+        navigation.replace('ResultadoPerfil');
       });
     });
 
@@ -84,7 +84,7 @@ export default function RewardedAdScreen({ navigation }) {
 
   function pularAd() {
     AsyncStorage.setItem('@concurseiro:onboarding_completo', 'true').then(() => {
-      navigation.replace('KnowledgeQuiz');
+      navigation.replace('ResultadoPerfil');
     });
   }
 
