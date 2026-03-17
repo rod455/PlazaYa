@@ -20,6 +20,8 @@ import RewardedAdScreen       from '../screens/RewardedAdScreen';
 import ResultadoPerfilScreen  from '../screens/ResultadoPerfilScreen';
 import KnowledgeQuizScreen    from '../screens/knowledge/KnowledgeQuizScreen';
 import AuthScreen             from '../screens/auth/AuthScreen';
+import CadastroScreen         from '../screens/auth/CadastroScreen';
+import NovedadesScreen        from '../screens/main/NovedadesScreen';
 import HomeScreen             from '../screens/main/HomeScreen';
 import ConvocatoriaScreen     from '../screens/main/ConvocatoriaScreen';
 import StudyHomeScreen        from '../screens/study/StudyHomeScreen';
@@ -80,7 +82,7 @@ function MainApp() {
       >
         <Tab.Screen name="Inicio"    component={HomeScreen} />
         <Tab.Screen name="Estudiar"  component={StudyHomeScreen} />
-        <Tab.Screen name="Novedades" component={NovididadesScreen} />
+        <Tab.Screen name="Novedades" component={NovedadesScreen} />
         <Tab.Screen name="Perfil"    component={PerfilScreen} />
       </Tab.Navigator>
       <BotaoTesteConhecimentos />
@@ -102,6 +104,7 @@ export default function AppNavigator() {
       <Stack.Screen name="RewardedAd"      component={RewardedAdScreen}      options={{ gestureEnabled: false }} />
       <Stack.Screen name="ResultadoPerfil" component={ResultadoPerfilScreen} options={{ gestureEnabled: false }} />
       <Stack.Screen name="Auth"            component={AuthScreen}            options={slideOpts} />
+      <Stack.Screen name="Cadastro"         component={CadastroScreen}        options={slideOpts} />
       <Stack.Screen name="MainApp"         component={MainApp}               options={{ gestureEnabled: false }} />
       <Stack.Screen name="KnowledgeQuiz"   component={KnowledgeQuizScreen}   options={{ headerShown: false, gestureEnabled: false }} />
       <Stack.Screen name="Convocatoria"    component={ConvocatoriaScreen}    options={{ headerShown: false, gestureEnabled: true }} />
