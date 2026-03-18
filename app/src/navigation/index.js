@@ -70,7 +70,7 @@ function MainApp() {
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor:   COLORS.primary,
+          tabBarActiveTintColor:   '#1a5c2a',
           tabBarInactiveTintColor: '#9ca3af',
           tabBarStyle: tabStyles.tabBar,
           tabBarLabelStyle: tabStyles.tabLabel,
@@ -114,14 +114,14 @@ export default function AppNavigator() {
 }
 
 const tabStyles = StyleSheet.create({
-  tabBar:       { backgroundColor: '#fff', borderTopColor: '#e5e7eb', borderTopWidth: 1, height: 60, paddingBottom: 6 },
+  tabBar:       { backgroundColor: '#fff', borderTopColor: '#e0e0e0', borderTopWidth: 1, height: 62, paddingBottom: 6 },
   tabLabel:     { fontSize: 11, fontWeight: '700' },
-  btnFlut:      { position: 'absolute', bottom: 66, left: 12, right: 12,
+  btnFlut:      { position: 'absolute', bottom: 68, left: 12, right: 12,
                   flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  backgroundColor: '#0177b5', paddingVertical: 14, borderRadius: 16,
-                  shadowColor: '#01497a', shadowOpacity: 0.45, shadowRadius: 16,
+                  backgroundColor: '#1a5c2a', paddingVertical: 15, borderRadius: 16,
+                  shadowColor: '#0d2e15', shadowOpacity: 0.45, shadowRadius: 16,
                   shadowOffset: { width: 0, height: 6 }, elevation: 10,
-                  borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.25)' },
+                  borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.2)' },
   btnFlutEmoji: { fontSize: 22 },
   btnFlutTxt:   { color: '#fff', fontWeight: '900', fontSize: 15, letterSpacing: 0.3 },
 });
