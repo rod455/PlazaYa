@@ -1,389 +1,241 @@
 // src/screens/main/HomeScreen.js
-// Lista convocatórias em tempo real do Supabase + filtros + navega para WebView
+// Branding PlazaYa — verde #1a5c2a, vermelho #c0392b, dourado #f0a500
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ActivityIndicator,
-  RefreshControl, ScrollView, TouchableOpacity, FlatList,
+  RefreshControl, ScrollView, TouchableOpacity, FlatList, StatusBar,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabase';
 import { useQuiz } from '../../context/QuizContext';
 import { useAuth } from '../../context/AuthContext';
-import { ESTADOS_MEXICO, AREA_OPTIONS } from '../../constants/data';
-import { COLORS } from '../../constants/colors';
+import { ESTADOS_MEXICO } from '../../constants/data';
 import AdBanner from '../../components/AdBanner';
 
-// ─── Mapeamento de área → emoji ───────────────────────────────────────────────
-const AREA_EMOJI = {
-  policia: '👮', juridico: '⚖️', saude: '🏥', fiscal: '📋',
-  ti: '💻', administrativo: '🏛️', educacion: '📚',
+const C = {
+  primary:     '#1a5c2a',
+  primaryMid:  '#2d8a3e',
+  red:         '#c0392b',
+  gold:        '#f0a500',
+  bg:          '#f2f4f0',
+  white:       '#ffffff',
+  text:        '#1a1a1a',
+  textMuted:   '#666666',
+  border:      '#e0e0e0',
 };
 
-// ─── DisclaimerBanner ─────────────────────────────────────────────────────────
-function DisclaimerBanner() {
-  const [expanded, setExpanded] = useState(false);
+const AREA_EMOJI = {
+  policia:'👮', juridico:'⚖️', saude:'🏥', fiscal:'📋',
+  ti:'💻', administrativo:'🏛️', educacion:'📚',
+};
+
+function Chip({ label, selected, onPress }) {
   return (
-    <TouchableOpacity
-      style={styles.disclaimer}
-      onPress={() => setExpanded(e => !e)}
-      activeOpacity={0.85}
-    >
-      <View style={styles.disclaimerRow}>
-        <Text>ℹ️</Text>
-        <Text style={styles.disclaimerTitle}>App independiente — no oficial</Text>
-        <Text style={styles.disclaimerChevron}>{expanded ? '▲' : '▼'}</Text>
-      </View>
-      {expanded && (
-        <Text style={styles.disclaimerBody}>
-          Esta app recopila información de fuentes públicas (DOF, TrabajaEn).
-          Confirma siempre los datos directamente en los sitios oficiales antes de inscribirte.
-          No tenemos vínculo con el gobierno de México.
-        </Text>
-      )}
+    <TouchableOpacity style={[s.chip, selected && s.chipOn]} onPress={onPress} activeOpacity={0.8}>
+      <Text style={[s.chipTxt, selected && s.chipTxtOn]}>{label}</Text>
     </TouchableOpacity>
   );
 }
 
-// ─── Card de convocatória ─────────────────────────────────────────────────────
-function ConvocatoriaCard({ item, onPress }) {
+function Disclaimer() {
+  const [open, setOpen] = useState(false);
+  return (
+    <TouchableOpacity style={s.disclaimer} onPress={() => setOpen(v => !v)} activeOpacity={0.9}>
+      <View style={s.disclaimerRow}>
+        <Text style={s.disclaimerTxt}>ℹ️  App independiente — no oficial</Text>
+        <Text style={s.disclaimerChev}>{open ? '▲' : '▼'}</Text>
+      </View>
+      {open && <Text style={s.disclaimerBody}>Esta app recopila información de fuentes públicas (DOF, TrabajaEn). Confirma siempre los datos en los sitios oficiales antes de inscribirte.</Text>}
+    </TouchableOpacity>
+  );
+}
+
+function ConvCard({ item, onPress }) {
   const salario = item.salario_min
     ? `$${Number(item.salario_min).toLocaleString('es-MX')}${item.salario_max ? ` — $${Number(item.salario_max).toLocaleString('es-MX')}` : ''} MXN`
-    : 'Salario a convenir';
-
+    : null;
   const dias = item.dias_restantes;
-  const esUrgente = dias !== null && dias <= 7;
-
+  const urgente = dias !== null && dias <= 7;
+  let fechaStr = null;
+  if (item.fecha_cierre) {
+    const d = new Date(item.fecha_cierre);
+    fechaStr = d.toLocaleDateString('es-MX', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
   return (
-    <TouchableOpacity style={styles.card} onPress={() => onPress(item)} activeOpacity={0.8}>
-      {/* Topo: área + dependência */}
-      <View style={styles.cardTop}>
-        <View style={styles.cardAreaBadge}>
-          <Text style={styles.cardAreaEmoji}>{AREA_EMOJI[item.area] ?? '🏛️'}</Text>
-          <Text style={styles.cardArea}>{item.area}</Text>
+    <TouchableOpacity style={s.card} onPress={() => onPress(item)} activeOpacity={0.88}>
+      <View style={s.cardHead}>
+        <View style={s.cardHeadLeft}>
+          <Text style={s.cardEmoji}>{AREA_EMOJI[item.area] ?? '🏛️'}</Text>
+          <View style={{ flex: 1 }}>
+            <Text style={s.cardTitulo} numberOfLines={2}>{item.titulo}</Text>
+            <Text style={s.cardDep} numberOfLines={1}>{item.dependencia ?? 'Gobierno Federal'}</Text>
+          </View>
         </View>
-        {item.estado && item.estado !== 'FEDERAL' && (
-          <Text style={styles.cardEstado}>📍 {item.estado}</Text>
-        )}
-        {item.estado === 'FEDERAL' && (
-          <Text style={styles.cardEstado}>🇲🇽 Federal</Text>
-        )}
+        <Text style={{ fontSize: 18 }}>🇲🇽</Text>
       </View>
-
-      {/* Título */}
-      <Text style={styles.cardTitulo} numberOfLines={2}>{item.titulo}</Text>
-      <Text style={styles.cardDep} numberOfLines={1}>🏛️ {item.dependencia ?? 'Gobierno'}</Text>
-
-      {/* Rodapé: salário + prazo */}
-      <View style={styles.cardBottom}>
-        <Text style={styles.cardSalario}>💰 {salario}</Text>
-        {dias !== null ? (
-          <View style={[styles.cardPrazoBadge, esUrgente && styles.cardPrazoUrgente]}>
-            <Text style={[styles.cardPrazoTxt, esUrgente && styles.cardPrazoTxtUrgente]}>
-              {dias === 0 ? '⚠️ Hoy' : `📅 ${dias}d`}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.cardPrazoBadge}>
-            <Text style={styles.cardPrazoTxt}>🔜 Previsto</Text>
-          </View>
-        )}
+      <View style={s.cardBody}>
+        {fechaStr && <View style={s.dataRow}><Text style={s.dataLabel}>📅 Inscripciones hasta </Text><Text style={s.dataVal}>{fechaStr}</Text></View>}
+        {item.escolaridad && <Text style={s.nivel}>Nivel {item.escolaridad}</Text>}
+        {salario && <View style={{ flexDirection:'row', alignItems:'center', gap: 6 }}><Text style={{ fontSize:16 }}>💰</Text><Text style={s.salario}>{salario}</Text></View>}
+        {item.num_plazas && <Text style={s.plazas}>👥 {Number(item.num_plazas).toLocaleString()} plazas disponibles</Text>}
       </View>
-
-      {item.num_plazas && (
-        <Text style={styles.cardPlazas}>👥 {item.num_plazas} plazas disponibles</Text>
-      )}
+      {urgente && <View style={s.urgente}><Text style={s.urgenteTxt}>⚠️ Cierra en {dias === 0 ? 'hoy' : `${dias} días`}</Text></View>}
     </TouchableOpacity>
   );
 }
 
-// ─── Chips de filtro ──────────────────────────────────────────────────────────
-function FilterChip({ label, selected, onPress }) {
-  return (
-    <TouchableOpacity
-      style={[styles.chip, selected && styles.chipSelected]}
-      onPress={onPress}
-      activeOpacity={0.8}
-    >
-      <Text style={[styles.chipTxt, selected && styles.chipTxtSelected]}>{label}</Text>
-    </TouchableOpacity>
-  );
-}
-
-// ─── HomeScreen principal ─────────────────────────────────────────────────────
 export default function HomeScreen() {
   const { answers } = useQuiz();
   const { user } = useAuth();
   const navigation = useNavigation();
-
-  // Estado dos filtros — inicia com o perfil do usuário
-  const [areaFiltro,   setAreaFiltro]   = useState(answers.area ?? null);
-  const [estadoFiltro, setEstadoFiltro] = useState(answers.estado ?? null);
+  const [areaFiltro, setAreaFiltro] = useState(answers.area ?? null);
   const [soloAbiertas, setSoloAbiertas] = useState(true);
-
-  const [lista,      setLista]      = useState([]);
-  const [loading,    setLoading]    = useState(true);
+  const [lista, setLista] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [total,      setTotal]      = useState(0);
+  const [total, setTotal] = useState(0);
+  const estadoFiltro = answers.estado ?? null;
+  const estadoNome = ESTADOS_MEXICO?.find(e => e.uf === estadoFiltro)?.nome ?? 'Todo México';
 
-  // ── Busca dados do Supabase ────────────────────────────────────────────────
-  const buscarConvocatorias = useCallback(async () => {
+  const buscar = useCallback(async () => {
     try {
-      let query = supabase
-        .from('convocatorias_activas')  // usa a view com dias_restantes
-        .select('*')
-        .order('fecha_publicacion', { ascending: false })
-        .limit(50);
-
-      if (areaFiltro)   query = query.eq('area', areaFiltro);
-      if (estadoFiltro) query = query.or(`estado.eq.${estadoFiltro},estado.eq.FEDERAL`);
-      if (soloAbiertas) query = query.neq('status_cierre', 'cerrada');
-
-      const { data, error, count } = await query;
-
+      let q = supabase.from('convocatorias_activas').select('*').order('fecha_publicacion', { ascending: false }).limit(50);
+      if (areaFiltro) q = q.eq('area', areaFiltro);
+      if (estadoFiltro) q = q.or(`estado.eq.${estadoFiltro},estado.eq.FEDERAL`);
+      if (soloAbiertas) q = q.neq('status_cierre', 'cerrada');
+      const { data, error } = await q;
       if (error) throw error;
       setLista(data ?? []);
-      setTotal(count ?? data?.length ?? 0);
-    } catch (e) {
-      console.error('Erro ao buscar convocatórias:', e);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
+      setTotal(data?.length ?? 0);
+    } catch (e) { console.error(e); }
+    finally { setLoading(false); setRefreshing(false); }
   }, [areaFiltro, estadoFiltro, soloAbiertas]);
 
-  // Carga inicial e quando filtros mudam
+  useEffect(() => { setLoading(true); buscar(); }, [buscar]);
+
   useEffect(() => {
-    setLoading(true);
-    buscarConvocatorias();
-  }, [buscarConvocatorias]);
+    const canal = supabase.channel('conv_live').on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'convocatorias' }, (p) => {
+      if (!areaFiltro || p.new.area === areaFiltro) setLista(prev => [{ ...p.new, dias_restantes: null, status_cierre: 'abierta' }, ...prev]);
+    }).subscribe();
+    return () => supabase.removeChannel(canal);
+  }, [areaFiltro]);
 
-  // ── Realtime — recebe novas vagas sem precisar dar pull ───────────────────
-  useEffect(() => {
-    const canal = supabase
-      .channel('convocatorias_novas')
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'convocatorias' },
-        (payload) => {
-          console.log('🆕 Nova convocatória recebida em tempo real:', payload.new.titulo);
-          // Adiciona no topo da lista se passar nos filtros ativos
-          const nova = payload.new;
-          const passaArea   = !areaFiltro || nova.area === areaFiltro;
-          const passaEstado = !estadoFiltro || nova.estado === estadoFiltro || nova.estado === 'FEDERAL';
-          if (passaArea && passaEstado) {
-            setLista(prev => [{ ...nova, dias_restantes: null, status_cierre: 'abierta' }, ...prev]);
-          }
-        }
-      )
-      .subscribe();
-
-    return () => { supabase.removeChannel(canal); };
-  }, [areaFiltro, estadoFiltro]);
-
-  // ── Navega para a tela de WebView da vaga ────────────────────────────────
-  function abrirConvocatoria(item) {
-    navigation.navigate('Convocatoria', { convocatoria: item });
-  }
-
-  // ── Áreas para os chips de filtro ────────────────────────────────────────
-  const areasChips = [
+  const areas = [
     { id: null, label: 'Todas' },
-    { id: 'policia',       label: '👮 Seguridad' },
-    { id: 'juridico',      label: '⚖️ Jurídico' },
-    { id: 'saude',         label: '🏥 Salud' },
-    { id: 'fiscal',        label: '📋 Fiscal' },
-    { id: 'ti',            label: '💻 TI' },
-    { id: 'educacion',     label: '📚 Educación' },
-    { id: 'administrativo',label: '🏛️ Admin' },
+    { id: 'policia', label: '👮 Seguridad' },
+    { id: 'juridico', label: '⚖️ Jurídico' },
+    { id: 'saude', label: '🏥 Salud' },
+    { id: 'fiscal', label: '📋 Fiscal' },
+    { id: 'ti', label: '💻 TI' },
+    { id: 'educacion', label: '📚 Educación' },
+    { id: 'administrativo', label: '🏛️ Admin' },
   ];
 
-  const estadoNome = ESTADOS_MEXICO.find(e => e.uf === estadoFiltro)?.nome ?? 'Todo México';
-
-  // ─── Render ───────────────────────────────────────────────────────────────
   return (
-    <SafeAreaView style={styles.safe}>
-
+    <SafeAreaView style={s.safe} edges={['top']}>
+      <StatusBar backgroundColor={C.primary} barStyle="light-content" />
       <AdBanner />
 
       {/* Header */}
-      <View style={styles.header}>
+      <View style={s.header}>
         <View>
-          <Text style={styles.headerTitulo}>🏛️ PlazaYa</Text>
-          <Text style={styles.headerSub}>
-            {total > 0 ? `${total} convocatorias` : 'Buscando...'} · {estadoNome}
-          </Text>
-        </View>
-        {user && (
-          <View style={styles.badgeUser}>
-            <Text style={styles.badgeUserTxt}>✅ Pro</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={s.logoP}>Plaza</Text><Text style={s.logoYa}>Ya</Text>
           </View>
-        )}
-      </View>
-
-      {/* Filtros de área — scroll horizontal */}
-      <View>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsWrap}
-        >
-          {areasChips.map(a => (
-            <FilterChip
-              key={String(a.id)}
-              label={a.label}
-              selected={areaFiltro === a.id}
-              onPress={() => setAreaFiltro(a.id)}
-            />
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Filtro rápido: só abertas */}
-      <View style={styles.filtrosRow}>
-        <TouchableOpacity
-          style={[styles.toggleBtn, soloAbiertas && styles.toggleBtnOn]}
-          onPress={() => setSoloAbiertas(v => !v)}
-        >
-          <Text style={[styles.toggleTxt, soloAbiertas && styles.toggleTxtOn]}>
-            {soloAbiertas ? '✅ Solo abiertas' : '📋 Todas (incl. previstas)'}
-          </Text>
-        </TouchableOpacity>
-
-        {estadoFiltro && (
-          <TouchableOpacity
-            style={styles.clearEstado}
-            onPress={() => setEstadoFiltro(null)}
-          >
-            <Text style={styles.clearEstadoTxt}>📍 {estadoFiltro} ✕</Text>
-          </TouchableOpacity>
-        )}
-      </View>
-
-      <DisclaimerBanner />
-
-      {/* Lista */}
-      {loading ? (
-        <View style={styles.loadingBox}>
-          <ActivityIndicator size="large" color={COLORS.primary} />
-          <Text style={styles.loadingTxt}>Buscando convocatorias...</Text>
+          <Text style={s.headerSub}>{total > 0 ? `${total} convocatorias` : 'Buscando...'} · {estadoNome}</Text>
         </View>
+        <TouchableOpacity style={s.searchBtn}><Text style={{ fontSize: 18 }}>🔍</Text></TouchableOpacity>
+      </View>
+
+      {/* Chips */}
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={s.chips}>
+        {areas.map(a => <Chip key={String(a.id)} label={a.label} selected={areaFiltro === a.id} onPress={() => setAreaFiltro(a.id)} />)}
+      </ScrollView>
+
+      {/* Filtro */}
+      <View style={s.filtroRow}>
+        <TouchableOpacity style={[s.toggleBtn, soloAbiertas && s.toggleBtnOn]} onPress={() => setSoloAbiertas(v => !v)}>
+          <Text style={[s.toggleTxt, soloAbiertas && s.toggleTxtOn]}>{soloAbiertas ? '✅ Solo abiertas' : '📋 Todas'}</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Disclaimer />
+
+      {loading ? (
+        <View style={s.center}><ActivityIndicator size="large" color={C.primary} /><Text style={s.loadingTxt}>Buscando convocatorias...</Text></View>
       ) : lista.length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={styles.emptyEmoji}>🔍</Text>
-          <Text style={styles.emptyTitulo}>Sin resultados</Text>
-          <Text style={styles.emptyTxt}>
-            No encontramos convocatorias con estos filtros.{'\n'}
-            Intenta cambiar el área o estado.
-          </Text>
-          <TouchableOpacity
-            style={styles.btnLimpar}
-            onPress={() => { setAreaFiltro(null); setEstadoFiltro(null); setSoloAbiertas(true); }}
-          >
-            <Text style={styles.btnLimparTxt}>Limpiar filtros</Text>
+        <View style={s.center}>
+          <Text style={{ fontSize: 48, marginBottom: 12 }}>🔍</Text>
+          <Text style={s.emptyTitle}>Sin resultados</Text>
+          <Text style={s.emptyTxt}>No encontramos convocatorias con estos filtros.{'
+'}Intenta cambiar el área o estado.</Text>
+          <TouchableOpacity style={s.btnLimpar} onPress={() => { setAreaFiltro(null); setSoloAbiertas(true); }}>
+            <Text style={s.btnLimparTxt}>Limpiar filtros</Text>
           </TouchableOpacity>
         </View>
       ) : (
         <FlatList
           data={lista}
           keyExtractor={item => item.id}
-          renderItem={({ item }) => (
-            <ConvocatoriaCard item={item} onPress={abrirConvocatoria} />
-          )}
-          contentContainerStyle={styles.lista}
+          renderItem={({ item }) => <ConvCard item={item} onPress={c => navigation.navigate('Convocatoria', { convocatoria: c })} />}
+          contentContainerStyle={s.lista}
           showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={() => { setRefreshing(true); buscarConvocatorias(); }}
-              colors={[COLORS.primary]}
-            />
-          }
-          ListFooterComponent={
-            <View style={styles.footer}>
-              <Text style={styles.footerTxt}>
-                Datos recopilados de DOF y TrabajaEn.{'\n'}
-                Confirma siempre en los sitios oficiales.
-              </Text>
-            </View>
-          }
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); buscar(); }} colors={[C.primary]} />}
+          ListFooterComponent={<Text style={s.footer}>Datos de DOF · TrabajaEn · Confirma en sitios oficiales</Text>}
         />
       )}
-
     </SafeAreaView>
   );
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  safe:           { flex: 1, backgroundColor: '#f9fafb' },
-
-  header:         { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-                    paddingHorizontal: 16, paddingVertical: 12 },
-  headerTitulo:   { fontSize: 20, fontWeight: '900', color: '#111827' },
-  headerSub:      { fontSize: 12, color: '#6b7280', marginTop: 2 },
-  badgeUser:      { backgroundColor: '#d1fae5', borderRadius: 20, paddingHorizontal: 10, paddingVertical: 4 },
-  badgeUserTxt:   { fontSize: 12, color: '#065f46', fontWeight: '700' },
-
-  // Chips de área
-  chipsWrap:      { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
-  chip:           { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20,
-                    backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#e5e7eb' },
-  chipSelected:   { backgroundColor: COLORS.primary, borderColor: COLORS.primary },
-  chipTxt:        { fontSize: 13, color: '#374151', fontWeight: '600' },
-  chipTxtSelected:{ color: '#fff', fontWeight: '700' },
-
-  // Filtros rápidos
-  filtrosRow:     { flexDirection: 'row', alignItems: 'center', gap: 8,
-                    paddingHorizontal: 12, paddingBottom: 8, flexWrap: 'wrap' },
-  toggleBtn:      { backgroundColor: '#f3f4f6', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
-  toggleBtnOn:    { backgroundColor: '#dcfce7' },
-  toggleTxt:      { fontSize: 13, color: '#6b7280', fontWeight: '600' },
-  toggleTxtOn:    { color: '#166534' },
-  clearEstado:    { backgroundColor: '#eff6ff', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6 },
-  clearEstadoTxt: { fontSize: 13, color: COLORS.primary, fontWeight: '700' },
-
-  // Disclaimer
-  disclaimer:     { marginHorizontal: 12, marginBottom: 8, backgroundColor: '#FFF8E1',
-                    borderRadius: 10, padding: 10, borderLeftWidth: 4, borderLeftColor: '#f59e0b' },
-  disclaimerRow:  { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  disclaimerTitle:{ flex: 1, fontSize: 12, fontWeight: '700', color: '#92400e' },
-  disclaimerChevron:{ fontSize: 11, color: '#92400e' },
-  disclaimerBody: { fontSize: 12, color: '#78350f', marginTop: 6, lineHeight: 18 },
-
-  // Loading / empty
-  loadingBox:     { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  loadingTxt:     { color: '#6b7280', marginTop: 12, fontSize: 14 },
-  emptyBox:       { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 32 },
-  emptyEmoji:     { fontSize: 48, marginBottom: 12 },
-  emptyTitulo:    { fontSize: 18, fontWeight: '800', color: '#111827', marginBottom: 8 },
-  emptyTxt:       { fontSize: 14, color: '#6b7280', textAlign: 'center', lineHeight: 22, marginBottom: 24 },
-  btnLimpar:      { backgroundColor: COLORS.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 },
-  btnLimparTxt:   { color: '#fff', fontWeight: '700', fontSize: 15 },
-
-  // Cards
-  lista:          { paddingHorizontal: 12, paddingBottom: 20 },
-  card:           { backgroundColor: '#fff', borderRadius: 14, padding: 16,
-                    marginBottom: 10, borderWidth: 1, borderColor: '#e5e7eb',
-                    shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 6, elevation: 2 },
-  cardTop:        { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 },
-  cardAreaBadge:  { flexDirection: 'row', alignItems: 'center', gap: 4,
-                    backgroundColor: '#eff6ff', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  cardAreaEmoji:  { fontSize: 13 },
-  cardArea:       { fontSize: 11, color: COLORS.primary, fontWeight: '700', textTransform: 'uppercase' },
-  cardEstado:     { fontSize: 12, color: '#6b7280' },
-  cardTitulo:     { fontSize: 15, fontWeight: '800', color: '#111827', lineHeight: 21, marginBottom: 4 },
-  cardDep:        { fontSize: 13, color: '#6b7280', marginBottom: 10 },
-  cardBottom:     { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  cardSalario:    { fontSize: 13, fontWeight: '800', color: '#16a34a', flex: 1 },
-  cardPrazoBadge: { backgroundColor: '#dcfce7', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
-  cardPrazoUrgente:{ backgroundColor: '#fee2e2' },
-  cardPrazoTxt:   { fontSize: 12, color: '#166534', fontWeight: '700' },
-  cardPrazoTxtUrgente:{ color: '#991b1b' },
-  cardPlazas:     { fontSize: 12, color: '#6b7280', marginTop: 6 },
-
-  // Footer da lista
-  footer:         { alignItems: 'center', paddingVertical: 20 },
-  footerTxt:      { fontSize: 12, color: '#9ca3af', textAlign: 'center', lineHeight: 18 },
+const s = StyleSheet.create({
+  safe:         { flex: 1, backgroundColor: C.bg },
+  center:       { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 32 },
+  header:       { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
+                  backgroundColor: C.white, paddingHorizontal: 16, paddingVertical: 10,
+                  borderBottomWidth: 1, borderBottomColor: C.border },
+  logoP:        { fontSize: 22, fontWeight: '900', color: C.primary },
+  logoYa:       { fontSize: 22, fontWeight: '900', color: C.red },
+  headerSub:    { fontSize: 12, color: C.textMuted },
+  searchBtn:    { width: 36, height: 36, borderRadius: 18, backgroundColor: C.bg, justifyContent: 'center', alignItems: 'center' },
+  chips:        { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
+  chip:         { paddingHorizontal: 14, paddingVertical: 7, borderRadius: 20, backgroundColor: C.white, borderWidth: 1.5, borderColor: C.border },
+  chipOn:       { backgroundColor: C.primary, borderColor: C.primary },
+  chipTxt:      { fontSize: 13, color: C.text, fontWeight: '600' },
+  chipTxtOn:    { color: C.white, fontWeight: '700' },
+  filtroRow:    { paddingHorizontal: 12, paddingBottom: 6 },
+  toggleBtn:    { backgroundColor: '#f3f4f6', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 6, alignSelf: 'flex-start' },
+  toggleBtnOn:  { backgroundColor: '#dcfce7' },
+  toggleTxt:    { fontSize: 13, color: C.textMuted, fontWeight: '600' },
+  toggleTxtOn:  { color: C.primary },
+  disclaimer:   { marginHorizontal: 12, marginBottom: 8, backgroundColor: '#FFF8E1', borderRadius: 10, padding: 10, borderLeftWidth: 4, borderLeftColor: C.gold },
+  disclaimerRow:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  disclaimerTxt:{ fontSize: 12, fontWeight: '700', color: '#92400e', flex: 1 },
+  disclaimerChev:{ fontSize: 11, color: '#92400e' },
+  disclaimerBody:{ fontSize: 12, color: '#78350f', marginTop: 6, lineHeight: 18 },
+  lista:        { paddingHorizontal: 12, paddingBottom: 140 },
+  loadingTxt:   { color: C.textMuted, marginTop: 12, fontSize: 14 },
+  emptyTitle:   { fontSize: 18, fontWeight: '800', color: C.text, marginBottom: 8 },
+  emptyTxt:     { fontSize: 14, color: C.textMuted, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
+  btnLimpar:    { backgroundColor: C.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 },
+  btnLimparTxt: { color: C.white, fontWeight: '700', fontSize: 15 },
+  footer:       { fontSize: 11, color: '#9ca3af', textAlign: 'center', paddingVertical: 20 },
+  card:         { backgroundColor: C.white, borderRadius: 16, marginBottom: 12, overflow: 'hidden',
+                  shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
+  cardHead:     { backgroundColor: C.primary, padding: 14, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
+  cardHeadLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
+  cardEmoji:    { fontSize: 22, marginTop: 2 },
+  cardTitulo:   { fontSize: 15, fontWeight: '900', color: C.white, lineHeight: 20 },
+  cardDep:      { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
+  cardBody:     { padding: 14, gap: 6 },
+  dataRow:      { flexDirection: 'row', alignItems: 'center' },
+  dataLabel:    { fontSize: 13, color: C.textMuted },
+  dataVal:      { fontSize: 13, fontWeight: '800', color: C.primary },
+  nivel:        { fontSize: 12, color: C.textMuted, backgroundColor: '#f0f7f1', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  salario:      { fontSize: 15, fontWeight: '900', color: C.primary },
+  plazas:       { fontSize: 12, color: C.textMuted },
+  urgente:      { backgroundColor: '#fee2e2', paddingHorizontal: 14, paddingVertical: 6, borderTopWidth: 1, borderTopColor: '#fecaca' },
+  urgenteTxt:   { fontSize: 12, fontWeight: '800', color: C.red },
 });
