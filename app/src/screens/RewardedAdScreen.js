@@ -72,7 +72,7 @@ export default function RewardedAdScreen({ navigation }) {
       <View style={s.bgTop} />
       <View style={s.bgBottom} />
       <Animated.View style={[s.content, { opacity: fadeIn }]}>
-        <Image source={require('../assets/icon.png')} style={s.logo} resizeMode="contain" />
+        <Image source={require('../../assets/icon.png')} style={s.logo} resizeMode="contain" />
         <View style={s.nameRow}>
           <Text style={s.nameP}>Plaza</Text>
           <Text style={s.nameYa}>Ya</Text>
