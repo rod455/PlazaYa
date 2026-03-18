@@ -1,16 +1,16 @@
 {
   "expo": {
-    "name": "Concursos México",
-    "slug": "concursos-mexico",
+    "name": "PlazaYa",
+    "slug": "plazaya",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
     "newArchEnabled": false,
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#01497a"
+      "backgroundColor": "#f0a500"
     },
     "android": {
       "package": "com.mycompany.concursosmx",
@@ -20,7 +20,7 @@
       "buildToolsVersion": "35.0.0",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#01497a"
+        "backgroundColor": "#f0a500"
       },
       "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "VIBRATE"]
     },
@@ -29,7 +29,7 @@
         "expo-notifications",
         {
           "icon": "./assets/icon.png",
-          "color": "#01497a"
+          "color": "#1a5c2a"
         }
       ],
       [
