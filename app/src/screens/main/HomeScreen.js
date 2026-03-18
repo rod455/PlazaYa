@@ -169,8 +169,7 @@ export default function HomeScreen() {
         <View style={s.center}>
           <Text style={{ fontSize: 48, marginBottom: 12 }}>🔍</Text>
           <Text style={s.emptyTitle}>Sin resultados</Text>
-          <Text style={s.emptyTxt}>No encontramos convocatorias con estos filtros.{'
-'}Intenta cambiar el área o estado.</Text>
+          <Text style={s.emptyTxt}>No encontramos convocatorias con estos filtros. Intenta cambiar el área o estado.</Text>
           <TouchableOpacity style={s.btnLimpar} onPress={() => { setAreaFiltro(null); setSoloAbiertas(true); }}>
             <Text style={s.btnLimparTxt}>Limpiar filtros</Text>
           </TouchableOpacity>
