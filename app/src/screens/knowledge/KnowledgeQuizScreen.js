@@ -7,9 +7,10 @@ import {
   View, Text, TouchableOpacity, StyleSheet, ActivityIndicator,
   Animated, SafeAreaView, ScrollView, Modal,
 } from 'react-native';
-import { InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+import { InterstitialAd, AdEventType } from 'react-native-google-mobile-ads';
 import { useNavigation } from '@react-navigation/native';
 import { supabase } from '../../services/supabase';
+import { ADMOB_IDS } from '../../constants/data';
 
 const COLORS = {
   primary: '#0177b5', primaryDark: '#01497a',
@@ -19,9 +20,8 @@ const COLORS = {
   danger: '#dc2626', warning: '#d97706',
 };
 
-const INTERSTITIAL_ID = __DEV__
-  ? TestIds.INTERSTITIAL
-  : 'ca-app-pub-9316035916536420/2550558246';
+// ✅ FIX: Sempre usa o ID real — sem fallback para TestIds
+const INTERSTITIAL_ID = ADMOB_IDS.INTERSTITIAL;
 
 const TEMPO = 20;
 
