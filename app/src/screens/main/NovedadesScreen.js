@@ -8,10 +8,11 @@ import {
   ActivityIndicator, Modal, RefreshControl, Alert, Animated,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { RewardedAd, RewardedAdEventType, TestIds } from 'react-native-google-mobile-ads';
+import { RewardedAd, RewardedAdEventType } from 'react-native-google-mobile-ads';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { supabase } from '../../services/supabase';
+import { ADMOB_IDS } from '../../constants/data';
 
 const COLORS = {
   primary: '#0177b5', primaryDark: '#01497a',
@@ -20,9 +21,8 @@ const COLORS = {
   border: '#e5e7eb', success: '#16a34a',
 };
 
-const REWARDED_AD_ID = __DEV__
-  ? TestIds.REWARDED
-  : 'ca-app-pub-9316035916536420/3401306180';
+// ✅ FIX: Sempre usa o ID real — sem fallback para TestIds
+const REWARDED_AD_ID = ADMOB_IDS.REWARDED;
 
 const UNLOCK_KEY      = 'novedades_unlock_ts';
 const UNLOCK_DURATION = 24 * 60 * 60 * 1000; // 24h em ms
