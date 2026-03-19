@@ -6,16 +6,14 @@ import { useEffect, useRef } from 'react';
 import {
   InterstitialAd,
   AdEventType,
-  TestIds,
 } from 'react-native-google-mobile-ads';
 import { AppState } from 'react-native';
 import { ADMOB_IDS } from '../constants/data';
 
 const INTERVALO_MS = 3 * 60 * 1000; // 3 minutos
 
-const INTERSTITIAL_ID = __DEV__
-  ? TestIds.INTERSTITIAL
-  : ADMOB_IDS.INTERSTITIAL;
+// ✅ FIX: Sempre usa o ID real — sem fallback para TestIds
+const INTERSTITIAL_ID = ADMOB_IDS.INTERSTITIAL;
 
 // Instância única — criada fora do hook para persistir entre renders
 const interstitial = InterstitialAd.createForAdRequest(INTERSTITIAL_ID, {
