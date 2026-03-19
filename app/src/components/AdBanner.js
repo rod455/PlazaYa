@@ -1,15 +1,14 @@
 // src/components/AdBanner.js
 // Banner fixo na base de qualquer tela — usa o ID real do AdMob
+// ✅ FIX: Removido fallback para TestIds.BANNER — agora usa ID real sempre
 
 import React from 'react';
 import { View, StyleSheet, Platform } from 'react-native';
-import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import { BannerAd, BannerAdSize } from 'react-native-google-mobile-ads';
 import { ADMOB_IDS } from '../constants/data';
 
-// Em desenvolvimento usa ID de teste; em produção usa o ID real
-const BANNER_ID = __DEV__
-  ? TestIds.BANNER
-  : ADMOB_IDS.BANNER;
+// ✅ FIX: Sempre usa o ID real — sem __DEV__ ternário
+const BANNER_ID = ADMOB_IDS.BANNER;
 
 export default function AdBanner({ style }) {
   if (Platform.OS !== 'android' && Platform.OS !== 'ios') return null;
