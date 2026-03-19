@@ -20,6 +20,11 @@ credentials.json
 credentials/
 google-services.json
 
+# ─── Arquivos locais com senhas — NUNCA subir! ───────────────
+app/android/app/build.gradle
+app/android/gradle.properties
+app/plazaya.keystore
+
 # ─── Variáveis de ambiente — NUNCA subir! ────────────────────
 .env
 .env.local
