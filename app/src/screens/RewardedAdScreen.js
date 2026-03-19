@@ -1,5 +1,6 @@
 // src/screens/RewardedAdScreen.js
 // Branding PlazaYa — SEM botão pular
+// ✅ FIX: Removido ID de teste (ca-app-pub-3940256099942544) — agora usa ID real sempre
 
 import React, { useEffect, useState, useRef } from 'react';
 import {
@@ -15,11 +16,8 @@ const C = {
   gold: '#f0a500', red: '#c0392b', white: '#ffffff',
 };
 
-const REWARDED_ID = __DEV__
-  ? 'ca-app-pub-3940256099942544/5224354917'
-  : ADMOB_IDS.REWARDED;
-
-const rewarded = RewardedAd.createForAdRequest(REWARDED_ID, {
+// ✅ FIX: Sempre usa o ID real — sem fallback para ID de teste
+const rewarded = RewardedAd.createForAdRequest(ADMOB_IDS.REWARDED, {
   keywords: ['oposicion mexico', 'servidor publico'],
   requestNonPersonalizedAdsOnly: false,
 });
@@ -88,41 +86,37 @@ export default function RewardedAdScreen({ navigation }) {
           <Animated.View style={[{ width: '100%' }, { transform: [{ scale: pulse }] }]}>
             <TouchableOpacity style={s.btn} onPress={() => { if (!showing) { setShowing(true); rewarded.show(); } }} disabled={showing} activeOpacity={0.85}>
               {showing
-                ? <ActivityIndicator color={C.primary} />
-                : <View style={s.btnInner}><Text style={{ fontSize: 20 }}>▶️</Text><Text style={s.btnTxt}>Ver anuncio y continuar</Text></View>}
+                ? <ActivityIndicator color={C.white} />
+                : <Text style={s.btnText}>▶  Ver anuncio y continuar</Text>
+              }
             </TouchableOpacity>
           </Animated.View>
         ) : (
-          <View style={s.btnLoading}>
+          <View style={s.loadingBox}>
             <ActivityIndicator color={C.primary} size="small" />
-            <Text style={s.btnLoadingTxt}>Preparando anuncio...</Text>
+            <Text style={s.loadingText}>Preparando anuncio…</Text>
           </View>
         )}
-        <Text style={s.aviso}>🔒 Debes ver el anuncio completo para continuar</Text>
       </Animated.View>
     </View>
   );
 }
 
 const s = StyleSheet.create({
-  container: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  bgTop:     { position: 'absolute', top: 0, left: 0, right: 0, height: '55%', backgroundColor: '#f0a500' },
-  bgBottom:  { position: 'absolute', bottom: 0, left: 0, right: 0, height: '45%', backgroundColor: '#1a5c2a' },
-  content:   { alignItems: 'center', paddingHorizontal: 32, width: '100%' },
-  logo:      { width: 110, height: 110, borderRadius: 24, marginBottom: 12,
-               shadowColor: '#000', shadowOpacity: 0.3, shadowRadius: 16, shadowOffset: { width: 0, height: 6 }, elevation: 10 },
-  nameRow:   { flexDirection: 'row', marginBottom: 24 },
-  nameP:     { fontSize: 32, fontWeight: '900', color: '#fff', textShadowColor: 'rgba(0,0,0,0.25)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
-  nameYa:    { fontSize: 32, fontWeight: '900', color: '#c0392b', textShadowColor: 'rgba(0,0,0,0.25)', textShadowOffset: { width: 0, height: 2 }, textShadowRadius: 4 },
-  titulo:    { fontSize: 24, fontWeight: '900', color: '#fff', textAlign: 'center', marginBottom: 10 },
-  sub:       { fontSize: 14, color: 'rgba(255,255,255,0.85)', textAlign: 'center', lineHeight: 21, marginBottom: 32 },
-  dotsRow:   { flexDirection: 'row', gap: 10, marginBottom: 32 },
-  dot:       { width: 10, height: 10, borderRadius: 5, backgroundColor: '#fff' },
-  btn:       { backgroundColor: '#fff', borderRadius: 16, paddingVertical: 18, width: '100%', alignItems: 'center',
-               shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 12, shadowOffset: { width: 0, height: 4 }, elevation: 6 },
-  btnInner:  { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  btnTxt:    { color: '#1a5c2a', fontSize: 16, fontWeight: '900' },
-  btnLoading:    { backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: 16, paddingVertical: 18, width: '100%', alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 10 },
-  btnLoadingTxt: { color: 'rgba(255,255,255,0.7)', fontSize: 15, fontWeight: '700' },
-  aviso:     { marginTop: 20, fontSize: 12, color: 'rgba(255,255,255,0.6)', textAlign: 'center', fontWeight: '600' },
+  container: { flex: 1, backgroundColor: C.gold },
+  bgTop:    { position: 'absolute', top: 0, left: 0, right: 0, height: '50%', backgroundColor: C.gold },
+  bgBottom: { position: 'absolute', bottom: 0, left: 0, right: 0, height: '50%', backgroundColor: C.primary },
+  content:  { flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 32 },
+  logo:     { width: 90, height: 90, borderRadius: 20, marginBottom: 12 },
+  nameRow:  { flexDirection: 'row', marginBottom: 24 },
+  nameP:    { fontSize: 28, fontWeight: '900', color: C.primary },
+  nameYa:   { fontSize: 28, fontWeight: '900', color: C.gold },
+  titulo:   { fontSize: 22, fontWeight: '800', color: C.white, textAlign: 'center', marginBottom: 8 },
+  sub:      { fontSize: 14, color: 'rgba(255,255,255,0.85)', textAlign: 'center', lineHeight: 20, marginBottom: 28 },
+  dotsRow:  { flexDirection: 'row', gap: 6, marginBottom: 28 },
+  dot:      { width: 8, height: 8, borderRadius: 4, backgroundColor: C.white },
+  btn:      { backgroundColor: C.gold, borderRadius: 28, paddingVertical: 16, alignItems: 'center' },
+  btnText:  { color: C.primary, fontSize: 16, fontWeight: '900', letterSpacing: 0.3 },
+  loadingBox:  { alignItems: 'center', gap: 8 },
+  loadingText: { fontSize: 14, color: 'rgba(255,255,255,0.7)' },
 });
