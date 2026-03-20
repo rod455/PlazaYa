@@ -1,5 +1,5 @@
 // src/screens/auth/AuthScreen.js
-// Cadastro e Login — Supabase Auth
+// Login e cadastro — Supabase Auth
 
 import React, { useState } from 'react';
 import {
@@ -9,12 +9,13 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { signUp, signIn, resetPassword } from '../../services/authService';
 import { useQuiz } from '../../context/QuizContext';
+import { COLORS } from '../../constants/colors';
 
 export default function AuthScreen({ navigation, route }) {
   const fromQuiz = route?.params?.fromKnowledgeQuiz ?? false;
   const { answers } = useQuiz();
 
-  const [modo,     setModo]     = useState('login');   // login | cadastro | reset
+  const [modo,     setModo]     = useState('login');
   const [email,    setEmail]    = useState('');
   const [senha,    setSenha]    = useState('');
   const [nome,     setNome]     = useState('');
@@ -32,7 +33,7 @@ export default function AuthScreen({ navigation, route }) {
         email: email.trim().toLowerCase(),
         password: senha,
         nome: nome.trim(),
-        perfil: answers,  // passa o perfil do quiz de onboarding
+        perfil: answers,
       });
       Alert.alert(
         '¡Cuenta creada! 🎉',
@@ -80,146 +81,105 @@ export default function AuthScreen({ navigation, route }) {
   }
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={{ flex: 1 }}
-      >
-        <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
+    <SafeAreaView style={s.safe}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1 }}>
+        <ScrollView contentContainerStyle={s.content} keyboardShouldPersistTaps="handled">
+          <TouchableOpacity onPress={() => navigation.goBack()} style={s.back}>
+            <Text style={s.backTxt}>← Volver</Text>
+          </TouchableOpacity>
 
-          {/* Header */}
-          <Text style={styles.logo}>🏛️</Text>
-          <Text style={styles.titulo}>
-            {modo === 'cadastro' ? 'Crea tu cuenta' : modo === 'reset' ? 'Recuperar contraseña' : 'Bienvenido de vuelta'}
-          </Text>
+          <Text style={s.logo}>Plaza<Text style={{ color: COLORS.red }}>Ya</Text></Text>
+          <Text style={s.title}>{modo === 'login' ? 'Iniciar sesión' : modo === 'cadastro' ? 'Crear cuenta' : 'Recuperar contraseña'}</Text>
 
-          {fromQuiz && modo === 'cadastro' && (
-            <View style={styles.tipBox}>
-              <Text style={styles.tipTxt}>
-                📚 Crea tu cuenta para acceder a cientos de preguntas y simulacros completos.
-              </Text>
-            </View>
-          )}
-
-          {/* Campos */}
           {modo === 'cadastro' && (
-            <View style={styles.campo}>
-              <Text style={styles.label}>Nombre completo</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Tu nombre"
-                value={nome}
-                onChangeText={setNome}
-                autoCapitalize="words"
-              />
-            </View>
+            <>
+              <Text style={s.label}>Nombre</Text>
+              <TextInput style={s.input} value={nome} onChangeText={setNome} placeholder="Tu nombre" placeholderTextColor="#999" />
+            </>
           )}
 
-          <View style={styles.campo}>
-            <Text style={styles.label}>Email</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="tu@email.com"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              autoCorrect={false}
-            />
-          </View>
+          <Text style={s.label}>Email</Text>
+          <TextInput style={s.input} value={email} onChangeText={setEmail} placeholder="tu@email.com" placeholderTextColor="#999" keyboardType="email-address" autoCapitalize="none" />
 
           {modo !== 'reset' && (
-            <View style={styles.campo}>
-              <Text style={styles.label}>Contraseña</Text>
-              <View style={styles.senhaWrap}>
-                <TextInput
-                  style={[styles.input, { flex: 1, marginBottom: 0 }]}
-                  placeholder={modo === 'cadastro' ? 'Mínimo 6 caracteres' : 'Tu contraseña'}
-                  value={senha}
-                  onChangeText={setSenha}
-                  secureTextEntry={!senhaVis}
-                  autoCapitalize="none"
-                />
-                <TouchableOpacity onPress={() => setSenhaVis(v => !v)} style={styles.olho}>
-                  <Text style={{ fontSize: 18 }}>{senhaVis ? '🙈' : '👁️'}</Text>
+            <>
+              <Text style={s.label}>Contraseña</Text>
+              <View style={s.senhaRow}>
+                <TextInput style={[s.input, { flex: 1 }]} value={senha} onChangeText={setSenha} placeholder="Mínimo 6 caracteres" placeholderTextColor="#999" secureTextEntry={!senhaVis} />
+                <TouchableOpacity onPress={() => setSenhaVis(!senhaVis)} style={s.eyeBtn}>
+                  <Text>{senhaVis ? '🙈' : '👁️'}</Text>
                 </TouchableOpacity>
               </View>
-            </View>
+            </>
           )}
 
           {/* Botão principal */}
           <TouchableOpacity
-            style={[styles.btn, loading && styles.btnDisabled]}
-            onPress={modo === 'cadastro' ? handleCadastro : modo === 'reset' ? handleReset : handleLogin}
+            style={s.btn}
+            onPress={modo === 'login' ? handleLogin : modo === 'cadastro' ? handleCadastro : handleReset}
             disabled={loading}
+            activeOpacity={0.85}
           >
-            {loading
-              ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.btnTxt}>
-                  {modo === 'cadastro' ? 'Crear cuenta 🚀' : modo === 'reset' ? 'Enviar email' : 'Entrar →'}
-                </Text>
-            }
+            {loading ? <ActivityIndicator color="#fff" /> : (
+              <Text style={s.btnTxt}>
+                {modo === 'login' ? 'Entrar' : modo === 'cadastro' ? 'Crear cuenta' : 'Enviar email'}
+              </Text>
+            )}
           </TouchableOpacity>
 
-          {/* Links de alternância */}
+          {/* Links */}
           {modo === 'login' && (
             <>
-              <TouchableOpacity onPress={() => setModo('cadastro')} style={styles.link}>
-                <Text style={styles.linkTxt}>¿No tienes cuenta? <Text style={styles.linkBold}>Regístrate gratis</Text></Text>
+              <TouchableOpacity onPress={() => setModo('reset')} style={s.link}>
+                <Text style={s.linkTxt}>¿Olvidaste tu contraseña?</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModo('reset')} style={styles.link}>
-                <Text style={styles.linkTxt}>¿Olvidaste tu contraseña?</Text>
+              <TouchableOpacity onPress={() => setModo('cadastro')} style={s.link}>
+                <Text style={s.linkTxt}>¿No tienes cuenta? <Text style={{ fontWeight: '800' }}>Crear cuenta</Text></Text>
               </TouchableOpacity>
             </>
           )}
-
           {modo === 'cadastro' && (
-            <TouchableOpacity onPress={() => setModo('login')} style={styles.link}>
-              <Text style={styles.linkTxt}>¿Ya tienes cuenta? <Text style={styles.linkBold}>Inicia sesión</Text></Text>
+            <TouchableOpacity onPress={() => setModo('login')} style={s.link}>
+              <Text style={s.linkTxt}>¿Ya tienes cuenta? <Text style={{ fontWeight: '800' }}>Iniciar sesión</Text></Text>
             </TouchableOpacity>
           )}
-
           {modo === 'reset' && (
-            <TouchableOpacity onPress={() => setModo('login')} style={styles.link}>
-              <Text style={styles.linkTxt}>← Volver al inicio de sesión</Text>
+            <TouchableOpacity onPress={() => setModo('login')} style={s.link}>
+              <Text style={s.linkTxt}>← Volver a iniciar sesión</Text>
             </TouchableOpacity>
           )}
 
-          {/* Pular (ir sem conta) */}
-          <TouchableOpacity onPress={() => navigation.replace('MainApp')} style={styles.pular}>
-            <Text style={styles.pularTxt}>Continuar sin cuenta →</Text>
+          {/* Skip */}
+          <TouchableOpacity onPress={() => navigation.replace('MainApp')} style={s.skipBtn}>
+            <Text style={s.skipTxt}>Continuar sin cuenta →</Text>
           </TouchableOpacity>
-
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe:        { flex: 1, backgroundColor: '#f9fafb' },
-  container:   { padding: 24, paddingTop: 48 },
-  logo:        { fontSize: 48, textAlign: 'center', marginBottom: 12 },
-  titulo:      { fontSize: 26, fontWeight: '900', color: '#111827', textAlign: 'center', marginBottom: 28 },
-
-  tipBox:      { backgroundColor: '#eff6ff', borderRadius: 12, padding: 14, marginBottom: 20, borderLeftWidth: 4, borderLeftColor: '#01497a' },
-  tipTxt:      { fontSize: 14, color: '#1e40af', lineHeight: 20 },
-
-  campo:       { marginBottom: 16 },
-  label:       { fontSize: 13, fontWeight: '700', color: '#374151', marginBottom: 6 },
-  input:       { backgroundColor: '#fff', borderWidth: 1.5, borderColor: '#d1d5db', borderRadius: 12,
-                 paddingHorizontal: 16, paddingVertical: 13, fontSize: 15, color: '#111827' },
-  senhaWrap:   { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  olho:        { padding: 10 },
-
-  btn:         { backgroundColor: '#01497a', borderRadius: 14, paddingVertical: 16, alignItems: 'center', marginTop: 8 },
-  btnDisabled: { opacity: 0.6 },
-  btnTxt:      { color: '#fff', fontSize: 17, fontWeight: '800' },
-
-  link:        { alignItems: 'center', marginTop: 16 },
-  linkTxt:     { fontSize: 14, color: '#6b7280' },
-  linkBold:    { color: '#01497a', fontWeight: '700' },
-
-  pular:       { alignItems: 'center', marginTop: 32, paddingBottom: 20 },
-  pularTxt:    { fontSize: 13, color: '#9ca3af' },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: COLORS.bg },
+  content: { padding: 20, paddingTop: 10 },
+  back: { paddingVertical: 8 },
+  backTxt: { fontSize: 15, color: COLORS.primary, fontWeight: '600' },
+  logo: { fontSize: 32, fontWeight: '900', color: COLORS.primary, textAlign: 'center', marginTop: 20, marginBottom: 4 },
+  title: { fontSize: 20, fontWeight: '700', color: COLORS.text, textAlign: 'center', marginBottom: 24 },
+  label: { fontSize: 14, fontWeight: '700', color: COLORS.text, marginBottom: 6, marginTop: 12 },
+  input: {
+    backgroundColor: '#fff', borderRadius: 10, padding: 14,
+    fontSize: 15, color: COLORS.text, borderWidth: 1, borderColor: COLORS.border,
+  },
+  senhaRow: { flexDirection: 'row', alignItems: 'center' },
+  eyeBtn: { padding: 10, marginLeft: -44 },
+  btn: {
+    backgroundColor: COLORS.primary, borderRadius: 12, paddingVertical: 16,
+    alignItems: 'center', marginTop: 24, elevation: 3,
+  },
+  btnTxt: { color: '#fff', fontSize: 16, fontWeight: '800' },
+  link: { alignItems: 'center', marginTop: 16 },
+  linkTxt: { color: COLORS.primary, fontSize: 14 },
+  skipBtn: { alignItems: 'center', marginTop: 24, padding: 10 },
+  skipTxt: { color: '#999', fontSize: 13 },
 });

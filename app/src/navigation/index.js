@@ -1,6 +1,5 @@
 // src/navigation/index.js
-// Fluxo correto:
-// Splash → Quiz1-7 → RewardedAd → ResultadoPerfil → MainApp (com botão flutuante)
+// PlazaYa — Navegação completa com todas as funcionalidades
 
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -26,8 +25,8 @@ import HomeScreen             from '../screens/main/HomeScreen';
 import ConvocatoriaScreen     from '../screens/main/ConvocatoriaScreen';
 import StudyHomeScreen        from '../screens/study/StudyHomeScreen';
 import StudyQuizScreen        from '../screens/study/StudyQuizScreen';
-import { NovididadesScreen, EstadoScreen, PerfilScreen } from '../screens/main/OtherScreens';
-
+import PerfilScreen           from '../screens/main/PerfilScreen';
+import QuizScreen             from '../screens/quiz/QuizScreen';
 import { COLORS } from '../constants/colors';
 
 const Stack = createStackNavigator();
@@ -50,32 +49,45 @@ const slideOpts = {
   }),
 };
 
+// ── Botão flutuante de Quiz ───────────────────────────────────────────────────
 function BotaoTesteConhecimentos() {
-  const navigation = useNavigation();
+  const nav = useNavigation();
   return (
     <TouchableOpacity
-      style={tabStyles.btnFlut}
-      onPress={() => navigation.navigate('KnowledgeQuiz')}
+      style={st.fab}
+      onPress={() => {
+        const root = nav.getParent?.();
+        if (root) root.navigate('Quiz');
+        else nav.navigate('Quiz');
+      }}
       activeOpacity={0.85}
     >
-      <Text style={tabStyles.btnFlutEmoji}>🧠</Text>
-      <Text style={tabStyles.btnFlutTxt}>Testa tus conocimientos</Text>
+      <Text style={st.fabTxt}>🧠</Text>
     </TouchableOpacity>
   );
 }
 
-function MainApp() {
+// ── Tabs principais ───────────────────────────────────────────────────────────
+function MainTabs() {
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
         screenOptions={({ route }) => ({
           headerShown: false,
-          tabBarActiveTintColor:   '#1a5c2a',
-          tabBarInactiveTintColor: '#9ca3af',
-          tabBarStyle: tabStyles.tabBar,
-          tabBarLabelStyle: tabStyles.tabLabel,
+          tabBarActiveTintColor: COLORS.primary,
+          tabBarInactiveTintColor: '#999',
+          tabBarStyle: {
+            backgroundColor: COLORS.white,
+            borderTopColor: '#E5E7EB',
+            paddingBottom: 4, height: 56,
+          },
           tabBarIcon: ({ color }) => {
-            const icons = { 'Inicio':'🏠', 'Estudiar':'📚', 'Novedades':'📋', 'Perfil':'👤' };
+            const icons = {
+              'Inicio':    '🏠',
+              'Estudiar':  '📖',
+              'Novedades': '📋',
+              'Perfil':    '👤',
+            };
             return <Text style={{ fontSize: 20, color }}>{icons[route.name]}</Text>;
           },
         })}
@@ -90,6 +102,7 @@ function MainApp() {
   );
 }
 
+// ── Stack principal ───────────────────────────────────────────────────────────
 export default function AppNavigator() {
   return (
     <Stack.Navigator initialRouteName="Splash" screenOptions={{ headerShown: false }}>
@@ -103,25 +116,25 @@ export default function AppNavigator() {
       <Stack.Screen name="Quiz7"           component={Quiz7Screen}           options={slideOpts} />
       <Stack.Screen name="RewardedAd"      component={RewardedAdScreen}      options={{ gestureEnabled: false }} />
       <Stack.Screen name="ResultadoPerfil" component={ResultadoPerfilScreen} options={{ gestureEnabled: false }} />
+      <Stack.Screen name="KnowledgeQuiz"   component={KnowledgeQuizScreen}   options={{ gestureEnabled: false }} />
       <Stack.Screen name="Auth"            component={AuthScreen}            options={slideOpts} />
-      <Stack.Screen name="Cadastro"         component={CadastroScreen}        options={slideOpts} />
-      <Stack.Screen name="MainApp"         component={MainApp}               options={{ gestureEnabled: false }} />
-      <Stack.Screen name="KnowledgeQuiz"   component={KnowledgeQuizScreen}   options={{ headerShown: false, gestureEnabled: true, presentation: 'modal' }} />
-      <Stack.Screen name="Convocatoria"    component={ConvocatoriaScreen}    options={{ headerShown: false, gestureEnabled: true }} />
-      <Stack.Screen name="StudyQuiz"       component={StudyQuizScreen}       options={{ headerShown: false, gestureEnabled: false }} />
+      <Stack.Screen name="Cadastro"        component={CadastroScreen}        options={slideOpts} />
+      <Stack.Screen name="MainApp"         component={MainTabs}              options={{ gestureEnabled: false }} />
+      <Stack.Screen name="Quiz"            component={QuizScreen}            options={{ gestureEnabled: false }} />
+      <Stack.Screen name="Convocatoria"    component={ConvocatoriaScreen}    options={slideOpts} />
+      <Stack.Screen name="StudyQuiz"       component={StudyQuizScreen}       options={{ gestureEnabled: false }} />
     </Stack.Navigator>
   );
 }
 
-const tabStyles = StyleSheet.create({
-  tabBar:       { backgroundColor: '#fff', borderTopColor: '#e0e0e0', borderTopWidth: 1, height: 62, paddingBottom: 6 },
-  tabLabel:     { fontSize: 11, fontWeight: '700' },
-  btnFlut:      { position: 'absolute', bottom: 68, left: 12, right: 12,
-                  flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10,
-                  backgroundColor: '#1a5c2a', paddingVertical: 15, borderRadius: 16,
-                  shadowColor: '#0d2e15', shadowOpacity: 0.45, shadowRadius: 16,
-                  shadowOffset: { width: 0, height: 6 }, elevation: 10,
-                  borderWidth: 1.5, borderColor: 'rgba(255,255,255,0.2)' },
-  btnFlutEmoji: { fontSize: 22 },
-  btnFlutTxt:   { color: '#fff', fontWeight: '900', fontSize: 15, letterSpacing: 0.3 },
+const st = StyleSheet.create({
+  fab: {
+    position: 'absolute', bottom: 70, right: 16,
+    width: 56, height: 56, borderRadius: 28,
+    backgroundColor: COLORS.red, alignItems: 'center',
+    justifyContent: 'center', elevation: 8,
+    shadowColor: '#000', shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 3 }, shadowRadius: 6,
+  },
+  fabTxt: { fontSize: 26 },
 });

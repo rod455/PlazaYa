@@ -2,7 +2,7 @@
   "expo": {
     "name": "PlazaYa",
     "slug": "plazaya",
-    "version": "1.0.0",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.mycompany.concursosmx",
-      "versionCode": 1,
+      "versionCode": 2,
       "compileSdkVersion": 35,
       "targetSdkVersion": 35,
       "buildToolsVersion": "35.0.0",
@@ -22,7 +22,12 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#f0a500"
       },
-      "permissions": ["INTERNET", "ACCESS_NETWORK_STATE", "VIBRATE"]
+      "googleServicesFile": "./google-services.json",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE",
+        "VIBRATE"
+      ]
     },
     "plugins": [
       [
@@ -36,9 +41,10 @@
         "expo-build-properties",
         {
           "android": {
+            "ndkVersion": "27.0.12077973",
+            "useLegacyPackaging": false,
             "compileSdkVersion": 35,
-            "targetSdkVersion": 35,
-            "useLegacyPackaging": false
+            "targetSdkVersion": 35
           }
         }
       ],
@@ -49,6 +55,9 @@
         }
       ]
     ],
+    "react-native-google-mobile-ads": {
+      "android_app_id": "ca-app-pub-9316035916536420~2327897668"
+    },
     "extra": {
       "eas": {
         "projectId": "SEU-PROJECT-ID-AQUI"

@@ -22,13 +22,8 @@ export function QuizProvider({ children }) {
 
   function resetAnswers() {
     setAnswers({
-      escolaridade: null,
-      area:         null,
-      mobilidade:   null,
-      estado:       null,
-      salario:      null,
-      curso:        null,
-      preparacao:   null,
+      escolaridade: null, area: null, mobilidade: null,
+      estado: null, salario: null, curso: null, preparacao: null,
     });
   }
 
@@ -41,6 +36,6 @@ export function QuizProvider({ children }) {
 
 export function useQuiz() {
   const ctx = useContext(QuizContext);
-  if (!ctx) throw new Error('useQuiz deve ser usado dentro de QuizProvider');
+  if (!ctx) throw new Error('useQuiz debe usarse dentro de QuizProvider');
   return ctx;
 }

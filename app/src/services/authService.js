@@ -1,7 +1,8 @@
 // src/services/authService.js
 // Cadastro, login e logout via Supabase Auth
 
-import { supabase, upsertProfile } from './supabase';
+import { supabase } from './supabase';
+import { upsertProfile } from './supabaseService';
 
 // ─── CADASTRO ────────────────────────────────────────────────────────────────
 export async function signUp({ email, password, nome, perfil }) {
@@ -10,7 +11,6 @@ export async function signUp({ email, password, nome, perfil }) {
 
   const userId = data.user?.id;
   if (userId && perfil) {
-    // salva perfil do quiz de onboarding
     await upsertProfile(userId, {
       nome,
       email,
@@ -53,7 +53,6 @@ export async function getSession() {
 }
 
 // ─── LISTENER DE AUTH ────────────────────────────────────────────────────────
-// Use no App.js para reagir a login/logout
 export function onAuthStateChange(callback) {
   return supabase.auth.onAuthStateChange((_event, session) => {
     callback(session);

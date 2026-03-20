@@ -1,5 +1,5 @@
 // src/screens/study/StudyQuizScreen.js
-// Quiz de estudo — questões por tema OU simulado completo (usuário logado)
+// Quiz de estudo — questões por tema OU simulado completo
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
@@ -7,33 +7,28 @@ import {
   ScrollView, SafeAreaView, ActivityIndicator, Alert,
 } from 'react-native';
 import { useAuth } from '../../context/AuthContext';
-import {
-  fetchQuestoesTema,
-  fetchSimulado,
-  salvarSessaoEstudo,
-} from '../../services/questionsService';
+import { fetchQuestoesTema, fetchSimulado, salvarSessaoEstudo } from '../../services/questionsService';
+import { COLORS } from '../../constants/colors';
 
 const OPCOES      = ['a', 'b', 'c', 'd'];
 const LABEL_OPCAO = { a: 'A', b: 'B', c: 'C', d: 'D' };
-const TEMPO_QUESTAO = 30; // mais tempo no módulo de estudo
+const TEMPO_QUESTAO = 30;
 
 export default function StudyQuizScreen({ navigation, route }) {
   const { tipo, area, tema } = route.params;
   const { user } = useAuth();
 
-  const [fase,      setFase]      = useState('loading');
-  const [questoes,  setQuestoes]  = useState([]);
-  const [respostas, setRespostas] = useState([]);        // string | null
-  const [indice,    setIndice]    = useState(0);
-  const [tempo,     setTempo]     = useState(TEMPO_QUESTAO);
-  const [mostrarExpl, setMostrarExpl] = useState(false); // mostra explicação após responder
-  const [respondida, setRespondida]   = useState(null);  // resposta dada nesta questão
+  const [fase,       setFase]       = useState('loading');
+  const [questoes,   setQuestoes]   = useState([]);
+  const [respostas,  setRespostas]  = useState([]);
+  const [indice,     setIndice]     = useState(0);
+  const [tempo,      setTempo]      = useState(TEMPO_QUESTAO);
+  const [mostrarExpl, setMostrarExpl] = useState(false);
+  const [respondida,  setRespondida]  = useState(null);
 
-  const timerRef   = useRef(null);
-  const inicioRef  = useRef(Date.now());
-  const tempoQRef  = useRef(Date.now());
+  const timerRef  = useRef(null);
+  const inicioRef = useRef(Date.now());
 
-  // ── Carrega questões ──
   useEffect(() => {
     async function carregar() {
       try {
@@ -42,154 +37,113 @@ export default function StudyQuizScreen({ navigation, route }) {
           : await fetchQuestoesTema({ area, tema, quantidade: 10 });
 
         if (!qs || qs.length === 0) {
-          Alert.alert('Sin preguntas', 'No hay preguntas disponibles para este tema aún.', [
+          Alert.alert('Sin preguntas', 'No hay preguntas disponibles para este tema todavía.', [
             { text: 'OK', onPress: () => navigation.goBack() },
           ]);
           return;
         }
         setQuestoes(qs);
+        setRespostas(new Array(qs.length).fill(null));
         setFase('questao');
       } catch (e) {
-        console.error(e);
-        Alert.alert('Error', 'No se pudieron cargar las preguntas.', [
-          { text: 'OK', onPress: () => navigation.goBack() },
-        ]);
+        Alert.alert('Error', 'No se pudieron cargar las preguntas.');
+        navigation.goBack();
       }
     }
     carregar();
   }, []);
 
-  // ── Timer ──
+  // Timer
   useEffect(() => {
-    if (fase !== 'questao') return;
-    limparTimer();
+    if (fase !== 'questao' || mostrarExpl) return;
     setTempo(TEMPO_QUESTAO);
-    setRespondida(null);
-    setMostrarExpl(false);
-    tempoQRef.current = Date.now();
-
     timerRef.current = setInterval(() => {
-      setTempo(t => {
-        if (t <= 1) { limparTimer(); registrarResposta(null); return TEMPO_QUESTAO; }
-        return t - 1;
+      setTempo(prev => {
+        if (prev <= 1) {
+          clearInterval(timerRef.current);
+          handleResponder(null);
+          return 0;
+        }
+        return prev - 1;
       });
     }, 1000);
+    return () => clearInterval(timerRef.current);
+  }, [indice, fase, mostrarExpl]);
 
-    return limparTimer;
-  }, [fase, indice]);
-
-  function limparTimer() {
-    if (timerRef.current) clearInterval(timerRef.current);
-  }
-
-  function registrarResposta(opcao) {
-    limparTimer();
+  function handleResponder(opcao) {
+    clearInterval(timerRef.current);
+    const novas = [...respostas];
+    novas[indice] = opcao;
+    setRespostas(novas);
     setRespondida(opcao);
     setMostrarExpl(true);
   }
 
-  function avancar() {
-    const tempoGasto = Math.round((Date.now() - tempoQRef.current) / 1000);
-    const questao    = questoes[indice];
-    const correta    = respondida === questao.resposta_correta;
-
-    const novaResp = [
-      ...respostas,
-      {
-        questionId: questao.id,
-        resposta:   respondida,
-        correta,
-        tempoSeg:   tempoGasto,
-      },
-    ];
-    setRespostas(novaResp);
+  function handleProxima() {
     setMostrarExpl(false);
     setRespondida(null);
-
-    if (indice + 1 >= questoes.length) {
-      finalizarSessao(novaResp);
+    if (indice + 1 < questoes.length) {
+      setIndice(indice + 1);
     } else {
-      setIndice(i => i + 1);
+      finalizarQuiz();
     }
   }
 
-  async function finalizarSessao(todasRespostas) {
-    setFase('resultado');
-    if (!user) return;
+  async function finalizarQuiz() {
+    const acertos = questoes.reduce((acc, q, i) => acc + (respostas[i] === q.resposta_correta ? 1 : 0), 0);
+    const tempoTotal = Math.round((Date.now() - inicioRef.current) / 1000);
 
-    try {
-      const tempoTotal = Math.round((Date.now() - inicioRef.current) / 1000);
-      const acertos    = todasRespostas.filter(r => r.correta).length;
+    if (user) {
       await salvarSessaoEstudo({
-        userId:    user.id,
-        tipo,
-        area,
-        tema:      tema || null,
-        total:     questoes.length,
-        acertos,
-        tempoSeg:  tempoTotal,
-        respostas: todasRespostas,
+        userId: user.id, area, tema, tipo,
+        acertos, total: questoes.length, tempoTotal,
       });
-    } catch (e) {
-      console.warn('Não salvou sessão:', e.message);
     }
+
+    setFase('resultado');
   }
 
-  // ─── Render: Loading ───────────────────────────────────────────────────
+  // ── LOADING ─────────────────────────────────────────────────────────────────
   if (fase === 'loading') {
     return (
-      <SafeAreaView style={styles.safe}>
-        <ActivityIndicator size="large" color="#01497a" style={{ marginTop: 80 }} />
-        <Text style={styles.loadingTxt}>Cargando {tipo === 'simulado' ? 'simulacro' : 'ejercicios'}...</Text>
+      <SafeAreaView style={s.center}>
+        <ActivityIndicator color={COLORS.primary} size="large" />
+        <Text style={s.loadTxt}>Cargando preguntas...</Text>
       </SafeAreaView>
     );
   }
 
-  // ─── Render: Resultado ────────────────────────────────────────────────
+  // ── RESULTADO ───────────────────────────────────────────────────────────────
   if (fase === 'resultado') {
-    const acertos = respostas.filter(r => r.correta).length;
-    const pct     = Math.round((acertos / questoes.length) * 100);
-    const emoji   = pct >= 80 ? '🏆' : pct >= 60 ? '👍' : pct >= 40 ? '📚' : '💪';
+    const acertos = questoes.reduce((acc, q, i) => acc + (respostas[i] === q.resposta_correta ? 1 : 0), 0);
+    const pct = Math.round((acertos / questoes.length) * 100);
+    const emoji = pct >= 70 ? '🏆' : pct >= 50 ? '👍' : '📚';
 
     return (
-      <SafeAreaView style={styles.safe}>
-        <ScrollView contentContainerStyle={styles.resultadoWrap}>
-          <Text style={styles.resultadoEmoji}>{emoji}</Text>
-          <Text style={styles.resultadoTitulo}>{acertos}/{questoes.length} correctas</Text>
-          <Text style={styles.resultadoPct}>{pct}%</Text>
-          <Text style={styles.resultadoMsg}>{mensagem(pct)}</Text>
+      <SafeAreaView style={s.safe}>
+        <ScrollView contentContainerStyle={s.resultContent}>
+          <Text style={s.resultEmoji}>{emoji}</Text>
+          <Text style={s.resultTitle}>{pct >= 70 ? '¡Excelente!' : pct >= 50 ? '¡Buen trabajo!' : 'Sigue practicando'}</Text>
+          <Text style={s.resultScore}>{acertos}/{questoes.length} correctas ({pct}%)</Text>
 
-          {/* Gabarito detalhado */}
+          <Text style={s.gabTitle}>Respuestas</Text>
           {questoes.map((q, i) => {
-            const r = respostas[i];
+            const correto = respostas[i] === q.resposta_correta;
             return (
-              <View key={i} style={[styles.gabItem, r?.correta ? styles.gabCerto : styles.gabErrado]}>
-                <View style={styles.gabHeader}>
-                  <Text style={styles.gabNum}>Q{i + 1}</Text>
-                  <Text>{r?.correta ? '✅' : '❌'}</Text>
-                  <Text style={{ color: '#6b7280', fontSize: 12 }}>{nivelEmoji(q.dificuldade)} {q.dificuldade}</Text>
-                </View>
-                <Text style={styles.gabEnunciado}>{q.enunciado}</Text>
-                <Text style={styles.gabCorreta}>
-                  ✅ Correcta: <Text style={{ fontWeight: '800' }}>
-                    {LABEL_OPCAO[q.resposta_correta]}) {q[`opcao_${q.resposta_correta}`]}
-                  </Text>
-                </Text>
-                {!r?.correta && r?.resposta && (
-                  <Text style={styles.gabErro}>
-                    ❌ Tu respuesta: {LABEL_OPCAO[r.resposta]}) {q[`opcao_${r.resposta}`]}
-                  </Text>
+              <View key={q.id} style={[s.gabCard, { borderLeftColor: correto ? COLORS.success : COLORS.danger }]}>
+                <Text style={s.gabNum}>Q{i + 1} {correto ? '✅' : '❌'}</Text>
+                <Text style={s.gabEnun} numberOfLines={2}>{q.enunciado}</Text>
+                <Text style={s.gabResp}>Correcta: {LABEL_OPCAO[q.resposta_correta]}) {q[`opcao_${q.resposta_correta}`]}</Text>
+                {!correto && respostas[i] && (
+                  <Text style={s.gabErro}>Tu respuesta: {LABEL_OPCAO[respostas[i]]}) {q[`opcao_${respostas[i]}`]}</Text>
                 )}
-                {!r?.resposta && <Text style={styles.gabErro}>⏱ Tiempo agotado</Text>}
-                {q.explicacao && (
-                  <Text style={styles.gabExplicacao}>💡 {q.explicacao}</Text>
-                )}
+                {!respostas[i] && <Text style={s.gabErro}>Tiempo agotado</Text>}
               </View>
             );
           })}
 
-          <TouchableOpacity style={styles.btnVoltar} onPress={() => navigation.goBack()}>
-            <Text style={styles.btnVoltarTxt}>← Volver a estudiar</Text>
+          <TouchableOpacity style={s.btnRetry} onPress={() => navigation.goBack()} activeOpacity={0.85}>
+            <Text style={s.btnRetryTxt}>← Volver a Estudiar</Text>
           </TouchableOpacity>
           <View style={{ height: 40 }} />
         </ScrollView>
@@ -197,153 +151,99 @@ export default function StudyQuizScreen({ navigation, route }) {
     );
   }
 
-  // ─── Render: Questão ──────────────────────────────────────────────────
-  const questao = questoes[indice];
-  if (!questao) return null;
+  // ── QUESTÃO ─────────────────────────────────────────────────────────────────
+  const q = questoes[indice];
+  const correta = q.resposta_correta;
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.questaoWrap} showsVerticalScrollIndicator={false}>
-
-        {/* Header de progresso */}
-        <View style={styles.progressRow}>
-          <Text style={styles.progressTxt}>{indice + 1}/{questoes.length}</Text>
-          <View style={styles.progressBarBg}>
-            <View style={[styles.progressBarFill, { width: `${((indice + 1) / questoes.length) * 100}%` }]} />
-          </View>
-          <Text style={[styles.tempoTxt, tempo <= 10 && { color: '#ef4444' }]}>⏱ {tempo}s</Text>
+    <SafeAreaView style={s.safe}>
+      <View style={s.topBar}>
+        <Text style={s.progresso}>{indice + 1}/{questoes.length}</Text>
+        <View style={[s.timerBadge, tempo <= 5 && { backgroundColor: COLORS.danger }]}>
+          <Text style={s.timerTxt}>⏱ {tempo}s</Text>
         </View>
+      </View>
 
-        {/* Nível */}
-        <Text style={[styles.nivelTag, { color: nivelCor(questao.dificuldade) }]}>
-          {nivelEmoji(questao.dificuldade)} {questao.dificuldade}
-          {questao.tema ? `  ·  ${questao.tema}` : ''}
-        </Text>
+      <View style={s.progressBar}>
+        <View style={[s.progressFill, { width: `${((indice + 1) / questoes.length) * 100}%` }]} />
+      </View>
 
-        {/* Enunciado */}
-        <Text style={styles.enunciado}>{questao.enunciado}</Text>
+      <ScrollView style={s.scroll} contentContainerStyle={s.qContent}>
+        <Text style={s.enunciado}>{q.enunciado}</Text>
 
-        {/* Opções */}
-        {OPCOES.map(op => {
-          const isCorreta  = op === questao.resposta_correta;
-          const isSel      = respondida === op;
-          let bgColor      = '#fff';
-          let borderColor  = '#e5e7eb';
+        {OPCOES.map(opt => {
+          const texto = q[`opcao_${opt}`];
+          if (!texto) return null;
 
+          let bgColor = '#fff';
+          let borderColor = COLORS.border;
           if (mostrarExpl) {
-            if (isCorreta)       { bgColor = '#d1fae5'; borderColor = '#10b981'; }
-            else if (isSel)      { bgColor = '#fee2e2'; borderColor = '#ef4444'; }
-          } else if (isSel) {
-            bgColor = '#eff6ff'; borderColor = '#01497a';
+            if (opt === correta) { bgColor = '#dcfce7'; borderColor = COLORS.success; }
+            else if (opt === respondida && opt !== correta) { bgColor = '#fee2e2'; borderColor = COLORS.danger; }
           }
 
           return (
             <TouchableOpacity
-              key={op}
-              style={[styles.opcao, { backgroundColor: bgColor, borderColor }]}
-              onPress={() => !respondida && registrarResposta(op)}
+              key={opt}
+              style={[s.opcao, { backgroundColor: bgColor, borderColor }]}
+              onPress={() => !mostrarExpl && handleResponder(opt)}
+              disabled={mostrarExpl}
               activeOpacity={0.8}
-              disabled={!!respondida}
             >
-              <View style={[styles.opcaoLetra, isSel && !mostrarExpl && styles.opcaoLetraSel,
-                mostrarExpl && isCorreta && { backgroundColor: '#10b981' },
-                mostrarExpl && isSel && !isCorreta && { backgroundColor: '#ef4444' },
-              ]}>
-                <Text style={[styles.opcaoLetraTxt, (isSel || (mostrarExpl && isCorreta)) && { color: '#fff' }]}>
-                  {LABEL_OPCAO[op]}
-                </Text>
-              </View>
-              <Text style={[styles.opcaoTxt, (isSel && !mostrarExpl) && { color: '#01497a', fontWeight: '700' }]}>
-                {questao[`opcao_${op}`]}
-              </Text>
+              <Text style={s.opcaoLetra}>{LABEL_OPCAO[opt]}</Text>
+              <Text style={s.opcaoTxt}>{texto}</Text>
             </TouchableOpacity>
           );
         })}
 
-        {/* Explicação (após responder) */}
-        {mostrarExpl && questao.explicacao && (
-          <View style={styles.explBox}>
-            <Text style={styles.explTitulo}>💡 Explicación</Text>
-            <Text style={styles.explTxt}>{questao.explicacao}</Text>
+        {mostrarExpl && (
+          <View style={s.explBox}>
+            <Text style={s.explTitle}>{respondida === correta ? '✅ ¡Correcto!' : respondida ? '❌ Incorrecto' : '⏱ Tiempo agotado'}</Text>
+            {q.explicacao && <Text style={s.explTxt}>{q.explicacao}</Text>}
+            <TouchableOpacity style={s.btnNext} onPress={handleProxima} activeOpacity={0.85}>
+              <Text style={s.btnNextTxt}>{indice + 1 < questoes.length ? 'Siguiente →' : 'Ver resultado'}</Text>
+            </TouchableOpacity>
           </View>
         )}
-
-        {/* Botão avançar */}
-        {mostrarExpl && (
-          <TouchableOpacity style={styles.btnAvancar} onPress={avancar}>
-            <Text style={styles.btnAvancarTxt}>
-              {indice + 1 >= questoes.length ? 'Ver resultado →' : 'Siguiente pregunta →'}
-            </Text>
-          </TouchableOpacity>
-        )}
-
-        <View style={{ height: 40 }} />
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function nivelEmoji(d) { return d === 'facil' ? '🟢' : d === 'medio' ? '🟡' : '🔴'; }
-function nivelCor(d)   { return d === 'facil' ? '#16a34a' : d === 'medio' ? '#d97706' : '#dc2626'; }
-function mensagem(pct) {
-  if (pct >= 80) return '¡Excelente desempeño! Estás listo para el examen.';
-  if (pct >= 60) return 'Buen resultado. Sigue practicando los temas más difíciles.';
-  if (pct >= 40) return 'Vas por buen camino. Repasa los temas donde fallaste.';
-  return 'No te rindas. Estudia la teoría y vuelve a intentarlo.';
-}
-
-// ─── Styles ───────────────────────────────────────────────────────────────────
-const styles = StyleSheet.create({
-  safe:         { flex: 1, backgroundColor: '#f9fafb' },
-  loadingTxt:   { textAlign: 'center', color: '#6b7280', marginTop: 16 },
-
-  questaoWrap:  { padding: 20 },
-  progressRow:  { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 16 },
-  progressTxt:  { fontSize: 13, color: '#6b7280', width: 36 },
-  progressBarBg:{ flex: 1, height: 6, backgroundColor: '#e5e7eb', borderRadius: 4 },
-  progressBarFill:{ height: 6, backgroundColor: '#01497a', borderRadius: 4 },
-  tempoTxt:     { fontSize: 13, color: '#6b7280', width: 40, textAlign: 'right' },
-
-  nivelTag:     { fontSize: 12, fontWeight: '700', textTransform: 'uppercase', marginBottom: 10 },
-  enunciado:    { fontSize: 18, fontWeight: '800', color: '#111827', lineHeight: 27, marginBottom: 24 },
-
-  opcao:        { borderRadius: 12, flexDirection: 'row', alignItems: 'center',
-                  padding: 14, marginBottom: 12, borderWidth: 1.5,
-                  shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 4, elevation: 1 },
-  opcaoLetra:   { width: 32, height: 32, borderRadius: 8, backgroundColor: '#f3f4f6',
-                  alignItems: 'center', justifyContent: 'center', marginRight: 12 },
-  opcaoLetraSel:{ backgroundColor: '#01497a' },
-  opcaoLetraTxt:{ fontWeight: '800', fontSize: 14, color: '#374151' },
-  opcaoTxt:     { flex: 1, fontSize: 14, color: '#374151', lineHeight: 20 },
-
-  explBox:      { backgroundColor: '#fefce8', borderRadius: 12, padding: 16, marginTop: 4,
-                  borderLeftWidth: 4, borderLeftColor: '#f59e0b' },
-  explTitulo:   { fontWeight: '800', fontSize: 14, color: '#92400e', marginBottom: 6 },
-  explTxt:      { fontSize: 14, color: '#78350f', lineHeight: 20 },
-
-  btnAvancar:   { backgroundColor: '#01497a', borderRadius: 14, paddingVertical: 16,
-                  alignItems: 'center', marginTop: 16 },
-  btnAvancarTxt:{ color: '#fff', fontSize: 16, fontWeight: '800' },
-
-  // Resultado
-  resultadoWrap:  { padding: 20 },
-  resultadoEmoji: { fontSize: 60, textAlign: 'center', marginTop: 20, marginBottom: 8 },
-  resultadoTitulo:{ fontSize: 26, fontWeight: '900', textAlign: 'center', color: '#111827' },
-  resultadoPct:   { fontSize: 40, fontWeight: '900', textAlign: 'center', color: '#01497a', marginBottom: 8 },
-  resultadoMsg:   { fontSize: 15, color: '#4b5563', textAlign: 'center', lineHeight: 22, marginBottom: 28 },
-
-  gabItem:       { borderRadius: 12, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#e5e7eb', backgroundColor: '#fff' },
-  gabCerto:      { borderColor: '#10b981', backgroundColor: '#f0fdf4' },
-  gabErrado:     { borderColor: '#ef4444', backgroundColor: '#fef2f2' },
-  gabHeader:     { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },
-  gabNum:        { fontWeight: '800', fontSize: 13, color: '#6b7280' },
-  gabEnunciado:  { fontSize: 13, color: '#374151', marginBottom: 6 },
-  gabCorreta:    { fontSize: 13, color: '#16a34a' },
-  gabErro:       { fontSize: 13, color: '#dc2626', marginTop: 4 },
-  gabExplicacao: { fontSize: 12, color: '#6b7280', marginTop: 6, fontStyle: 'italic' },
-
-  btnVoltar:     { borderWidth: 1.5, borderColor: '#01497a', borderRadius: 12,
-                   paddingVertical: 14, alignItems: 'center', marginTop: 24 },
-  btnVoltarTxt:  { color: '#01497a', fontWeight: '700', fontSize: 15 },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: COLORS.bg },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.bg },
+  loadTxt: { color: COLORS.textMuted, fontSize: 14, marginTop: 12 },
+  topBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 16, paddingBottom: 8 },
+  progresso: { fontSize: 16, fontWeight: '800', color: COLORS.text },
+  timerBadge: { backgroundColor: COLORS.primary, borderRadius: 20, paddingHorizontal: 12, paddingVertical: 4 },
+  timerTxt: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  progressBar: { height: 4, backgroundColor: '#e0e0e0', marginHorizontal: 16, borderRadius: 2 },
+  progressFill: { height: 4, backgroundColor: COLORS.primary, borderRadius: 2 },
+  scroll: { flex: 1 },
+  qContent: { padding: 16 },
+  enunciado: { fontSize: 16, fontWeight: '600', color: COLORS.text, lineHeight: 24, marginBottom: 20 },
+  opcao: {
+    flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff',
+    borderRadius: 12, padding: 14, marginBottom: 10, borderWidth: 2,
+  },
+  opcaoLetra: { fontSize: 16, fontWeight: '800', color: COLORS.primary, marginRight: 12, width: 24 },
+  opcaoTxt: { fontSize: 14, color: COLORS.text, flex: 1, lineHeight: 20 },
+  explBox: { backgroundColor: '#fff', borderRadius: 14, padding: 16, marginTop: 12, elevation: 2 },
+  explTitle: { fontSize: 16, fontWeight: '800', marginBottom: 8 },
+  explTxt: { fontSize: 13, color: COLORS.textMuted, lineHeight: 20, marginBottom: 12 },
+  btnNext: { backgroundColor: COLORS.primary, borderRadius: 12, paddingVertical: 14, alignItems: 'center' },
+  btnNextTxt: { color: '#fff', fontSize: 15, fontWeight: '800' },
+  resultContent: { padding: 20, alignItems: 'center' },
+  resultEmoji: { fontSize: 64, marginTop: 20, marginBottom: 8 },
+  resultTitle: { fontSize: 24, fontWeight: '900', color: COLORS.text, marginBottom: 8 },
+  resultScore: { fontSize: 18, color: COLORS.primary, fontWeight: '700', marginBottom: 24 },
+  gabTitle: { fontSize: 18, fontWeight: '800', color: COLORS.text, alignSelf: 'flex-start', marginBottom: 12, width: '100%' },
+  gabCard: { backgroundColor: '#fff', borderRadius: 12, padding: 12, marginBottom: 8, borderLeftWidth: 4, width: '100%' },
+  gabNum: { fontWeight: '800', fontSize: 14, marginBottom: 4 },
+  gabEnun: { fontSize: 13, color: '#555', marginBottom: 4 },
+  gabResp: { fontSize: 12, color: COLORS.success },
+  gabErro: { fontSize: 12, color: COLORS.danger, marginTop: 2 },
+  btnRetry: { backgroundColor: COLORS.primary, borderRadius: 14, paddingVertical: 14, paddingHorizontal: 32, marginTop: 20 },
+  btnRetryTxt: { color: '#fff', fontSize: 15, fontWeight: '800' },
 });

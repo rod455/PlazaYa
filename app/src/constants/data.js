@@ -1,12 +1,20 @@
 // src/constants/data.js
-// Dados de configuração do app Concursos México
+// Dados de configuração do app PlazaYa (México) + ConcursosBrasil
 
-// ─── AdMob — IDs reais do app PlazaYa (México) ───────────────────────────────
+// ─── AdMob — PlazaYa (México) ────────────────────────────────────────────────
 export const ADMOB_IDS = {
-  APP_ID:       'ca-app-pub-9316035916536420~2327897668', // App ID
-  REWARDED:     'ca-app-pub-9316035916536420/3401306180', // Vídeo após onboarding
-  BANNER:       'ca-app-pub-9316035916536420/4577955786', // Banner em todas as telas
-  INTERSTITIAL: 'ca-app-pub-9316035916536420/2550558246', // Intersticial a cada 3 min
+  APP_ID:       'ca-app-pub-9316035916536420~2327897668',
+  REWARDED:     'ca-app-pub-9316035916536420/3401306180',
+  BANNER:       'ca-app-pub-9316035916536420/4577955786',
+  INTERSTITIAL: 'ca-app-pub-9316035916536420/2550558246',
+};
+
+// ─── AdMob — ConcursosBrasil ─────────────────────────────────────────────────
+export const ADMOB_IDS_BR = {
+  APP_ID:       'ca-app-pub-9316035916536420~8124628178',
+  BANNER:       'ca-app-pub-9316035916536420/2364067431',
+  REWARDED:     'ca-app-pub-9316035916536420/4784148966',
+  INTERSTITIAL: 'ca-app-pub-9316035916536420/2976243277',
 };
 
 // ─── Estados / Regiões do México ──────────────────────────────────────────────
@@ -45,7 +53,38 @@ export const ESTADOS_MEXICO = [
   { uf: 'ZAC', nome: 'Zacatecas' },
 ];
 
-// ─── Áreas de concursos ───────────────────────────────────────────────────────
+// ─── Estados do Brasil ────────────────────────────────────────────────────────
+export const ESTADOS_BRASIL = [
+  { uf: 'AC', nome: 'Acre' },
+  { uf: 'AL', nome: 'Alagoas' },
+  { uf: 'AP', nome: 'Amapá' },
+  { uf: 'AM', nome: 'Amazonas' },
+  { uf: 'BA', nome: 'Bahia' },
+  { uf: 'CE', nome: 'Ceará' },
+  { uf: 'DF', nome: 'Distrito Federal' },
+  { uf: 'ES', nome: 'Espírito Santo' },
+  { uf: 'GO', nome: 'Goiás' },
+  { uf: 'MA', nome: 'Maranhão' },
+  { uf: 'MT', nome: 'Mato Grosso' },
+  { uf: 'MS', nome: 'Mato Grosso do Sul' },
+  { uf: 'MG', nome: 'Minas Gerais' },
+  { uf: 'PA', nome: 'Pará' },
+  { uf: 'PB', nome: 'Paraíba' },
+  { uf: 'PR', nome: 'Paraná' },
+  { uf: 'PE', nome: 'Pernambuco' },
+  { uf: 'PI', nome: 'Piauí' },
+  { uf: 'RJ', nome: 'Rio de Janeiro' },
+  { uf: 'RN', nome: 'Rio Grande do Norte' },
+  { uf: 'RS', nome: 'Rio Grande do Sul' },
+  { uf: 'RO', nome: 'Rondônia' },
+  { uf: 'RR', nome: 'Roraima' },
+  { uf: 'SC', nome: 'Santa Catarina' },
+  { uf: 'SP', nome: 'São Paulo' },
+  { uf: 'SE', nome: 'Sergipe' },
+  { uf: 'TO', nome: 'Tocantins' },
+];
+
+// ─── Áreas de concursos (México) ─────────────────────────────────────────────
 export const AREA_OPTIONS = [
   { id: 'policia',       label: 'Seguridad Pública (Policía, GN)', icon: '👮' },
   { id: 'juridico',      label: 'Jurídico / Poder Judicial',        icon: '⚖️' },
@@ -53,41 +92,71 @@ export const AREA_OPTIONS = [
   { id: 'fiscal',        label: 'Tributario / SAT / Finanzas',       icon: '📋' },
   { id: 'ti',            label: 'Tecnología de la Información',      icon: '💻' },
   { id: 'administrativo',label: 'Administrativo / Gestión Pública',  icon: '🏛️' },
+  { id: 'educacion',     label: 'Educación (SEP, USICAMM)',          icon: '📚' },
 ];
 
-// ─── Escolaridade ─────────────────────────────────────────────────────────────
+// ─── Áreas de concursos (Brasil) ─────────────────────────────────────────────
+export const AREA_OPTIONS_BR = [
+  { id: 'policia',  label: 'Polícia (PM, PC, PRF, PF)', icon: '🛡️' },
+  { id: 'saude',    label: 'Saúde',                      icon: '➕' },
+  { id: 'bancario', label: 'Bancário',                   icon: '🏦' },
+  { id: 'juridico', label: 'Jurídico (Tribunais)',       icon: '⚖️' },
+  { id: 'inss',     label: 'INSS',                       icon: '🏛️' },
+  { id: 'fiscal',   label: 'Fiscal e Tributário',        icon: '📋' },
+  { id: 'educacao', label: 'Educação',                   icon: '📚' },
+  { id: 'tecnologia', label: 'Tecnologia da Informação', icon: '💻' },
+];
+
+// ─── Escolaridade (México) ────────────────────────────────────────────────────
 export const ESCOLARIDADE_OPTIONS = [
-  { id: 'secundaria',  label: 'Secundaria completa',   icon: '📖' },
-  { id: 'preparatoria',label: 'Preparatoria completa', icon: '🎒' },
-  { id: 'tecnico',     label: 'Técnico / Tecnológico', icon: '🔧' },
-  { id: 'licenciatura',label: 'Licenciatura',           icon: '🎓' },
-  { id: 'posgrado',    label: 'Posgrado',               icon: '🏆' },
+  { id: 'secundaria',    label: 'Secundaria' },
+  { id: 'preparatoria',  label: 'Preparatoria / Bachillerato' },
+  { id: 'tecnico',       label: 'Técnico / TSU' },
+  { id: 'licenciatura',  label: 'Licenciatura' },
+  { id: 'maestria',      label: 'Maestría / Doctorado' },
 ];
 
-// ─── Faixa salarial ───────────────────────────────────────────────────────────
-export const SALARIO_OPTIONS = [
-  { id: 'ate10k',   label: 'Hasta $10,000 MXN',           min: 0,     max: 10000  },
-  { id: '10k_20k',  label: '$10,000 a $20,000 MXN',       min: 10000, max: 20000  },
-  { id: '20k_40k',  label: '$20,000 a $40,000 MXN',       min: 20000, max: 40000  },
-  { id: 'acima40k', label: 'Más de $40,000 MXN',          min: 40000, max: 999999 },
+// ─── Escolaridade (Brasil) ────────────────────────────────────────────────────
+export const ESCOLARIDADE_OPTIONS_BR = [
+  { id: 'fundamental', label: 'Fundamental Completo' },
+  { id: 'medio',       label: 'Ensino Médio completo' },
+  { id: 'tecnico',     label: 'Técnico' },
+  { id: 'superior',    label: 'Superior' },
+  { id: 'pos',         label: 'Pós-graduação' },
 ];
 
 // ─── Mobilidade ───────────────────────────────────────────────────────────────
 export const MOBILIDADE_OPTIONS = [
-  { id: 'local',  label: 'Quiero plazas en mi estado',      icon: '📍' },
-  { id: 'federal',label: 'Acepto plazas en cualquier estado', icon: '🇲🇽' },
+  { id: 'regiao',       label: 'Solo en mi estado' },
+  { id: 'outro_estado', label: 'Puedo cambiar de estado' },
 ];
 
-// ─── Preparação ───────────────────────────────────────────────────────────────
-export const PREPARACAO_OPTIONS = [
-  { id: 'imediato',    label: '¡Estoy listo para comenzar ahora!', icon: '🚀' },
-  { id: 'breve',       label: 'Comenzaré en los próximos meses',   icon: '📅' },
-  { id: 'pesquisando', label: 'Todavía estoy investigando',        icon: '🔍' },
+// ─── Faixa salarial (México — MXN) ───────────────────────────────────────────
+export const SALARIO_OPTIONS = [
+  { id: 'ate15k',   label: 'Hasta $15,000 MXN',      min: 0,     max: 15000 },
+  { id: '15k_30k',  label: '$15,000 a $30,000 MXN',   min: 15000, max: 30000 },
+  { id: '30k_60k',  label: '$30,000 a $60,000 MXN',   min: 30000, max: 60000 },
+  { id: 'acima60k', label: 'Más de $60,000 MXN',      min: 60000, max: 999999 },
 ];
 
-// ─── Curso ────────────────────────────────────────────────────────────────────
+// ─── Faixa salarial (Brasil — BRL) ───────────────────────────────────────────
+export const SALARIO_OPTIONS_BR = [
+  { id: 'ate4k',    label: 'Até R$ 4.000',     min: 0,     max: 4000 },
+  { id: '4k_8k',    label: 'R$ 4.000 a R$ 8.000', min: 4000,  max: 8000 },
+  { id: '8k_15k',   label: 'R$ 8.000 a R$ 15.000', min: 8000,  max: 15000 },
+  { id: 'acima15k', label: 'Acima de R$ 15.000',    min: 15000, max: 999999 },
+];
+
+// ─── Opções de preparação ─────────────────────────────────────────────────────
 export const CURSO_OPTIONS = [
-  { id: 'sim',    label: 'Sí, quiero un curso de preparación', icon: '📚' },
-  { id: 'talvez', label: 'Quizás, depende del costo',           icon: '🤔' },
-  { id: 'nao',    label: 'No, prefiero estudiar solo',          icon: '💪' },
+  { id: 'sim_curso',     label: 'Sí, quiero comprar un curso' },
+  { id: 'conta_propria', label: 'No, voy a estudiar por mi cuenta' },
+  { id: 'pesquisando',   label: 'No sé, solo estoy investigando' },
+];
+
+export const PREPARACAO_OPTIONS = [
+  { id: 'presencial',      label: 'Curso presencial' },
+  { id: 'semi_presencial',  label: 'Curso semi-presencial' },
+  { id: 'online',           label: 'Curso en línea' },
+  { id: 'sozinho',          label: 'Voy a estudiar solo' },
 ];
