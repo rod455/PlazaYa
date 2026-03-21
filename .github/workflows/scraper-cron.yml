@@ -1,0 +1,42 @@
+# .github/workflows/scraper-cron.yml
+# Executa o scraper do PlazaYa diariamente para buscar novas convocatorias no DOF
+# Horário: 06:00 UTC = 00:00 CDMX (hora central do México)
+
+name: "🕐 Scraper Diário — DOF Vacantes"
+
+on:
+  schedule:
+    # Todos os dias às 06:00 UTC (meia-noite Cidade do México)
+    - cron: "0 6 * * *"
+
+  # Permite rodar manualmente pelo painel do GitHub Actions
+  workflow_dispatch:
+
+jobs:
+  scraper:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: 🚀 Invocar Edge Function do Scraper
+        run: |
+          echo "⏰ Iniciando scraper — $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" \
+            -X POST "${{ secrets.SUPABASE_FUNCTION_URL }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
+            -H "Content-Type: application/json")
+
+          # Separa body e status code
+          HTTP_CODE=$(echo "$RESPONSE" | tail -1)
+          BODY=$(echo "$RESPONSE" | sed '$d')
+
+          echo "📡 Status: $HTTP_CODE"
+          echo "📋 Resposta: $BODY"
+
+          if [ "$HTTP_CODE" -ne 200 ]; then
+            echo "❌ Scraper falhou com status $HTTP_CODE"
+            exit 1
+          fi
+
+          echo "✅ Scraper executado com sucesso!"
