@@ -1,11 +1,13 @@
 // src/services/notificationService.js
-// FCM nativo — tokens registrados direto no Firebase
-import { Platform } from 'react-native';
-import messaging from '@react-native-firebase/messaging';
-import firestore from '@react-native-firebase/firestore';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Notifications from 'expo-notifications';
+// PlazaYa — Push notifications via Expo Notifications + Supabase
+// ✅ SEM Firebase — usa apenas Expo Push Tokens
 
+import { Platform } from 'react-native';
+import * as Notifications from 'expo-notifications';
+import * as Device from 'expo-device';
+import { supabase } from './supabase';
+
+// Configura como a notificação aparece quando o app está aberto (foreground)
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -14,19 +16,29 @@ Notifications.setNotificationHandler({
   }),
 });
 
-// ─── REGISTRAR TOKEN FCM ─────────────────────────────────────────────────────
+// ─── REGISTRAR PUSH TOKEN ─────────────────────────────────────────────────────
 export async function registerForPushNotifications() {
   try {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (!enabled) {
-      console.log('Permiso de notificación denegado');
+    if (!Device.isDevice) {
+      console.log('Push notifications requerem dispositivo físico');
       return null;
     }
 
+    // Pede permissão
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== 'granted') {
+      console.log('Permissão de notificação negada');
+      return null;
+    }
+
+    // Configura canal no Android
     if (Platform.OS === 'android') {
       await Notifications.setNotificationChannelAsync('default', {
         name: 'PlazaYa',
@@ -36,167 +48,65 @@ export async function registerForPushNotifications() {
       });
     }
 
-    const fcmToken = await messaging().getToken();
-    if (!fcmToken) {
-      console.log('No se pudo obtener el token FCM');
-      return null;
-    }
+    // Pega o Expo Push Token
+    const tokenData = await Notifications.getExpoPushTokenAsync();
+    const token = tokenData.data;
 
-    console.log('Token FCM registrado:', fcmToken.slice(0, 20) + '...');
-
-    await messaging().subscribeToTopic('todos_usuarios');
-    await messaging().subscribeToTopic('nuevas_convocatorias');
-
-    return fcmToken;
+    console.log('Expo Push Token:', token?.slice(0, 30) + '...');
+    return token;
   } catch (error) {
-    console.error('Error al registrar push:', error);
+    console.error('Erro ao registrar push:', error);
     return null;
   }
 }
 
-// ─── INSCREVER EM TÓPICOS POR ÁREA ───────────────────────────────────────────
-export async function inscreverTopicosArea(areas) {
+// ─── SALVAR TOKEN NO SUPABASE ─────────────────────────────────────────────────
+export async function salvarPushToken({ token, area, estado }) {
   try {
-    for (const area of areas) {
-      await messaging().subscribeToTopic(`convocatoria_${area}`);
-    }
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user || !token) return;
+
+    await supabase
+      .from('push_tokens')
+      .upsert({
+        user_id:    user.id,
+        token:      token,
+        plataforma: Platform.OS,
+        area:       area || null,
+        estado:     estado || null,
+        ativo:      true,
+        updated_at: new Date().toISOString(),
+      }, { onConflict: 'token' });
+
+    console.log('Push token salvo no Supabase');
   } catch (error) {
-    console.error('Error al suscribir a tópicos:', error);
+    console.error('Erro ao salvar push token:', error);
   }
 }
 
-// ─── LISTENER DE REFRESH DE TOKEN ─────────────────────────────────────────────
-export function onTokenRefresh(callback) {
-  return messaging().onTokenRefresh(async (newToken) => {
-    console.log('Token FCM actualizado:', newToken.slice(0, 20) + '...');
-    if (callback) callback(newToken);
-
-    try {
-      const userId = await AsyncStorage.getItem('userId');
-      if (userId) {
-        await firestore().collection('usuarios').doc(userId).update({
-          fcmToken: newToken,
-          updatedAt: firestore.FieldValue.serverTimestamp(),
-        });
-      }
-    } catch (e) {
-      console.error('Error al actualizar token:', e.message);
-    }
-  });
-}
-
-// ─── SALVAR USUÁRIO NO FIRESTORE ──────────────────────────────────────────────
-export async function saveUserToFirestore({ token, onboardingCompleto, areas, estado }) {
-  try {
-    let userId = await AsyncStorage.getItem('userId');
-    if (!userId) {
-      userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 6);
-      await AsyncStorage.setItem('userId', userId);
-    }
-
-    await firestore().collection('usuarios').doc(userId).set({
-      fcmToken: token,
-      onboardingCompleto: onboardingCompleto || false,
-      areas: areas || [],
-      estado: estado || null,
-      createdAt: firestore.FieldValue.serverTimestamp(),
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-      ultimoAcesso: firestore.FieldValue.serverTimestamp(),
-      plataforma: Platform.OS,
-      app: 'plazaya',
-    }, { merge: true });
-
-    return userId;
-  } catch (e) {
-    console.error('Error saveUserToFirestore:', e);
-    return null;
-  }
-}
-
-// ─── MARCAR ONBOARDING COMPLETO ───────────────────────────────────────────────
-export async function markOnboardingComplete(profile) {
-  try {
-    const userId = await AsyncStorage.getItem('userId');
-    if (!userId) return;
-
-    await firestore().collection('usuarios').doc(userId).update({
-      onboardingCompleto: true,
-      area: profile.area || null,
-      estado: profile.estado || null,
-      escolaridade: profile.escolaridade || null,
-      updatedAt: firestore.FieldValue.serverTimestamp(),
-    });
-
-    // Inscreve nos tópicos de área
-    if (profile.area) {
-      await inscreverTopicosArea([profile.area]);
-    }
-  } catch (e) {
-    console.error('Error markOnboardingComplete:', e);
-  }
-}
-
-// ─── ATUALIZAR ÚLTIMO ACESSO ──────────────────────────────────────────────────
-export async function updateLastOpen() {
-  try {
-    const userId = await AsyncStorage.getItem('userId');
-    if (!userId) return;
-    await firestore().collection('usuarios').doc(userId).update({
-      ultimoAcesso: firestore.FieldValue.serverTimestamp(),
-    });
-  } catch (e) {}
-}
-
-// ─── NAVEGAÇÃO POR NOTIFICAÇÃO ────────────────────────────────────────────────
-function navegarPorNotificacao(navigation, data) {
-  if (!navigation || !data) return;
-
-  const irParaNovedades = () => {
-    try {
-      navigation.navigate('MainApp', { screen: 'Novedades' });
-    } catch (_) {
-      try { navigation.navigate('MainApp'); } catch (__) {}
-    }
-  };
-
-  if (data.screen === 'Novedades') { irParaNovedades(); return; }
-  if (data.screen === 'MainApp') {
-    try { navigation.navigate('MainApp'); } catch (_) {}
-    return;
-  }
-  if (data.tipo === 'nueva_convocatoria') { irParaNovedades(); return; }
-
-  try { navigation.navigate('MainApp'); } catch (_) {}
-}
-
-// ─── LISTENERS DE NOTIFICAÇÕES ────────────────────────────────────────────────
+// ─── LISTENERS DE NOTIFICAÇÃO ─────────────────────────────────────────────────
 export function setupNotificationListeners(navigation) {
-  const unsubOpen = messaging().onNotificationOpenedApp(remoteMessage => {
-    navegarPorNotificacao(navigation, remoteMessage.data);
+  // Notificação recebida com app aberto
+  const receivedSub = Notifications.addNotificationReceivedListener(notification => {
+    console.log('Notificação recebida:', notification.request.content.title);
   });
 
-  messaging()
-    .getInitialNotification()
-    .then(remoteMessage => {
-      if (remoteMessage) {
-        setTimeout(() => {
-          navegarPorNotificacao(navigation, remoteMessage.data);
-        }, 500);
+  // Usuário clicou na notificação
+  const responseSub = Notifications.addNotificationResponseReceivedListener(response => {
+    const data = response.notification.request.content.data;
+    if (data?.screen === 'Convocatoria' && data?.conv_id && navigation) {
+      try {
+        navigation.navigate('Convocatoria', { convocatoria: { id: data.conv_id } });
+      } catch (e) {
+        console.log('Erro ao navegar por notificação:', e);
       }
-    });
-
-  const unsubForeground = messaging().onMessage(async remoteMessage => {
-    await Notifications.scheduleNotificationAsync({
-      content: {
-        title: remoteMessage.notification?.title || 'PlazaYa',
-        body: remoteMessage.notification?.body || '',
-        data: remoteMessage.data || {},
-      },
-      trigger: null,
-    });
+    }
   });
 
   return {
-    remove: () => { unsubOpen(); unsubForeground(); },
+    remove: () => {
+      receivedSub.remove();
+      responseSub.remove();
+    },
   };
 }
