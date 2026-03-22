@@ -1,46 +1,28 @@
 // src/screens/main/OtherScreens.js
-// Telas secundárias do Tab Navigator
+// ✅ FIX v1.1: Todo el texto en español mexicano (sin portugués)
 
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import {
+  View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../../context/AuthContext';
 import { signOut } from '../../services/authService';
 import { COLORS } from '../../constants/colors';
 import AdBanner from '../../components/AdBanner';
 
-// ─── Novedades ────────────────────────────────────────────────────────────────
-export function NovididadesScreen() {
+// ─── Novedades (placeholder) ──────────────────────────────────────────────────
+export function NovedadesScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.container}>
         <AdBanner />
         <Text style={styles.titulo}>📋 Novedades</Text>
         <Text style={styles.sub}>Últimas convocatorias publicadas</Text>
-
-        {/* Placeholder — integrar com API de convocatórias do México */}
-        {[
-          { org: 'SAT', plaza: 'Auditor Fiscal Federal', vagas: 120, salario: '$28,000 MXN', prazo: '30/04/2026' },
-          { org: 'IMSS', plaza: 'Médico General', vagas: 450, salario: '$35,000 MXN', prazo: '15/05/2026' },
-          { org: 'Guardia Nacional', plaza: 'Elemento Operativo', vagas: 2000, salario: '$15,000 MXN', prazo: '20/04/2026' },
-          { org: 'Poder Judicial CDMX', plaza: 'Oficial Judicial', vagas: 80, salario: '$18,000 MXN', prazo: '10/05/2026' },
-          { org: 'SEP', plaza: 'Docente Frente a Grupo', vagas: 1500, salario: '$12,000 MXN', prazo: null },
-        ].map((c, i) => (
-          <View key={i} style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Text style={styles.cardOrg}>{c.org}</Text>
-              {c.prazo
-                ? <Text style={styles.cardPrazo}>📅 {c.prazo}</Text>
-                : <Text style={styles.cardPrevisto}>🔜 Previsto</Text>
-              }
-            </View>
-            <Text style={styles.cardPlaza}>{c.plaza}</Text>
-            <View style={styles.cardFooter}>
-              <Text style={styles.cardVagas}>👥 {c.vagas} plazas</Text>
-              <Text style={styles.cardSalario}>💰 {c.salario}</Text>
-            </View>
-          </View>
-        ))}
+        <View style={styles.emptyBox}>
+          <Text style={styles.emptyEmoji}>🔜</Text>
+          <Text style={styles.emptyTxt}>Próximamente: notificaciones{'\n'}de nuevas convocatorias</Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -56,7 +38,7 @@ export function EstadoScreen() {
         <Text style={styles.sub}>Convocatorias por entidad federativa</Text>
         <View style={styles.emptyBox}>
           <Text style={styles.emptyEmoji}>🏗️</Text>
-          <Text style={styles.emptyTxt}>Integração com convocatórias{'\n'}por estado em breve</Text>
+          <Text style={styles.emptyTxt}>Próximamente: convocatorias{'\n'}filtradas por estado</Text>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -75,7 +57,6 @@ export function PerfilScreen({ navigation }) {
         style: 'destructive',
         onPress: async () => {
           await signOut();
-          // Auth listener em AuthContext vai limpar o estado automaticamente
         },
       },
     ]);
@@ -112,6 +93,13 @@ export function PerfilScreen({ navigation }) {
             </TouchableOpacity>
           </View>
         )}
+
+        {/* ✅ FIX: Disclaimer en español */}
+        <View style={styles.disclaimerBox}>
+          <Text style={styles.disclaimerTxt}>
+            ⚠️ PlazaYa es una aplicación independiente, no oficial. No está afiliada con el gobierno de México ni con ninguna dependencia gubernamental. La información se recopila de fuentes públicas.
+          </Text>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -151,4 +139,9 @@ const styles = StyleSheet.create({
   btnLogout:  { borderWidth: 1.5, borderColor: '#ef4444', borderRadius: 12, paddingVertical: 14,
                 alignItems: 'center', marginTop: 20 },
   btnLogoutTxt:{ color: '#ef4444', fontWeight: '700', fontSize: 15 },
+
+  // ✅ FIX: Disclaimer en español
+  disclaimerBox: { marginTop: 24, backgroundColor: '#FFF8E1', borderRadius: 10, padding: 12,
+                   borderLeftWidth: 4, borderLeftColor: '#f0a500' },
+  disclaimerTxt: { fontSize: 11, color: '#78350f', lineHeight: 17 },
 });
