@@ -1,5 +1,6 @@
 // src/screens/main/HomeScreen.js
 // Branding PlazaYa — verde #1a5c2a, vermelho #c0392b, dourado #f0a500
+// ✅ FIX v1.1: Disclaimer em espanhol, sem menção a fontes específicas, sempre visível
 
 import React, { useEffect, useState, useCallback } from 'react';
 import {
@@ -39,16 +40,16 @@ function Chip({ label, selected, onPress }) {
   );
 }
 
+// ✅ FIX: Disclaimer sempre visível, em espanhol mexicano, sem mencionar fontes específicas
 function Disclaimer() {
-  const [open, setOpen] = useState(false);
   return (
-    <TouchableOpacity style={s.disclaimer} onPress={() => setOpen(v => !v)} activeOpacity={0.9}>
-      <View style={s.disclaimerRow}>
-        <Text style={s.disclaimerTxt}>ℹ️  App independiente — no oficial</Text>
-        <Text style={s.disclaimerChev}>{open ? '▲' : '▼'}</Text>
-      </View>
-      {open && <Text style={s.disclaimerBody}>Esta app recopila información de fuentes públicas (DOF, TrabajaEn). Confirma siempre los datos en los sitios oficiales antes de inscribirte.</Text>}
-    </TouchableOpacity>
+    <View style={s.disclaimer}>
+      <Text style={s.disclaimerTxt}>
+        ⚠️  <Text style={{ fontWeight: '800' }}>App independiente — no oficial.</Text>{' '}
+        Esta aplicación NO está afiliada con el gobierno de México ni con ninguna dependencia gubernamental.
+        La información se recopila de fuentes públicas. Confirma siempre en los sitios oficiales antes de postularte.
+      </Text>
+    </View>
   );
 }
 
@@ -73,31 +74,50 @@ function ConvCard({ item, onPress }) {
             <Text style={s.cardDep} numberOfLines={1}>{item.dependencia ?? 'Gobierno Federal'}</Text>
           </View>
         </View>
-        <Text style={{ fontSize: 18 }}>🇲🇽</Text>
+        {item.estado && item.estado !== 'FEDERAL' && (
+          <View style={s.estadoBadge}><Text style={s.estadoTxt}>{item.estado}</Text></View>
+        )}
+        {item.estado === 'FEDERAL' && (
+          <View style={[s.estadoBadge, { backgroundColor: '#dcfce7' }]}><Text style={[s.estadoTxt, { color: C.primary }]}>FEDERAL</Text></View>
+        )}
       </View>
+
       <View style={s.cardBody}>
-        {fechaStr && <View style={s.dataRow}><Text style={s.dataLabel}>📅 Inscripciones hasta </Text><Text style={s.dataVal}>{fechaStr}</Text></View>}
-        {item.escolaridad && <Text style={s.nivel}>Nivel {item.escolaridad}</Text>}
-        {salario && <View style={{ flexDirection:'row', alignItems:'center', gap: 6 }}><Text style={{ fontSize:16 }}>💰</Text><Text style={s.salario}>{salario}</Text></View>}
-        {item.num_plazas && <Text style={s.plazas}>👥 {Number(item.num_plazas).toLocaleString()} plazas disponibles</Text>}
+        {salario && <Text style={s.cardSalario}>💰 {salario}</Text>}
+        {item.escolaridad && <Text style={s.cardEsc}>🎓 {item.escolaridad}</Text>}
       </View>
-      {urgente && <View style={s.urgente}><Text style={s.urgenteTxt}>⚠️ Cierra en {dias === 0 ? 'hoy' : `${dias} días`}</Text></View>}
+
+      <View style={s.cardFooter}>
+        {dias !== null && (
+          <View style={[s.dateBadge, urgente && s.dateBadgeUrgente]}>
+            <Text style={[s.dateTxt, urgente && { color: '#dc2626' }]}>
+              {dias === 0 ? '⚠️ Cierra hoy' : `📅 ${dias} días · Cierra ${fechaStr}`}
+            </Text>
+          </View>
+        )}
+        {!item.fecha_cierre && (
+          <Text style={s.sinFechaTxt}>📅 Sin fecha definida</Text>
+        )}
+        {item.num_plazas && <Text style={s.plazasTxt}>👥 {item.num_plazas} plazas</Text>}
+      </View>
     </TouchableOpacity>
   );
 }
 
 export default function HomeScreen() {
   const { answers } = useQuiz();
-  const { user } = useAuth();
   const navigation = useNavigation();
-  const [areaFiltro, setAreaFiltro] = useState(answers.area ?? null);
-  const [soloAbiertas, setSoloAbiertas] = useState(true);
   const [lista, setLista] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [total, setTotal] = useState(0);
-  const estadoFiltro = answers.estado ?? null;
-  const estadoNome = ESTADOS_MEXICO?.find(e => e.uf === estadoFiltro)?.nome ?? 'Todo México';
+  const [areaFiltro, setAreaFiltro] = useState(answers?.area || null);
+  const [estadoFiltro] = useState(answers?.estado || null);
+  const [soloAbiertas, setSoloAbiertas] = useState(true);
+
+  const estadoNome = estadoFiltro
+    ? ESTADOS_MEXICO.find(e => e.uf === estadoFiltro)?.nome ?? estadoFiltro
+    : 'Todo México';
 
   const buscar = useCallback(async () => {
     try {
@@ -161,6 +181,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* ✅ FIX: Disclaimer sempre visível */}
       <Disclaimer />
 
       {loading ? (
@@ -182,7 +203,9 @@ export default function HomeScreen() {
           contentContainerStyle={s.lista}
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); buscar(); }} colors={[C.primary]} />}
-          ListFooterComponent={<Text style={s.footer}>Datos de DOF · TrabajaEn · Confirma en sitios oficiales</Text>}
+          ListFooterComponent={
+            <Text style={s.footer}>Información recopilada de fuentes públicas. Confirma siempre en los sitios oficiales.</Text>
+          }
         />
       )}
     </SafeAreaView>
@@ -209,32 +232,36 @@ const s = StyleSheet.create({
   toggleBtnOn:  { backgroundColor: '#dcfce7' },
   toggleTxt:    { fontSize: 13, color: C.textMuted, fontWeight: '600' },
   toggleTxtOn:  { color: C.primary },
+
+  // ✅ FIX: Disclaimer sempre visível, sem toggle
   disclaimer:   { marginHorizontal: 12, marginBottom: 8, backgroundColor: '#FFF8E1', borderRadius: 10, padding: 10, borderLeftWidth: 4, borderLeftColor: C.gold },
-  disclaimerRow:{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  disclaimerTxt:{ fontSize: 12, fontWeight: '700', color: '#92400e', flex: 1 },
-  disclaimerChev:{ fontSize: 11, color: '#92400e' },
-  disclaimerBody:{ fontSize: 12, color: '#78350f', marginTop: 6, lineHeight: 18 },
+  disclaimerTxt:{ fontSize: 11, color: '#78350f', lineHeight: 17 },
+
   lista:        { paddingHorizontal: 12, paddingBottom: 140 },
   loadingTxt:   { color: C.textMuted, marginTop: 12, fontSize: 14 },
   emptyTitle:   { fontSize: 18, fontWeight: '800', color: C.text, marginBottom: 8 },
   emptyTxt:     { fontSize: 14, color: C.textMuted, textAlign: 'center', lineHeight: 22, marginBottom: 24 },
-  btnLimpar:    { backgroundColor: C.primary, borderRadius: 12, paddingVertical: 12, paddingHorizontal: 24 },
-  btnLimparTxt: { color: C.white, fontWeight: '700', fontSize: 15 },
-  footer:       { fontSize: 11, color: '#9ca3af', textAlign: 'center', paddingVertical: 20 },
-  card:         { backgroundColor: C.white, borderRadius: 16, marginBottom: 12, overflow: 'hidden',
-                  shadowColor: '#000', shadowOpacity: 0.08, shadowRadius: 8, shadowOffset: { width: 0, height: 2 }, elevation: 3 },
-  cardHead:     { backgroundColor: C.primary, padding: 14, flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between' },
-  cardHeadLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 10 },
-  cardEmoji:    { fontSize: 22, marginTop: 2 },
-  cardTitulo:   { fontSize: 15, fontWeight: '900', color: C.white, lineHeight: 20 },
-  cardDep:      { fontSize: 12, color: 'rgba(255,255,255,0.75)', marginTop: 2 },
-  cardBody:     { padding: 14, gap: 6 },
-  dataRow:      { flexDirection: 'row', alignItems: 'center' },
-  dataLabel:    { fontSize: 13, color: C.textMuted },
-  dataVal:      { fontSize: 13, fontWeight: '800', color: C.primary },
-  nivel:        { fontSize: 12, color: C.textMuted, backgroundColor: '#f0f7f1', alignSelf: 'flex-start', paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
-  salario:      { fontSize: 15, fontWeight: '900', color: C.primary },
-  plazas:       { fontSize: 12, color: C.textMuted },
-  urgente:      { backgroundColor: '#fee2e2', paddingHorizontal: 14, paddingVertical: 6, borderTopWidth: 1, borderTopColor: '#fecaca' },
-  urgenteTxt:   { fontSize: 12, fontWeight: '800', color: C.red },
+  btnLimpar:    { backgroundColor: C.primary, borderRadius: 10, paddingVertical: 12, paddingHorizontal: 28 },
+  btnLimparTxt: { color: C.white, fontWeight: '700' },
+  footer:       { fontSize: 11, color: '#9ca3af', textAlign: 'center', paddingVertical: 20, lineHeight: 17 },
+
+  // Cards
+  card:         { backgroundColor: C.white, borderRadius: 14, padding: 14, marginBottom: 10,
+                  borderWidth: 1, borderColor: C.border, shadowColor: '#000', shadowOpacity: 0.04, shadowRadius: 6, elevation: 2 },
+  cardHead:     { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', marginBottom: 8 },
+  cardHeadLeft: { flexDirection: 'row', flex: 1, gap: 10 },
+  cardEmoji:    { fontSize: 24 },
+  cardTitulo:   { fontSize: 14, fontWeight: '800', color: C.text, lineHeight: 20 },
+  cardDep:      { fontSize: 12, color: C.textMuted, marginTop: 2 },
+  estadoBadge:  { backgroundColor: '#eff6ff', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  estadoTxt:    { fontSize: 11, fontWeight: '700', color: '#1d4ed8' },
+  cardBody:     { flexDirection: 'row', gap: 12, marginBottom: 8, flexWrap: 'wrap' },
+  cardSalario:  { fontSize: 13, fontWeight: '800', color: '#16a34a' },
+  cardEsc:      { fontSize: 12, color: C.textMuted },
+  cardFooter:   { flexDirection: 'row', flexWrap: 'wrap', gap: 8, alignItems: 'center' },
+  dateBadge:    { backgroundColor: '#f3f4f6', borderRadius: 6, paddingHorizontal: 8, paddingVertical: 3 },
+  dateBadgeUrgente: { backgroundColor: '#fee2e2' },
+  dateTxt:      { fontSize: 11, fontWeight: '600', color: '#374151' },
+  sinFechaTxt:  { fontSize: 11, color: '#9ca3af' },
+  plazasTxt:    { fontSize: 11, color: C.textMuted },
 });
