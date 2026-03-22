@@ -21,7 +21,7 @@ credentials/
 google-services.json
 
 # ─── Arquivos locais com senhas — NUNCA subir! ───────────────
-app/android/app/build.gradle
+app/android/keystore.properties
 app/android/gradle.properties
 app/plazaya.keystore
 
