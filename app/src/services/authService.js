@@ -2,7 +2,7 @@
 // Cadastro, login e logout via Supabase Auth
 
 import { supabase } from './supabase';
-import { upsertProfile } from './supabaseService';
+import { upsertProfile } from './supabase';
 
 // ─── CADASTRO ────────────────────────────────────────────────────────────────
 export async function signUp({ email, password, nome, perfil }) {

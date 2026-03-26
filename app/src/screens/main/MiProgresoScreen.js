@@ -15,14 +15,17 @@ import AdBanner from '../../components/AdBanner';
 import { ADMOB_IDS } from '../../constants/data';
 
 const STORAGE_KEYS = {
-  QUIZZES_DONE: '@plazaya:quizzes_realizados',
+  // Keys do QuizGameScreen (quiz completo de 5 perguntas)
+  QUIZZES_DONE: '@plazaya:quizzes_done',
+  TOTAL_QUIZ_CORRECT: '@plazaya:total_correct',
+  TOTAL_QUIZ_ANSWERED: '@plazaya:total_questions',
+  // Keys do QuizDiarioScreen (1 pergunta/dia)
   TOTAL_CORRECT: '@plazaya:quiz_diario_aciertos',
   TOTAL_ANSWERED: '@plazaya:quiz_diario_respondidos',
   STREAK: '@plazaya:quiz_diario_racha',
-  CONVOCATORIAS_VIEWED: '@plazaya:convocatorias_vistas',
+  // Keys globais
+  CONVOCATORIAS_VIEWED: '@plazaya:concursos_viewed',
   QUIZ_HISTORY: '@plazaya:quiz_historico',
-  TOTAL_QUIZ_CORRECT: '@plazaya:total_aciertos',
-  TOTAL_QUIZ_ANSWERED: '@plazaya:total_respondidos',
 };
 
 const MiProgresoScreen = ({ navigation }) => {
