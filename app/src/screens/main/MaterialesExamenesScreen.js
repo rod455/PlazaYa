@@ -42,7 +42,6 @@ const MaterialesExamenesScreen = ({ navigation }) => {
       setMateriales(data || []);
       applyFilters(data || [], selectedFilter, searchText);
     } catch (error) {
-      console.error('Error al obtener materiales:', error);
       Alert.alert('Error', 'No se pudieron cargar los materiales. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
@@ -101,7 +100,6 @@ const MaterialesExamenesScreen = ({ navigation }) => {
         Alert.alert('No disponible', 'Este material aún no tiene archivo PDF vinculado.');
       }
     } catch (error) {
-      console.error('Error al abrir material:', error);
       Alert.alert('Error', 'No se pudo abrir el material.');
     }
   };

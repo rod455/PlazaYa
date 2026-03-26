@@ -79,7 +79,6 @@ const MiProgresoScreen = ({ navigation }) => {
         convocatoriasViewed: parseInt(convocatoriasViewed || '0', 10),
       });
     } catch (error) {
-      console.error('Error al cargar estadísticas:', error);
     } finally {
       setLoading(false);
     }

@@ -182,7 +182,6 @@ const SimuladorSalarioScreen = ({ navigation }) => {
         )} brutos al mes en México. ¡Simula tu salario en PlazaYa!`,
       });
     } catch (error) {
-      console.error('Error al compartir:', error);
     }
   };
 

@@ -53,7 +53,6 @@ const QuizDiarioScreen = ({ navigation }) => {
         setStreak(parseInt(savedStreak, 10));
       }
     } catch (error) {
-      console.error('Error al cargar racha:', error);
     }
   }, []);
 
@@ -67,7 +66,6 @@ const QuizDiarioScreen = ({ navigation }) => {
       }
       return false;
     } catch (error) {
-      console.error('Error al verificar respuesta:', error);
       return false;
     }
   }, []);
@@ -103,7 +101,6 @@ const QuizDiarioScreen = ({ navigation }) => {
         }
       }
     } catch (error) {
-      console.error('Error al obtener pregunta:', error);
       Alert.alert('Error', 'No se pudo cargar la pregunta del día. Inténtalo de nuevo.');
     } finally {
       setLoading(false);
@@ -158,7 +155,6 @@ const QuizDiarioScreen = ({ navigation }) => {
 
       showInterstitial(() => {});
     } catch (error) {
-      console.error('Error al guardar respuesta:', error);
     }
   };
 

@@ -102,7 +102,6 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
       const { data, error } = await query;
 
       if (error) {
-        console.error('Error al cargar convocatorias:', error);
         return;
       }
 
@@ -115,7 +114,6 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
       setHasMore((data || []).length === ITEMS_PER_PAGE);
       setPage(currentPage + 1);
     } catch (error) {
-      console.error('Error al cargar convocatorias:', error);
     } finally {
       setLoading(false);
       setLoadingMore(false);

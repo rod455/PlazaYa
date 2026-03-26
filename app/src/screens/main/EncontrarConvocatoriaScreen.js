@@ -148,7 +148,6 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
       setConvocatorias(results.slice(0, 3));
       setShowResults(true);
     } catch (error) {
-      console.error('Error al buscar convocatorias:', error);
     } finally {
       setLoading(false);
     }

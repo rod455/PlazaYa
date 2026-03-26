@@ -91,7 +91,6 @@ export default function NovedadesScreen() {
 
       if (!error && data) setConvs(data);
     } catch (e) {
-      console.error(e);
     } finally {
       setLoading(false);
       setRefreshing(false);

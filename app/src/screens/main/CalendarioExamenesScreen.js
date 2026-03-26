@@ -47,14 +47,12 @@ const CalendarioExamenesScreen = ({ navigation }) => {
         .order('fecha_cierre', { ascending: true });
 
       if (error) {
-        console.error('Error al cargar convocatorias:', error);
         setConvocatorias([]);
         return;
       }
 
       setConvocatorias(data || []);
     } catch (error) {
-      console.error('Error al cargar convocatorias:', error);
       setConvocatorias([]);
     } finally {
       setLoading(false);

@@ -53,7 +53,6 @@ const CompartirScreen = ({ navigation }) => {
         await AsyncStorage.setItem(STORAGE_KEYS.REFERRAL_CODE, generated);
       }
     } catch (error) {
-      console.error('Error al cargar datos de compartir:', error);
     }
   }, [user]);
 
@@ -70,7 +69,6 @@ const CompartirScreen = ({ navigation }) => {
       const today = new Date().toISOString().split('T')[0];
       await AsyncStorage.setItem(STORAGE_KEYS.LAST_SHARE_DATE, today);
     } catch (error) {
-      console.error('Error al guardar conteo:', error);
     }
   };
 
@@ -89,7 +87,6 @@ const CompartirScreen = ({ navigation }) => {
         await incrementShareCount();
       }
     } catch (error) {
-      console.error('Error al compartir:', error);
       Alert.alert('Error', 'No se pudo compartir. Inténtalo de nuevo.');
     }
   };
@@ -104,7 +101,6 @@ const CompartirScreen = ({ navigation }) => {
       Alert.alert('¡Listo!', 'El enlace se copió al portapapeles.');
       await incrementShareCount();
     } catch (error) {
-      console.error('Error al copiar enlace:', error);
     }
   };
 
@@ -130,7 +126,6 @@ const CompartirScreen = ({ navigation }) => {
         );
       }
     } catch (error) {
-      console.error('Error al compartir por WhatsApp:', error);
       handleShare();
     }
   };

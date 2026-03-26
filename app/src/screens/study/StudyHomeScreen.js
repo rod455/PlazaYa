@@ -42,7 +42,6 @@ export default function StudyHomeScreen() {
       setTemas(t);
       setHistorico(h);
     } catch (e) {
-      console.error(e);
     } finally {
       setLoading(false);
       setRefreshing(false);

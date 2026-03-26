@@ -45,7 +45,6 @@ export function usePersistentInterstitial() {
           unsubError();
         };
       } catch (e) {
-        console.warn('useInterstitial load error:', e);
       }
     }
 
@@ -57,7 +56,6 @@ export function usePersistentInterstitial() {
         try {
           adRef.current.show().catch(() => {});
         } catch (e) {
-          console.warn('useInterstitial show error:', e);
         }
       }
     }, INTERVALO_MS);

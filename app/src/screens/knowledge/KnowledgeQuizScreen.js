@@ -84,7 +84,6 @@ export default function KnowledgeQuizScreen() {
       ad.load();
       return () => { try { u1(); u2(); u3(); } catch {} };
     } catch (e) {
-      console.warn('Ad init error:', e);
     }
   }, []);
 

@@ -21,7 +21,6 @@ export default function AdBanner({ style }) {
         requestOptions={{ requestNonPersonalizedAdsOnly: false }}
         onAdFailedToLoad={(err) => {
           // falha silenciosa — banner simplesmente não aparece
-          console.warn('AdBanner failed:', err?.code);
         }}
       />
     </View>
