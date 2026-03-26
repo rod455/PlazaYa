@@ -4,10 +4,10 @@
 // ─── AdMob — PlazaYa (México) ────────────────────────────────────────────────
 export const ADMOB_IDS = {
   APP_ID:       'ca-app-pub-9316035916536420~2327897668',
-  REWARDED:     'ca-app-pub-9316035916536420/3401306180',
-  BANNER:       'ca-app-pub-9316035916536420/4577955786',
-  INTERSTITIAL: 'ca-app-pub-9316035916536420/2550558246',
-  APP_OPEN:     'ca-app-pub-9316035916536420/2550558246',
+  BANNER:       'ca-app-pub-9316035916536420/2364067431',
+  APP_OPEN:     'ca-app-pub-9316035916536420/6648202461',
+  INTERSTITIAL: 'ca-app-pub-9316035916536420/2976243277',
+  REWARDED:     'ca-app-pub-9316035916536420/4784148966',
 };
 
 // Keywords centralizadas para todos los ad units

@@ -10,8 +10,7 @@ import {
   StatusBar,
   SafeAreaView,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useVoltarComAdENPS } from '../../hooks/useVoltarComAdENPS';
+import { useVoltarComAdENPS } from '../../hooks/useVoltarComNPS';
 
 const CORES = {
   primary: '#1a5c2a',
@@ -130,7 +129,7 @@ const PREGUNTAS = [
 
 export default function PreguntasFrecuentesScreen() {
   const [expandida, setExpandida] = useState(null);
-  const voltarComAd = useVoltarComAdENPS();
+  const { voltar: voltarComAd } = useVoltarComAdENPS();
 
   const togglePregunta = (id) => {
     setExpandida(expandida === id ? null : id);
@@ -143,7 +142,7 @@ export default function PreguntasFrecuentesScreen() {
       {/* Encabezado */}
       <View style={estilos.header}>
         <TouchableOpacity onPress={voltarComAd} style={estilos.botonVolver}>
-          <Ionicons name="arrow-back" size={24} color="#fff" />
+          <Text style={{ fontSize: 20, color: '#fff' }}>← </Text>
         </TouchableOpacity>
         <Text style={estilos.headerTitulo}>Preguntas Frecuentes</Text>
         <View style={{ width: 40 }} />
@@ -156,7 +155,7 @@ export default function PreguntasFrecuentesScreen() {
       >
         {/* Introducción */}
         <View style={estilos.introContainer}>
-          <Ionicons name="help-circle" size={40} color={CORES.primary} />
+          <Text style={{ fontSize: 36 }}>❓</Text>
           <Text style={estilos.introTitulo}>
             Todo lo que necesitas saber sobre empleo público en México
           </Text>
@@ -182,11 +181,7 @@ export default function PreguntasFrecuentesScreen() {
                 <Text style={estilos.preguntaNumeroTexto}>{item.id}</Text>
               </View>
               <Text style={estilos.preguntaTexto}>{item.pregunta}</Text>
-              <Ionicons
-                name={expandida === item.id ? 'chevron-up' : 'chevron-down'}
-                size={22}
-                color={CORES.primary}
-              />
+              <Text style={{ fontSize: 14, color: CORES.primary }}>{expandida === item.id ? '▲' : '▼'}</Text>
             </View>
 
             {expandida === item.id && (

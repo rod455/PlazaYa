@@ -52,13 +52,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
   const { voltar } = useVoltarComNPS();
   const { answers, setAnswer, resetAnswers } = useQuiz();
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      e.preventDefault();
-      voltar();
-    });
-    return unsubscribe;
-  }, [navigation, voltar]);
+  // voltar() é chamado pelo botão de voltar no header
 
   const filteredEstados = useMemo(() => {
     if (!searchEstado.trim()) return ESTADOS_MEXICO;

@@ -16,9 +16,11 @@ import { trackScreen } from './src/services/analyticsService';
 const APP_VERSION = '2.0.0';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.plazaya.mexico';
 
-// Open App Ad (interstitial que simula App Open)
-const appOpenAd = InterstitialAd.createForAdRequest(ADMOB_IDS.APP_OPEN || ADMOB_IDS.INTERSTITIAL, {
-  keywords: ['empleo gobierno', 'convocatoria publica', 'curso preparacion', 'servidor publico'],
+// Open App Ad — ad unit EXCLUSIVO para abertura do app e retorno do background
+// APP_OPEN tem seu próprio ID, separado do INTERSTITIAL do adService
+const appOpenAd = InterstitialAd.createForAdRequest(ADMOB_IDS.APP_OPEN, {
+  keywords: ['empleo gobierno mexico', 'convocatoria publica', 'curso preparacion', 'servidor publico'],
+  requestNonPersonalizedAdsOnly: false,
 });
 
 function UpdateModal({ visible, mensagem, forcar, onDismiss }) {

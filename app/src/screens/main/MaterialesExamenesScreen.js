@@ -90,18 +90,16 @@ const MaterialesExamenesScreen = ({ navigation }) => {
     fetchMateriales();
   };
 
-  const handleOpenMaterial = async (material) => {
-    try {
-      showInterstitial(() => {});
-
+  const handleOpenMaterial = (material) => {
+    showInterstitial(() => {
       if (material.url_pdf) {
-        await Linking.openURL(material.url_pdf);
+        Linking.openURL(material.url_pdf).catch(() => {
+          Alert.alert('Error', 'No fue posible abrir el material.');
+        });
       } else {
         Alert.alert('No disponible', 'Este material aún no tiene archivo PDF vinculado.');
       }
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo abrir el material.');
-    }
+    });
   };
 
   const renderFilterChip = (filter) => (

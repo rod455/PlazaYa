@@ -141,12 +141,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
   const { voltar } = useVoltarComNPS();
   // const { answers } = useQuiz(); // disponible si se necesita
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      voltar(e, navigation);
-    });
-    return unsubscribe;
-  }, [navigation, voltar]);
+  // voltar() é chamado pelo botão de voltar no header
 
   useEffect(() => {
     if (showDetails) {

@@ -50,12 +50,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
   const initialFilters = route?.params || {};
 
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      voltar(e, navigation);
-    });
-    return unsubscribe;
-  }, [navigation, voltar]);
+  // voltar() é chamado pelo botão de voltar no header
 
   useEffect(() => {
     if (initialFilters.area) {
