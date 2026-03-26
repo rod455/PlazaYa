@@ -28,7 +28,7 @@ const MaterialesExamenesScreen = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useVoltarComNPS('MaterialesExamenes');
+  const { voltar: voltarHome } = useVoltarComNPS();
 
   const fetchMateriales = useCallback(async () => {
     try {
@@ -93,7 +93,7 @@ const MaterialesExamenesScreen = ({ navigation }) => {
 
   const handleOpenMaterial = async (material) => {
     try {
-      await showInterstitial();
+      showInterstitial(() => {});
 
       if (material.url_pdf) {
         await Linking.openURL(material.url_pdf);
@@ -227,7 +227,7 @@ const MaterialesExamenesScreen = ({ navigation }) => {
         ListFooterComponent={<View style={{ height: 16 }} />}
       />
 
-      <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+      <AdBanner />
     </View>
   );
 };

@@ -33,7 +33,7 @@ const QuizDiarioScreen = ({ navigation }) => {
   const [streak, setStreak] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  useVoltarComNPS('QuizDiario');
+  const { voltar: voltarHome } = useVoltarComNPS();
 
   const getTodayKey = () => {
     const today = new Date();
@@ -156,7 +156,7 @@ const QuizDiarioScreen = ({ navigation }) => {
         await AsyncStorage.setItem(STORAGE_KEYS.STREAK, '0');
       }
 
-      await showInterstitial();
+      showInterstitial(() => {});
     } catch (error) {
       console.error('Error al guardar respuesta:', error);
     }
@@ -229,7 +229,7 @@ const QuizDiarioScreen = ({ navigation }) => {
           </View>
         </ScrollView>
 
-        <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+        <AdBanner />
       </View>
     );
   }
@@ -243,7 +243,7 @@ const QuizDiarioScreen = ({ navigation }) => {
             <Text style={styles.primaryButtonText}>Ir a los quizzes</Text>
           </TouchableOpacity>
         </View>
-        <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+        <AdBanner />
       </View>
     );
   }
@@ -343,7 +343,7 @@ const QuizDiarioScreen = ({ navigation }) => {
         )}
       </ScrollView>
 
-      <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+      <AdBanner />
     </View>
   );
 };

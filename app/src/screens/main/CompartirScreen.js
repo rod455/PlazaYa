@@ -34,7 +34,7 @@ const CompartirScreen = ({ navigation }) => {
   const [sharesCount, setSharesCount] = useState(0);
   const [referralCode, setReferralCode] = useState('');
 
-  useVoltarComNPS('Compartir');
+  const { voltar: voltarHome } = useVoltarComNPS();
 
   const loadData = useCallback(async () => {
     try {
@@ -244,7 +244,7 @@ const CompartirScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+      <AdBanner />
     </View>
   );
 };

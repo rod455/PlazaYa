@@ -5,68 +5,119 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  SafeAreaView,
   StatusBar,
   Platform,
   Animated,
   Share,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useVoltarComNPS } from '../../hooks/useVoltarComNPS';
 import { showInterstitial } from '../../services/adService';
 import AdBanner from '../../components/AdBanner';
 import { useQuiz } from '../../context/QuizContext';
 import { formatarValor } from '../../utils/salarioUtils';
-import { ADMOB_IDS } from '../../constants/data';
+
+const formatMXN = (val) => `$${Number(val).toLocaleString('es-MX')} MXN`;
 
 const CARGOS = [
   {
     id: 'auditor_sat',
     titulo: 'Auditor SAT',
     organo: 'SAT',
-    bruto: 45000,
-    liquido: 38000,
-    icon: 'calculator-variant',
+    bruto: 60000,
+    liquido: 45000,
+    emoji: '\uD83D\uDCCA',
+    competencia: 'Alta',
+    preparacion: '6-12 meses',
+    jubilacion: 'A los 60 años con 30 años de servicio',
   },
   {
     id: 'juez_federal',
     titulo: 'Juez Federal',
     organo: 'Poder Judicial',
     bruto: 80000,
-    liquido: 65000,
-    icon: 'gavel',
-  },
-  {
-    id: 'guardia_nacional',
-    titulo: 'Guardia Nacional',
-    organo: 'SSPC',
-    bruto: 17000,
-    liquido: 15000,
-    icon: 'shield-account',
+    liquido: 60000,
+    emoji: '\u2696\uFE0F',
+    competencia: 'Muy alta',
+    preparacion: '2-4 años',
+    jubilacion: 'A los 65 años con 30 años de servicio',
   },
   {
     id: 'medico_imss',
     titulo: 'Médico IMSS',
     organo: 'IMSS',
     bruto: 28000,
-    liquido: 23000,
-    icon: 'stethoscope',
+    liquido: 22000,
+    emoji: '\uD83E\uDE7A',
+    competencia: 'Alta',
+    preparacion: '6-12 meses',
+    jubilacion: 'A los 60 años con 28 años de servicio',
   },
   {
     id: 'profesor_sep',
     titulo: 'Profesor SEP',
     organo: 'SEP',
     bruto: 14000,
-    liquido: 12000,
-    icon: 'school',
+    liquido: 11500,
+    emoji: '\uD83D\uDCDA',
+    competencia: 'Media',
+    preparacion: '3-6 meses',
+    jubilacion: 'A los 60 años con 28 años de servicio',
+  },
+  {
+    id: 'guardia_nacional',
+    titulo: 'Guardia Nacional',
+    organo: 'SSPC',
+    bruto: 17000,
+    liquido: 14500,
+    emoji: '\uD83D\uDEE1\uFE0F',
+    competencia: 'Media',
+    preparacion: '3-6 meses',
+    jubilacion: 'A los 55 años con 20 años de servicio',
   },
   {
     id: 'analista_pjf',
     titulo: 'Analista Poder Judicial',
     organo: 'Poder Judicial',
+    bruto: 35000,
+    liquido: 27000,
+    emoji: '\uD83D\uDCBC',
+    competencia: 'Alta',
+    preparacion: '6-12 meses',
+    jubilacion: 'A los 65 años con 30 años de servicio',
+  },
+  {
+    id: 'ingeniero_cfe',
+    titulo: 'Ingeniero CFE',
+    organo: 'CFE',
+    bruto: 25000,
+    liquido: 20000,
+    emoji: '\u26A1',
+    competencia: 'Media-Alta',
+    preparacion: '3-6 meses',
+    jubilacion: 'A los 60 años con 28 años de servicio',
+  },
+  {
+    id: 'enfermero_issste',
+    titulo: 'Enfermero ISSSTE',
+    organo: 'ISSSTE',
+    bruto: 15000,
+    liquido: 12500,
+    emoji: '\uD83C\uDFE5',
+    competencia: 'Media',
+    preparacion: '3-6 meses',
+    jubilacion: 'A los 60 años con 28 años de servicio',
+  },
+  {
+    id: 'analista_ti',
+    titulo: 'Analista de TI (Federal)',
+    organo: 'Administración Pública Federal',
     bruto: 30000,
-    liquido: 25000,
-    icon: 'briefcase-search',
+    liquido: 24000,
+    emoji: '\uD83D\uDCBB',
+    competencia: 'Media-Alta',
+    preparacion: '3-6 meses',
+    jubilacion: 'A los 60 años con 28 años de servicio',
   },
   {
     id: 'policia_municipal',
@@ -74,31 +125,10 @@ const CARGOS = [
     organo: 'Municipio',
     bruto: 12000,
     liquido: 10500,
-    icon: 'police-badge',
-  },
-  {
-    id: 'ingeniero_cfe',
-    titulo: 'Ingeniero CFE',
-    organo: 'CFE',
-    bruto: 25000,
-    liquido: 21000,
-    icon: 'flash',
-  },
-  {
-    id: 'enfermero_issste',
-    titulo: 'Enfermero ISSSTE',
-    organo: 'ISSSTE',
-    bruto: 15000,
-    liquido: 13000,
-    icon: 'needle',
-  },
-  {
-    id: 'director_general',
-    titulo: 'Director General',
-    organo: 'Administración Federal',
-    bruto: 70000,
-    liquido: 55000,
-    icon: 'account-tie',
+    emoji: '\uD83D\uDE93',
+    competencia: 'Baja-Media',
+    preparacion: '1-3 meses',
+    jubilacion: 'A los 55 años con 20 años de servicio',
   },
 ];
 
@@ -108,15 +138,15 @@ const SimuladorSalarioScreen = ({ navigation }) => {
   const [adShown, setAdShown] = useState(false);
 
   const animValue = useRef(new Animated.Value(0)).current;
-  const { voltarComNPS } = useVoltarComNPS();
-  const { quizData } = useQuiz();
+  const { voltar } = useVoltarComNPS();
+  // const { answers } = useQuiz(); // disponible si se necesita
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      voltarComNPS(e, navigation);
+      voltar(e, navigation);
     });
     return unsubscribe;
-  }, [navigation, voltarComNPS]);
+  }, [navigation, voltar]);
 
   useEffect(() => {
     if (showDetails) {
@@ -131,16 +161,13 @@ const SimuladorSalarioScreen = ({ navigation }) => {
     }
   }, [showDetails]);
 
-  const handleSelectCargo = async (cargo) => {
+  const handleSelectCargo = (cargo) => {
     setSelectedCargo(cargo);
 
     if (!adShown) {
-      try {
-        await showInterstitial();
+      showInterstitial(() => {
         setAdShown(true);
-      } catch (error) {
-        console.error('Error al mostrar anuncio:', error);
-      }
+      });
     }
 
     setShowDetails(true);
@@ -150,9 +177,8 @@ const SimuladorSalarioScreen = ({ navigation }) => {
     if (!selectedCargo) return;
     try {
       await Share.share({
-        message: `Descubrí que un ${selectedCargo.titulo} gana ${formatarValor(
-          selectedCargo.bruto,
-          'MXN'
+        message: `Descubrí que un ${selectedCargo.titulo} gana ${formatMXN(
+          selectedCargo.bruto
         )} brutos al mes en México. ¡Simula tu salario en PlazaYa!`,
       });
     } catch (error) {
@@ -195,11 +221,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
           selectedCargo?.id === cargo.id && styles.cargoIconContainerSelected,
         ]}
       >
-        <Icon
-          name={cargo.icon}
-          size={24}
-          color={selectedCargo?.id === cargo.id ? '#fff' : '#1a5c2a'}
-        />
+        <Text style={styles.cargoEmoji}>{cargo.emoji}</Text>
       </View>
       <View style={styles.cargoInfo}>
         <Text style={styles.cargoTitulo}>{cargo.titulo}</Text>
@@ -207,17 +229,17 @@ const SimuladorSalarioScreen = ({ navigation }) => {
       </View>
       <View style={styles.cargoSalario}>
         <Text style={styles.cargoSalarioValue}>
-          {formatarValor(cargo.liquido, 'MXN')}
+          {formatMXN(cargo.liquido)}
         </Text>
-        <Text style={styles.cargoSalarioLabel}>neto/mes</Text>
+        <Text style={styles.cargoSalarioLabel}>líquido/mes</Text>
       </View>
     </TouchableOpacity>
   );
 
-  const renderBenefitItem = (icon, label, value, highlight = false) => (
+  const renderBenefitItem = (emoji, label, value, highlight = false) => (
     <View style={styles.benefitItem} key={label}>
       <View style={styles.benefitLeft}>
-        <Icon name={icon} size={20} color={highlight ? '#f0a500' : '#1a5c2a'} />
+        <Text style={styles.benefitEmoji}>{emoji}</Text>
         <Text style={styles.benefitLabel}>{label}</Text>
       </View>
       <Text
@@ -260,7 +282,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
             <Text style={styles.detailsOrgano}>{selectedCargo.organo}</Text>
           </View>
           <TouchableOpacity onPress={handleShare} style={styles.shareBtn}>
-            <Icon name="share-variant" size={20} color="#1a5c2a" />
+            <Text style={{ fontSize: 18 }}>📤</Text>
           </TouchableOpacity>
         </View>
 
@@ -268,26 +290,26 @@ const SimuladorSalarioScreen = ({ navigation }) => {
           <View style={styles.salarioBox}>
             <Text style={styles.salarioBoxLabel}>Salario Bruto</Text>
             <Text style={styles.salarioBoxValue}>
-              {formatarValor(selectedCargo.bruto, 'MXN')}
+              {formatMXN(selectedCargo.bruto)}
             </Text>
             <Text style={styles.salarioBoxPeriod}>mensual</Text>
           </View>
           <View style={styles.salarioBoxDivider} />
           <View style={styles.salarioBox}>
-            <Text style={styles.salarioBoxLabel}>Salario Neto</Text>
+            <Text style={styles.salarioBoxLabel}>Salario Líquido</Text>
             <Text style={[styles.salarioBoxValue, styles.salarioBoxValueNet]}>
-              {formatarValor(selectedCargo.liquido, 'MXN')}
+              {formatMXN(selectedCargo.liquido)}
             </Text>
             <Text style={styles.salarioBoxPeriod}>mensual</Text>
           </View>
         </View>
 
         <View style={styles.descuentosBar}>
-          <Icon name="information-outline" size={16} color="#c0392b" />
+          <Text style={{ fontSize: 14 }}>ℹ️</Text>
           <Text style={styles.descuentosText}>
             Descuentos (ISR, ISSSTE/IMSS, etc.):{' '}
             <Text style={styles.descuentosValue}>
-              -{formatarValor(descuentos, 'MXN')}
+              -{formatMXN(descuentos)}
             </Text>
           </Text>
         </View>
@@ -298,63 +320,81 @@ const SimuladorSalarioScreen = ({ navigation }) => {
           </Text>
 
           {renderBenefitItem(
-            'gift',
+            '🎁',
             'Aguinaldo (40 días)',
-            formatarValor(aguinaldo, 'MXN'),
+            formatMXN(aguinaldo),
             true
           )}
           {renderBenefitItem(
-            'beach',
+            '🏖️',
             'Prima Vacacional (25%)',
-            formatarValor(primaVacacional, 'MXN')
+            formatMXN(primaVacacional)
           )}
           {renderBenefitItem(
-            'piggy-bank',
+            '🐷',
             'Fondo de Ahorro (6.5%)',
-            formatarValor(fondoAhorro, 'MXN') + '/mes'
+            formatarValor(fondoAhorro) + '/mes'
           )}
           {renderBenefitItem(
-            'hospital-box',
+            '🏥',
             'ISSSTE/IMSS',
-            'Incluido',
+            'Incluido'
           )}
           {renderBenefitItem(
-            'shield-check',
+            '🛡️',
             'Seguro de Vida',
-            'Incluido',
+            'Incluido'
           )}
           {renderBenefitItem(
-            'home-city',
+            '🏠',
             'Crédito FOVISSSTE/INFONAVIT',
-            'Disponible',
+            'Disponible'
           )}
           {renderBenefitItem(
-            'calendar-check',
+            '📅',
             '20 días de vacaciones',
-            'Anuales',
+            'Anuales'
           )}
           {renderBenefitItem(
-            'school-outline',
+            '🎓',
             'Estímulos por capacitación',
-            'Variable',
+            'Variable'
           )}
+        </View>
+
+        <View style={styles.jubilacionBox}>
+          <Text style={styles.jubilacionTitle}>🏛️ Jubilación</Text>
+          <Text style={styles.jubilacionText}>
+            {selectedCargo.jubilacion}
+          </Text>
+        </View>
+
+        <View style={styles.competenciaBox}>
+          <View style={styles.competenciaRow}>
+            <Text style={styles.competenciaLabel}>📊 Competencia:</Text>
+            <Text style={styles.competenciaValue}>{selectedCargo.competencia}</Text>
+          </View>
+          <View style={styles.competenciaRow}>
+            <Text style={styles.competenciaLabel}>⏱️ Tiempo de preparación:</Text>
+            <Text style={styles.competenciaValue}>{selectedCargo.preparacion}</Text>
+          </View>
         </View>
 
         <View style={styles.anualBox}>
           <View style={styles.anualBoxHeader}>
-            <Icon name="chart-line" size={24} color="#f0a500" />
+            <Text style={{ fontSize: 22 }}>📈</Text>
             <Text style={styles.anualBoxTitle}>Ingreso Anual Estimado</Text>
           </View>
           <Text style={styles.anualBoxValue}>
-            {formatarValor(ingresoAnual, 'MXN')}
+            {formatMXN(ingresoAnual)}
           </Text>
           <Text style={styles.anualBoxSubtitle}>
-            Incluye 12 meses de salario neto + aguinaldo + prima vacacional
+            Incluye 12 meses de salario líquido + aguinaldo + prima vacacional
           </Text>
         </View>
 
         <View style={styles.disclaimerBox}>
-          <Icon name="alert-circle-outline" size={16} color="#999" />
+          <Text style={{ fontSize: 14 }}>⚠️</Text>
           <Text style={styles.disclaimerText}>
             Los valores son estimados y pueden variar según el tabulador,
             antigüedad, zona económica y tipo de contratación. Consulta la
@@ -374,7 +414,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
           onPress={() => navigation.goBack()}
           style={styles.headerBackBtn}
         >
-          <Icon name="arrow-left" size={24} color="#fff" />
+          <Text style={{ fontSize: 20, color: '#fff' }}>⬅️</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Simulador de Salario</Text>
         <View style={{ width: 40 }} />
@@ -386,7 +426,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.introSection}>
-          <Icon name="cash-multiple" size={40} color="#1a5c2a" />
+          <Text style={{ fontSize: 36 }}>💰</Text>
           <Text style={styles.introTitle}>
             ¿Cuánto gana un servidor público?
           </Text>
@@ -400,11 +440,11 @@ const SimuladorSalarioScreen = ({ navigation }) => {
 
         {CARGOS.map(renderCargoCard)}
 
-        <AdBanner adUnitId={ADMOB_IDS.banner} />
+        <AdBanner />
 
         {showDetails && renderDetails()}
 
-        <AdBanner adUnitId={ADMOB_IDS.banner} />
+        <AdBanner />
       </ScrollView>
     </SafeAreaView>
   );
@@ -506,6 +546,9 @@ const styles = StyleSheet.create({
   },
   cargoIconContainerSelected: {
     backgroundColor: '#1a5c2a',
+  },
+  cargoEmoji: {
+    fontSize: 20,
   },
   cargoInfo: {
     flex: 1,
@@ -646,6 +689,9 @@ const styles = StyleSheet.create({
     gap: 10,
     flex: 1,
   },
+  benefitEmoji: {
+    fontSize: 18,
+  },
   benefitLabel: {
     fontSize: 14,
     color: '#333',
@@ -658,6 +704,55 @@ const styles = StyleSheet.create({
   },
   benefitValueHighlight: {
     color: '#f0a500',
+  },
+  jubilacionBox: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    marginBottom: 16,
+  },
+  jubilacionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1a1a1a',
+    marginBottom: 8,
+  },
+  jubilacionText: {
+    fontSize: 14,
+    color: '#333',
+    lineHeight: 20,
+  },
+  competenciaBox: {
+    backgroundColor: '#fff',
+    borderRadius: 16,
+    padding: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    marginBottom: 16,
+  },
+  competenciaRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 6,
+  },
+  competenciaLabel: {
+    fontSize: 14,
+    color: '#333',
+    fontWeight: '600',
+  },
+  competenciaValue: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#1a5c2a',
   },
   anualBox: {
     backgroundColor: '#1a5c2a',

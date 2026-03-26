@@ -6,19 +6,18 @@ import {
   TouchableOpacity,
   FlatList,
   ActivityIndicator,
-  SafeAreaView,
   StatusBar,
   Platform,
   RefreshControl,
   TextInput,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useVoltarComNPS } from '../../hooks/useVoltarComNPS';
 import { showInterstitial } from '../../services/adService';
 import AdBanner from '../../components/AdBanner';
 import { useQuiz } from '../../context/QuizContext';
 import { formatarValor } from '../../utils/salarioUtils';
-import { ADMOB_IDS, ESTADOS_MEXICO } from '../../constants/data';
+import { ESTADOS_MEXICO } from '../../constants/data';
 import { supabase } from '../../services/supabase';
 
 const ITEMS_PER_PAGE = 10;
@@ -29,7 +28,7 @@ const AREAS_FILTER = [
   { id: 'seguridad', label: 'Seguridad' },
   { id: 'sat', label: 'SAT/Fiscal' },
   { id: 'salud', label: 'Salud' },
-  { id: 'educacion', label: 'Educación' },
+  { id: 'educacion', label: 'Educaci\u00f3n' },
   { id: 'judicial', label: 'P. Judicial' },
   { id: 'administrativo', label: 'Admin.' },
   { id: 'ti', label: 'TI' },
@@ -46,17 +45,17 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
   const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const { voltarComNPS } = useVoltarComNPS();
-  const { quizData } = useQuiz();
+  const { voltar } = useVoltarComNPS();
+  const { answers } = useQuiz();
 
   const initialFilters = route?.params || {};
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      voltarComNPS(e, navigation);
+      voltar(e, navigation);
     });
     return unsubscribe;
-  }, [navigation, voltarComNPS]);
+  }, [navigation, voltar]);
 
   useEffect(() => {
     if (initialFilters.area) {
@@ -135,13 +134,11 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
     }
   };
 
-  const handleUnlock = async (convocatoriaId) => {
-    try {
-      await showInterstitial();
-      setUnlockedIds((prev) => [...prev, convocatoriaId]);
-    } catch (error) {
-      console.error('Error al mostrar anuncio:', error);
-    }
+  const handleUnlock = (item) => {
+    showInterstitial(() => {
+      setUnlockedIds((prev) => [...prev, item.id]);
+      navigation.navigate('ConvocatoriaDetalles', { concurso: item });
+    });
   };
 
   const isLocked = (index, convocatoriaId) => {
@@ -167,10 +164,10 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
         style={[styles.card, locked && styles.cardLocked]}
         onPress={() => {
           if (locked) {
-            handleUnlock(item.id);
+            handleUnlock(item);
           } else {
             navigation.navigate('ConvocatoriaDetalles', {
-              convocatoriaId: item.id,
+              concurso: item,
             });
           }
         }}
@@ -178,7 +175,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
       >
         {locked && (
           <View style={styles.lockedOverlay}>
-            <Icon name="lock" size={28} color="#fff" />
+            <Text style={styles.lockedIcon}>🔒</Text>
             <Text style={styles.lockedText}>
               Ver anuncio para desbloquear
             </Text>
@@ -205,19 +202,19 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
           <View style={styles.cardDetails}>
             <View style={styles.cardDetailItem}>
-              <Icon name="map-marker" size={14} color="#666" />
+              <Text style={styles.cardDetailEmoji}>📍</Text>
               <Text style={styles.cardDetailText}>
                 {locked ? '••••••' : item.estado || 'Nacional'}
               </Text>
             </View>
             <View style={styles.cardDetailItem}>
-              <Icon name="account-group" size={14} color="#666" />
+              <Text style={styles.cardDetailEmoji}>👥</Text>
               <Text style={styles.cardDetailText}>
                 {locked ? '••' : item.plazas || '—'} plazas
               </Text>
             </View>
             <View style={styles.cardDetailItem}>
-              <Icon name="school" size={14} color="#666" />
+              <Text style={styles.cardDetailEmoji}>🎓</Text>
               <Text style={styles.cardDetailText}>
                 {locked ? '••••••' : item.escolaridad || '—'}
               </Text>
@@ -231,12 +228,12 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
                 {locked
                   ? '$••,•••'
                   : item.salario_hasta
-                  ? formatarValor(item.salario_hasta, 'MXN')
+                  ? formatarValor(item.salario_hasta)
                   : 'No especificado'}
               </Text>
             </View>
             <View style={styles.fechaContainer}>
-              <Icon name="calendar-clock" size={14} color="#c0392b" />
+              <Text style={styles.fechaEmoji}>📅</Text>
               <Text style={styles.fechaText}>
                 {locked ? '••/••/••' : item.fecha_limite || 'Abierta'}
               </Text>
@@ -246,7 +243,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
         {(index + 1) % 5 === 0 && index > 0 && (
           <View style={styles.inlineAd}>
-            <AdBanner adUnitId={ADMOB_IDS.banner} size="mediumRectangle" />
+            <AdBanner />
           </View>
         )}
       </TouchableOpacity>
@@ -287,18 +284,18 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
     return (
       <View style={styles.footerLoader}>
         <ActivityIndicator size="small" color="#1a5c2a" />
-        <Text style={styles.footerLoaderText}>Cargando más...</Text>
+        <Text style={styles.footerLoaderText}>Cargando m\u00e1s...</Text>
       </View>
     );
   };
 
   const renderEmpty = () => (
     <View style={styles.emptyContainer}>
-      <Icon name="clipboard-text-search-outline" size={64} color="#ccc" />
+      <Text style={styles.emptyIcon}>📋</Text>
       <Text style={styles.emptyTitle}>Sin convocatorias</Text>
       <Text style={styles.emptySubtitle}>
         No se encontraron convocatorias con los filtros seleccionados. Intenta
-        cambiar el área o los criterios de búsqueda.
+        cambiar el \u00e1rea o los criterios de b\u00fasqueda.
       </Text>
     </View>
   );
@@ -312,7 +309,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
           onPress={() => navigation.goBack()}
           style={styles.headerBackBtn}
         >
-          <Icon name="arrow-left" size={24} color="#fff" />
+          <Text style={styles.headerBackText}>⬅️</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Todas las Convocatorias</Text>
         <View style={{ width: 40 }} />
@@ -320,7 +317,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
       <View style={styles.searchContainer}>
         <View style={styles.searchInputWrapper}>
-          <Icon name="magnify" size={20} color="#999" />
+          <Text style={styles.searchEmoji}>🔍</Text>
           <TextInput
             style={styles.searchInput}
             placeholder="Buscar convocatoria..."
@@ -330,7 +327,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
-              <Icon name="close-circle" size={18} color="#999" />
+              <Text style={styles.clearEmoji}>❌</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -365,7 +362,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
         />
       )}
 
-      <AdBanner adUnitId={ADMOB_IDS.banner} />
+      <AdBanner />
     </SafeAreaView>
   );
 };
@@ -392,6 +389,9 @@ const styles = StyleSheet.create({
   headerBackBtn: {
     padding: 4,
   },
+  headerBackText: {
+    fontSize: 22,
+  },
   headerTitle: {
     fontSize: 18,
     fontWeight: '700',
@@ -412,12 +412,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 8,
   },
+  searchEmoji: {
+    fontSize: 16,
+  },
   searchInput: {
     flex: 1,
     fontSize: 14,
     color: '#333',
     marginLeft: 8,
     padding: 0,
+  },
+  clearEmoji: {
+    fontSize: 16,
   },
   filterContainer: {
     paddingHorizontal: 16,
@@ -484,6 +490,9 @@ const styles = StyleSheet.create({
     zIndex: 10,
     borderRadius: 12,
   },
+  lockedIcon: {
+    fontSize: 28,
+  },
   lockedText: {
     color: '#fff',
     fontSize: 14,
@@ -540,6 +549,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  cardDetailEmoji: {
+    fontSize: 14,
+  },
   cardDetailText: {
     fontSize: 12,
     color: '#666',
@@ -571,6 +583,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  fechaEmoji: {
+    fontSize: 14,
+  },
   fechaText: {
     fontSize: 12,
     color: '#c0392b',
@@ -595,6 +610,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 48,
     paddingHorizontal: 32,
+  },
+  emptyIcon: {
+    fontSize: 64,
   },
   emptyTitle: {
     fontSize: 18,

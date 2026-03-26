@@ -37,7 +37,7 @@ const MiProgresoScreen = ({ navigation }) => {
     convocatoriasViewed: 0,
   });
 
-  useVoltarComNPS('MiProgreso');
+  const { voltar: voltarHome } = useVoltarComNPS();
 
   const loadStats = useCallback(async () => {
     try {
@@ -231,7 +231,7 @@ const MiProgresoScreen = ({ navigation }) => {
         </View>
       </ScrollView>
 
-      <AdBanner adUnitId={ADMOB_IDS.BANNER} />
+      <AdBanner />
     </View>
   );
 };

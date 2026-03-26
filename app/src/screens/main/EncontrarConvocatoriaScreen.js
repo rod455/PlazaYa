@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -7,11 +7,12 @@ import {
   ScrollView,
   ActivityIndicator,
   FlatList,
-  SafeAreaView,
   StatusBar,
   Platform,
+  TextInput,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { RewardedAd, RewardedAdEventType } from 'react-native-google-mobile-ads';
 import { useVoltarComNPS } from '../../hooks/useVoltarComNPS';
 import { showInterstitial } from '../../services/adService';
 import AdBanner from '../../components/AdBanner';
@@ -22,20 +23,20 @@ import { ADMOB_IDS, ESTADOS_MEXICO } from '../../constants/data';
 
 const ESCOLARIDADES = [
   { id: 'secundaria', label: 'Secundaria' },
-  { id: 'preparatoria', label: 'Preparatoria/Bachillerato' },
-  { id: 'tecnico', label: 'Técnico/TSU' },
+  { id: 'preparatoria', label: 'Preparatoria' },
+  { id: 'tecnico', label: 'Tecnico/TSU' },
   { id: 'licenciatura', label: 'Licenciatura' },
-  { id: 'posgrado', label: 'Maestría/Doctorado' },
+  { id: 'maestria', label: 'Maestria' },
 ];
 
 const AREAS = [
-  { id: 'seguridad', label: 'Seguridad Pública', icon: 'shield-account' },
-  { id: 'sat', label: 'SAT/Fiscal', icon: 'calculator-variant' },
-  { id: 'salud', label: 'Salud', icon: 'hospital-box' },
-  { id: 'educacion', label: 'Educación', icon: 'school' },
-  { id: 'judicial', label: 'Poder Judicial', icon: 'gavel' },
-  { id: 'administrativo', label: 'Administrativo', icon: 'briefcase' },
-  { id: 'ti', label: 'TI', icon: 'laptop' },
+  { id: 'seguridad', label: 'Seguridad', emoji: '\u{1F46E}' },
+  { id: 'sat', label: 'SAT/Fiscal', emoji: '\u{1F4CB}' },
+  { id: 'salud', label: 'Salud', emoji: '\u{1F3E5}' },
+  { id: 'educacion', label: 'Educacion', emoji: '\u{1F4DA}' },
+  { id: 'judicial', label: 'Poder Judicial', emoji: '\u2696\uFE0F' },
+  { id: 'administrativo', label: 'Administrativo', emoji: '\u{1F3DB}\uFE0F' },
+  { id: 'ti', label: 'TI', emoji: '\u{1F4BB}' },
 ];
 
 const EncontrarConvocatoriaScreen = ({ navigation }) => {
@@ -43,19 +44,31 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
   const [escolaridad, setEscolaridad] = useState(null);
   const [area, setArea] = useState(null);
   const [estado, setEstado] = useState(null);
+  const [searchEstado, setSearchEstado] = useState('');
   const [convocatorias, setConvocatorias] = useState([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
 
-  const { voltarComNPS } = useVoltarComNPS();
-  const { quizData } = useQuiz();
+  const { voltar } = useVoltarComNPS();
+  const { answers, setAnswer, resetAnswers } = useQuiz();
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (e) => {
-      voltarComNPS(e, navigation);
+      e.preventDefault();
+      voltar();
     });
     return unsubscribe;
-  }, [navigation, voltarComNPS]);
+  }, [navigation, voltar]);
+
+  const filteredEstados = useMemo(() => {
+    if (!searchEstado.trim()) return ESTADOS_MEXICO;
+    const term = searchEstado.toLowerCase().trim();
+    return ESTADOS_MEXICO.filter(
+      (item) =>
+        item.nome.toLowerCase().includes(term) ||
+        item.uf.toLowerCase().includes(term),
+    );
+  }, [searchEstado]);
 
   const handleNext = useCallback(() => {
     if (step < 3) {
@@ -71,10 +84,62 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
     }
   }, [step]);
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     setLoading(true);
+
+    const rewarded = RewardedAd.createForAdRequest(ADMOB_IDS.REWARDED);
+
+    const onEarned = () => {
+      // User earned reward — proceed to fetch results
+    };
+
+    const onLoaded = () => {
+      rewarded.show();
+    };
+
+    const onClosed = () => {
+      cleanup();
+      doFetch();
+    };
+
+    const onError = () => {
+      cleanup();
+      doFetch();
+    };
+
+    const cleanup = () => {
+      try {
+        subEarned.remove();
+        subLoaded.remove();
+        subClosed.remove();
+        subError.remove();
+      } catch (_) {}
+    };
+
+    const subEarned = rewarded.addAdEventListener(
+      RewardedAdEventType.EARNED_REWARD,
+      onEarned,
+    );
+    const subLoaded = rewarded.addAdEventListener(
+      RewardedAdEventType.LOADED,
+      onLoaded,
+    );
+    const subClosed = rewarded.addAdEventListener('closed', onClosed);
+    const subError = rewarded.addAdEventListener('error', onError);
+
+    rewarded.load();
+
+    // Timeout: if ad doesn't load in 8s, proceed anyway
+    setTimeout(() => {
+      cleanup();
+      if (!showResults) {
+        doFetch();
+      }
+    }, 8000);
+  };
+
+  const doFetch = async () => {
     try {
-      await showInterstitial();
       const results = await fetchConvocatoriasFiltradas({
         escolaridad,
         area,
@@ -108,7 +173,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
             ]}
           >
             {s < step ? (
-              <Icon name="check" size={16} color="#fff" />
+              <Text style={styles.checkMark}>{'\u2713'}</Text>
             ) : (
               <Text
                 style={[
@@ -132,7 +197,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 
   const renderStep1 = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepTitle}>¿Cuál es tu escolaridad?</Text>
+      <Text style={styles.stepTitle}>{'\u00BFCu\u00E1l es tu escolaridad?'}</Text>
       <Text style={styles.stepSubtitle}>
         Selecciona tu nivel de estudios para encontrar convocatorias adecuadas.
       </Text>
@@ -166,9 +231,9 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 
   const renderStep2 = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepTitle}>¿Qué área te interesa?</Text>
+      <Text style={styles.stepTitle}>{'\u00BFQu\u00E9 \u00E1rea te interesa?'}</Text>
       <Text style={styles.stepSubtitle}>
-        Elige el área en la que deseas trabajar.
+        Elige el area en la que deseas trabajar.
       </Text>
       <View style={styles.areasGrid}>
         {AREAS.map((item) => (
@@ -181,11 +246,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
             onPress={() => setArea(item.id)}
             activeOpacity={0.7}
           >
-            <Icon
-              name={item.icon}
-              size={28}
-              color={area === item.id ? '#fff' : '#1a5c2a'}
-            />
+            <Text style={styles.areaEmoji}>{item.emoji}</Text>
             <Text
               style={[
                 styles.areaLabel,
@@ -202,38 +263,44 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 
   const renderStep3 = () => (
     <View style={styles.stepContent}>
-      <Text style={styles.stepTitle}>¿En qué estado buscas?</Text>
+      <Text style={styles.stepTitle}>{'\u00BFEn qu\u00E9 estado buscas?'}</Text>
       <Text style={styles.stepSubtitle}>
         Selecciona el estado donde quieres trabajar.
       </Text>
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Buscar estado..."
+        placeholderTextColor="#999"
+        value={searchEstado}
+        onChangeText={setSearchEstado}
+      />
       <ScrollView
         style={styles.estadosList}
         nestedScrollEnabled
         showsVerticalScrollIndicator={false}
       >
-        {ESTADOS_MEXICO.map((item) => (
+        {filteredEstados.map((item) => (
           <TouchableOpacity
-            key={item.id || item.sigla || item.label}
+            key={item.uf}
             style={[
               styles.optionCard,
-              estado === (item.id || item.sigla) && styles.optionCardSelected,
+              estado === item.uf && styles.optionCardSelected,
             ]}
-            onPress={() => setEstado(item.id || item.sigla)}
+            onPress={() => setEstado(item.uf)}
             activeOpacity={0.7}
           >
             <View style={styles.optionRadio}>
-              {estado === (item.id || item.sigla) && (
+              {estado === item.uf && (
                 <View style={styles.optionRadioInner} />
               )}
             </View>
             <Text
               style={[
                 styles.optionLabel,
-                estado === (item.id || item.sigla) &&
-                  styles.optionLabelSelected,
+                estado === item.uf && styles.optionLabelSelected,
               ]}
             >
-              {item.label || item.nombre}
+              {item.nome}
             </Text>
           </TouchableOpacity>
         ))}
@@ -241,61 +308,61 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
     </View>
   );
 
-  const renderConvocatoriaCard = ({ item }) => (
-    <TouchableOpacity
-      style={styles.convocatoriaCard}
-      onPress={() =>
-        navigation.navigate('ConvocatoriaDetalles', {
-          convocatoriaId: item.id,
-        })
-      }
-      activeOpacity={0.7}
-    >
-      <View style={styles.convocatoriaHeader}>
-        <View style={styles.convocatoriaBadge}>
-          <Text style={styles.convocatoriaBadgeText}>
-            {item.organo || 'Gobierno'}
-          </Text>
+  const renderConvocatoriaCard = ({ item }) => {
+    const salarioStr = formatarValor(item.salario);
+    return (
+      <TouchableOpacity
+        style={styles.convocatoriaCard}
+        onPress={() =>
+          navigation.navigate('ConvocatoriaDetalles', { concurso: item })
+        }
+        activeOpacity={0.7}
+      >
+        <View style={styles.convocatoriaHeader}>
+          <View style={styles.convocatoriaBadge}>
+            <Text style={styles.convocatoriaBadgeText}>
+              {item.orgao || 'Gobierno'}
+            </Text>
+          </View>
+          {salarioStr && (
+            <Text style={styles.convocatoriaSalario}>
+              Hasta {salarioStr}
+            </Text>
+          )}
         </View>
-        {item.salario_hasta && (
-          <Text style={styles.convocatoriaSalario}>
-            Hasta {formatarValor(item.salario_hasta, 'MXN')}
-          </Text>
-        )}
-      </View>
-      <Text style={styles.convocatoriaTitulo} numberOfLines={2}>
-        {item.titulo}
-      </Text>
-      <View style={styles.convocatoriaInfo}>
-        <View style={styles.convocatoriaInfoItem}>
-          <Icon name="map-marker" size={14} color="#666" />
-          <Text style={styles.convocatoriaInfoText}>
-            {item.estado || 'Nacional'}
-          </Text>
-        </View>
-        <View style={styles.convocatoriaInfoItem}>
-          <Icon name="account-group" size={14} color="#666" />
-          <Text style={styles.convocatoriaInfoText}>
-            {item.plazas || '—'} plazas
-          </Text>
-        </View>
-      </View>
-      <View style={styles.convocatoriaFooter}>
-        <Text style={styles.convocatoriaFecha}>
-          <Icon name="calendar" size={12} color="#1a5c2a" />{' '}
-          {item.fecha_limite || 'Abierta'}
+        <Text style={styles.convocatoriaTitulo} numberOfLines={2}>
+          {item.titulo}
         </Text>
-        <Icon name="chevron-right" size={20} color="#1a5c2a" />
-      </View>
-    </TouchableOpacity>
-  );
+        <View style={styles.convocatoriaInfo}>
+          <View style={styles.convocatoriaInfoItem}>
+            <Text style={styles.convocatoriaInfoIcon}>{'\uD83D\uDCCD'}</Text>
+            <Text style={styles.convocatoriaInfoText}>
+              {item.uf || 'Nacional'}
+            </Text>
+          </View>
+          <View style={styles.convocatoriaInfoItem}>
+            <Text style={styles.convocatoriaInfoIcon}>{'\uD83D\uDC65'}</Text>
+            <Text style={styles.convocatoriaInfoText}>
+              {item.vagas || '\u2014'} plazas
+            </Text>
+          </View>
+        </View>
+        <View style={styles.convocatoriaFooter}>
+          <Text style={styles.convocatoriaFecha}>
+            {'\uD83D\uDCC5'} {item.fimInscricoes || 'Abierta'}
+          </Text>
+          <Text style={styles.chevron}>{'\u203A'}</Text>
+        </View>
+      </TouchableOpacity>
+    );
+  };
 
   const renderResults = () => (
     <View style={styles.resultsContainer}>
       <View style={styles.resultsHeader}>
-        <Icon name="check-circle" size={48} color="#1a5c2a" />
+        <Text style={styles.resultsIcon}>{'\u2705'}</Text>
         <Text style={styles.resultsTitle}>
-          ¡Encontramos convocatorias para ti!
+          {'Encontramos convocatorias para ti!'}
         </Text>
         <Text style={styles.resultsSubtitle}>
           Basadas en tu perfil, estas son las mejores opciones.
@@ -312,7 +379,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
         />
       ) : (
         <View style={styles.emptyContainer}>
-          <Icon name="magnify-close" size={48} color="#999" />
+          <Text style={styles.emptyIcon}>{'\uD83D\uDD0D'}</Text>
           <Text style={styles.emptyText}>
             No encontramos convocatorias con esos filtros. Intenta cambiar tus
             preferencias.
@@ -332,7 +399,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
         activeOpacity={0.7}
       >
         <Text style={styles.verTodasBtnText}>Ver todas las convocatorias</Text>
-        <Icon name="arrow-right" size={18} color="#fff" />
+        <Text style={styles.btnArrow}>{'\u2192'}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -342,12 +409,13 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
           setEscolaridad(null);
           setArea(null);
           setEstado(null);
+          setSearchEstado('');
           setConvocatorias([]);
           setShowResults(false);
         }}
         activeOpacity={0.7}
       >
-        <Icon name="refresh" size={18} color="#1a5c2a" />
+        <Text style={styles.resetBtnIcon}>{'\uD83D\uDD04'}</Text>
         <Text style={styles.resetBtnText}>Buscar de nuevo</Text>
       </TouchableOpacity>
     </View>
@@ -371,10 +439,10 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 
       <View style={styles.header}>
         <TouchableOpacity
-          onPress={() => navigation.goBack()}
+          onPress={() => voltar()}
           style={styles.headerBackBtn}
         >
-          <Icon name="arrow-left" size={24} color="#fff" />
+          <Text style={styles.headerBackText}>{'\u2190'}</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Encontrar Convocatoria</Text>
         <View style={{ width: 40 }} />
@@ -396,7 +464,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
                 Escolaridad
               </Text>
               <Text style={[styles.stepLabel, step >= 2 && styles.stepLabelActive]}>
-                Área
+                Area
               </Text>
               <Text style={[styles.stepLabel, step >= 3 && styles.stepLabelActive]}>
                 Estado
@@ -414,8 +482,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
                   onPress={handleBack}
                   activeOpacity={0.7}
                 >
-                  <Icon name="arrow-left" size={18} color="#1a5c2a" />
-                  <Text style={styles.backBtnText}>Anterior</Text>
+                  <Text style={styles.backBtnText}>{'\u2190'} Anterior</Text>
                 </TouchableOpacity>
               )}
               <TouchableOpacity
@@ -431,17 +498,15 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
                 <Text style={styles.nextBtnText}>
                   {step === 3 ? 'Buscar Convocatorias' : 'Siguiente'}
                 </Text>
-                <Icon
-                  name={step === 3 ? 'magnify' : 'arrow-right'}
-                  size={18}
-                  color="#fff"
-                />
+                <Text style={styles.nextBtnIcon}>
+                  {step === 3 ? '\uD83D\uDD0D' : '\u2192'}
+                </Text>
               </TouchableOpacity>
             </View>
           </>
         )}
 
-        <AdBanner adUnitId={ADMOB_IDS.banner} />
+        <AdBanner />
       </ScrollView>
     </SafeAreaView>
   );
@@ -471,7 +536,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 16,
     paddingVertical: 14,
-    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight + 14 : 14,
     elevation: 4,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -480,6 +544,11 @@ const styles = StyleSheet.create({
   },
   headerBackBtn: {
     padding: 4,
+  },
+  headerBackText: {
+    fontSize: 22,
+    color: '#fff',
+    fontWeight: '700',
   },
   headerTitle: {
     fontSize: 18,
@@ -517,6 +586,11 @@ const styles = StyleSheet.create({
   },
   stepCircleCompleted: {
     backgroundColor: '#1a5c2a',
+  },
+  checkMark: {
+    fontSize: 16,
+    color: '#fff',
+    fontWeight: '700',
   },
   stepNumber: {
     fontSize: 14,
@@ -633,6 +707,9 @@ const styles = StyleSheet.create({
     borderColor: '#1a5c2a',
     backgroundColor: '#1a5c2a',
   },
+  areaEmoji: {
+    fontSize: 28,
+  },
   areaLabel: {
     fontSize: 13,
     color: '#333',
@@ -642,6 +719,17 @@ const styles = StyleSheet.create({
   },
   areaLabelSelected: {
     color: '#fff',
+  },
+  searchInput: {
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 12,
+    paddingHorizontal: 16,
+    fontSize: 15,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+    marginBottom: 12,
+    color: '#333',
   },
   estadosList: {
     maxHeight: 320,
@@ -667,7 +755,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: '#1a5c2a',
-    marginLeft: 6,
   },
   nextBtn: {
     flex: 1,
@@ -688,12 +775,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
+  nextBtnIcon: {
+    fontSize: 16,
+    color: '#fff',
+  },
   resultsContainer: {
     marginBottom: 16,
   },
   resultsHeader: {
     alignItems: 'center',
     marginBottom: 24,
+  },
+  resultsIcon: {
+    fontSize: 48,
   },
   resultsTitle: {
     fontSize: 22,
@@ -763,6 +857,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
+  convocatoriaInfoIcon: {
+    fontSize: 14,
+  },
   convocatoriaInfoText: {
     fontSize: 12,
     color: '#666',
@@ -780,9 +877,17 @@ const styles = StyleSheet.create({
     color: '#1a5c2a',
     fontWeight: '600',
   },
+  chevron: {
+    fontSize: 24,
+    color: '#1a5c2a',
+    fontWeight: '700',
+  },
   emptyContainer: {
     alignItems: 'center',
     paddingVertical: 32,
+  },
+  emptyIcon: {
+    fontSize: 48,
   },
   emptyText: {
     fontSize: 14,
@@ -807,6 +912,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#fff',
   },
+  btnArrow: {
+    fontSize: 18,
+    color: '#fff',
+    fontWeight: '700',
+  },
   resetBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -814,6 +924,9 @@ const styles = StyleSheet.create({
     marginTop: 12,
     paddingVertical: 12,
     gap: 6,
+  },
+  resetBtnIcon: {
+    fontSize: 16,
   },
   resetBtnText: {
     fontSize: 14,
