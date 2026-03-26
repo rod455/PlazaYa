@@ -5,8 +5,8 @@ import { View, Text, StyleSheet, TouchableOpacity, Linking } from 'react-native'
 
 const GOV_LINKS = [
   { label: 'Gobierno de México', url: 'https://www.gob.mx' },
-  { label: 'Diario Oficial de la Federación', url: 'https://www.dof.gob.mx' },
-  { label: 'Portal de Empleo del Gobierno', url: 'https://www.empleos.gob.mx' },
+  { label: 'Diario Oficial de la Federación (DOF)', url: 'https://www.dof.gob.mx' },
+  { label: 'Trabajaen — Servicio Profesional de Carrera', url: 'https://www.trabajaen.gob.mx' },
 ];
 
 export default function GovSourcesBanner() {

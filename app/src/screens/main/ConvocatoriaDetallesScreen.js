@@ -126,7 +126,10 @@ export default function ConvocatoriaDetallesScreen({ route, navigation }) {
         )}
         {concurso.fonte && <Text style={styles.fonteText}>📡 Fuente: {concurso.fonte}</Text>}
         <View style={{ marginVertical: 16 }}><AdBanner /></View>
-        <Text style={styles.disclaimer}>⚠️ Información recopilada de fuentes públicas. Confirma siempre en el sitio oficial antes de postularte.</Text>
+        <View style={styles.disclaimerBox}>
+          <Text style={styles.disclaimerTitle}>⚠️ Aviso importante</Text>
+          <Text style={styles.disclaimer}>Esta aplicación es independiente y NO está afiliada con el gobierno de México ni con ninguna dependencia gubernamental. La información se recopila de fuentes públicas y puede contener imprecisiones. Confirma siempre los datos, requisitos y fechas en el sitio oficial de la dependencia convocante antes de postularte.</Text>
+        </View>
         <View style={{ height: 100 }} />
       </ScrollView>
       <View style={styles.footer}>
@@ -179,7 +182,9 @@ const styles = StyleSheet.create({
   tag: { backgroundColor: '#ECFDF5', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
   tagText: { fontSize: 12, color: '#1a5c2a', fontWeight: '600' },
   fonteText: { fontSize: 12, color: '#9CA3AF', marginBottom: 8 },
-  disclaimer: { fontSize: 11, color: '#9CA3AF', textAlign: 'center', lineHeight: 16, paddingHorizontal: 10 },
+  disclaimerBox: { backgroundColor: '#FFF8E1', borderRadius: 12, padding: 14, borderLeftWidth: 4, borderLeftColor: '#f0a500', marginBottom: 8 },
+  disclaimerTitle: { fontSize: 13, fontWeight: '800', color: '#92400E', marginBottom: 6 },
+  disclaimer: { fontSize: 11, color: '#78350F', lineHeight: 17 },
   footer: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#EAECF0' },
   inscreverBtn: { backgroundColor: '#10B981', paddingVertical: 16, borderRadius: 14, alignItems: 'center', elevation: 4 },
   inscreverText: { color: '#FFF', fontSize: 17, fontWeight: '900', letterSpacing: 0.3 },
