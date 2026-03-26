@@ -1,41 +1,45 @@
-// src/context/QuizContext.js
-// Estado global do quiz de onboarding
-
 import React, { createContext, useContext, useState } from 'react';
 
 const QuizContext = createContext(null);
 
-export function QuizProvider({ children }) {
+export const QuizProvider = ({ children }) => {
   const [answers, setAnswers] = useState({
-    escolaridade: null,  // Quiz1
-    area:         null,  // Quiz2
-    mobilidade:   null,  // Quiz3
-    estado:       null,  // Quiz4
-    salario:      null,  // Quiz5
-    curso:        null,  // Quiz6
-    preparacao:   null,  // Quiz7
+    escolaridade: null,
+    area: null,
+    areaOutra: '',
+    mobilidade: null,
+    estado: null,
+    salario: null,
+    curso: null,
+    preparacao: null,
   });
 
-  function setAnswer(key, value) {
+  const setAnswer = (key, value) => {
     setAnswers(prev => ({ ...prev, [key]: value }));
-  }
+  };
 
-  function resetAnswers() {
+  const resetQuiz = () => {
     setAnswers({
-      escolaridade: null, area: null, mobilidade: null,
-      estado: null, salario: null, curso: null, preparacao: null,
+      escolaridade: null,
+      area: null,
+      areaOutra: '',
+      mobilidade: null,
+      estado: null,
+      salario: null,
+      curso: null,
+      preparacao: null,
     });
-  }
+  };
 
   return (
-    <QuizContext.Provider value={{ answers, setAnswer, resetAnswers }}>
+    <QuizContext.Provider value={{ answers, setAnswer, resetQuiz }}>
       {children}
     </QuizContext.Provider>
   );
-}
+};
 
-export function useQuiz() {
-  const ctx = useContext(QuizContext);
-  if (!ctx) throw new Error('useQuiz debe usarse dentro de QuizProvider');
-  return ctx;
-}
+export const useQuiz = () => {
+  const context = useContext(QuizContext);
+  if (!context) throw new Error('useQuiz debe usarse dentro de QuizProvider');
+  return context;
+};
