@@ -47,7 +47,8 @@ function Disclaimer() {
       <Text style={s.disclaimerTxt}>
         ⚠️  <Text style={{ fontWeight: '800' }}>App independiente — no oficial.</Text>{' '}
         Esta aplicación NO está afiliada con el gobierno de México ni con ninguna dependencia gubernamental.
-        La información se recopila de fuentes públicas. Confirma siempre en los sitios oficiales antes de postularte.
+        La información se recopila de fuentes públicas como dof.gob.mx, trabajaen.gob.mx y gob.mx/spc.
+        Confirma siempre en los sitios oficiales antes de postularte.
       </Text>
     </View>
   );
@@ -204,7 +205,7 @@ export default function HomeScreen() {
           showsVerticalScrollIndicator={false}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); buscar(); }} colors={[C.primary]} />}
           ListFooterComponent={
-            <Text style={s.footer}>Información recopilada de fuentes públicas. Confirma siempre en los sitios oficiales.</Text>
+            <Text style={s.footer}>Información recopilada de fuentes públicas: dof.gob.mx · trabajaen.gob.mx · gob.mx/spc. Confirma siempre en los sitios oficiales.</Text>
           }
         />
       )}

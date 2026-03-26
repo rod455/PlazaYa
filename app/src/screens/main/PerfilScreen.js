@@ -123,6 +123,25 @@ export default function PerfilScreen() {
           </View>
         </Section>
 
+        {/* Fuentes oficiales */}
+        <Section title="Fuentes de información">
+          <Text style={s.sourcesIntro}>
+            La información mostrada en PlazaYa se recopila de las siguientes fuentes gubernamentales públicas:
+          </Text>
+          <Row icon="📰" label="Diario Oficial de la Federación"
+            value="dof.gob.mx"
+            onPress={() => Linking.openURL('https://www.dof.gob.mx')} />
+          <Row icon="💼" label="Bolsa de Trabajo del Gobierno"
+            value="trabajaen.gob.mx"
+            onPress={() => Linking.openURL('https://www.trabajaen.gob.mx')} />
+          <Row icon="🏛️" label="Servicio Profesional de Carrera"
+            value="gob.mx/spc"
+            onPress={() => Linking.openURL('https://www.gob.mx/spc')} />
+          <Row icon="🌐" label="Portales de Secretarías"
+            value="gob.mx (Salud, SEP, STPS, etc.)"
+            onPress={() => Linking.openURL('https://www.gob.mx')} />
+        </Section>
+
         {/* Legal */}
         <Section title="Legal">
           <Row icon="📄" label="Aviso de privacidad"
@@ -161,6 +180,7 @@ const s = StyleSheet.create({
   logoutTxt: { color: COLORS.danger, fontSize: 14, fontWeight: '700' },
   switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 6 },
   switchLabel: { fontSize: 14, fontWeight: '600', color: COLORS.text },
+  sourcesIntro: { fontSize: 13, color: '#374151', lineHeight: 20, marginBottom: 10 },
   version: { fontSize: 12, color: '#999', textAlign: 'center', marginTop: 16 },
   disclaimer: { fontSize: 11, color: '#bbb', textAlign: 'center', marginTop: 4 },
 });

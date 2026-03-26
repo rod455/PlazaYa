@@ -177,7 +177,7 @@ export default function ConvocatoriaScreen({ route, navigation }) {
 
             {/* Aviso */}
             <Text style={styles.fallbackAviso}>
-              La información proviene de fuentes públicas. Confirma siempre los datos en el sitio oficial de la dependencia convocante.
+              La información proviene de fuentes gubernamentales públicas (dof.gob.mx, trabajaen.gob.mx, gob.mx/spc). Confirma siempre los datos en el sitio oficial de la dependencia convocante.
             </Text>
           </ScrollView>
         ) : (

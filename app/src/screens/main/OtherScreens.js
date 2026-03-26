@@ -97,7 +97,7 @@ export function PerfilScreen({ navigation }) {
         {/* ✅ FIX: Disclaimer en español */}
         <View style={styles.disclaimerBox}>
           <Text style={styles.disclaimerTxt}>
-            ⚠️ PlazaYa es una aplicación independiente, no oficial. No está afiliada con el gobierno de México ni con ninguna dependencia gubernamental. La información se recopila de fuentes públicas.
+            ⚠️ PlazaYa es una aplicación independiente, no oficial. No está afiliada con el gobierno de México ni con ninguna dependencia gubernamental. La información se recopila de fuentes gubernamentales públicas como dof.gob.mx, trabajaen.gob.mx y gob.mx/spc.
           </Text>
         </View>
       </ScrollView>
