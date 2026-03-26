@@ -16,6 +16,7 @@ import { trackScreen } from './src/services/analyticsService';
 const APP_VERSION = '2.0.0';
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.plazaya.mexico';
 
+// Open App Ad (interstitial que simula App Open)
 const appOpenAd = InterstitialAd.createForAdRequest(ADMOB_IDS.APP_OPEN || ADMOB_IDS.INTERSTITIAL, {
   keywords: ['empleo gobierno', 'convocatoria publica', 'curso preparacion', 'servidor publico'],
 });
@@ -53,25 +54,49 @@ export default function App() {
   const firstAdShown = useRef(false);
 
   useEffect(() => {
+    // Inicializa interstitial centralizado (adService)
     initAds();
+
+    // Ad de abertura
     const unsubOpenLoaded = appOpenAd.addAdEventListener(AdEventType.LOADED, () => {
       appOpenReady.current = true;
-      if (!firstAdShown.current) { firstAdShown.current = true; try { appOpenAd.show(); } catch (_) {} }
+      if (!firstAdShown.current) {
+        firstAdShown.current = true;
+        try { appOpenAd.show(); } catch (_) {}
+      }
     });
-    const unsubOpenClosed = appOpenAd.addAdEventListener(AdEventType.CLOSED, () => { appOpenReady.current = false; appOpenAd.load(); });
-    const unsubOpenError = appOpenAd.addAdEventListener(AdEventType.ERROR, () => { appOpenReady.current = false; firstAdShown.current = true; appOpenAd.load(); });
+    const unsubOpenClosed = appOpenAd.addAdEventListener(AdEventType.CLOSED, () => {
+      appOpenReady.current = false;
+      appOpenAd.load();
+    });
+    const unsubOpenError = appOpenAd.addAdEventListener(AdEventType.ERROR, () => {
+      appOpenReady.current = false;
+      firstAdShown.current = true;
+      appOpenAd.load();
+    });
     appOpenAd.load();
+
+    // Mostra ad quando volta do background
     const subscription = AppState.addEventListener('change', nextAppState => {
       if (appState.current.match(/inactive|background/) && nextAppState === 'active') {
-        if (!isFirstOpen.current && appOpenReady.current) { try { appOpenAd.show(); } catch (_) {} }
+        if (!isFirstOpen.current && appOpenReady.current) {
+          try { appOpenAd.show(); } catch (_) {}
+        }
         isFirstOpen.current = false;
       }
       appState.current = nextAppState;
     });
-    return () => { subscription.remove(); unsubOpenLoaded(); unsubOpenClosed(); unsubOpenError(); };
+
+    return () => {
+      subscription.remove();
+      unsubOpenLoaded(); unsubOpenClosed(); unsubOpenError();
+    };
   }, []);
 
-  function onNavigationReady() { routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name; }
+  function onNavigationReady() {
+    routeNameRef.current = navigationRef.current?.getCurrentRoute()?.name;
+  }
+
   function onNavigationStateChange() {
     const current = navigationRef.current?.getCurrentRoute()?.name;
     if (current && current !== routeNameRef.current) trackScreen(current);
@@ -84,7 +109,9 @@ export default function App() {
       <NavigationContainer ref={navigationRef} onReady={onNavigationReady} onStateChange={onNavigationStateChange}>
         <AppNavigator />
       </NavigationContainer>
-      {updateInfo && <UpdateModal visible={showUpdate} mensagem={updateInfo.mensagem} forcar={updateInfo.forcar} onDismiss={() => setShowUpdate(false)} />}
+      {updateInfo && (
+        <UpdateModal visible={showUpdate} mensagem={updateInfo.mensagem} forcar={updateInfo.forcar} onDismiss={() => setShowUpdate(false)} />
+      )}
     </QuizProvider>
     </AuthProvider>
   );

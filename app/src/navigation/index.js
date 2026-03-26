@@ -19,8 +19,20 @@ import QuizScreen from '../screens/quiz/QuizGameScreen';
 const Stack = createStackNavigator();
 
 const screenTransition = {
-  headerShown: false, gestureEnabled: true, gestureDirection: 'horizontal', animationEnabled: true,
-  cardStyleInterpolator: ({ current, layouts }) => ({ cardStyle: { transform: [{ translateX: current.progress.interpolate({ inputRange: [0, 1], outputRange: [layouts.screen.width, 0] }) }] } }),
+  headerShown: false,
+  gestureEnabled: true,
+  gestureDirection: 'horizontal',
+  animationEnabled: true,
+  cardStyleInterpolator: ({ current, layouts }) => ({
+    cardStyle: {
+      transform: [{
+        translateX: current.progress.interpolate({
+          inputRange: [0, 1],
+          outputRange: [layouts.screen.width, 0],
+        }),
+      }],
+    },
+  }),
 };
 
 export default function AppNavigator() {

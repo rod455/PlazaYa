@@ -7,6 +7,35 @@ export const ADMOB_IDS = {
   REWARDED:     'ca-app-pub-9316035916536420/3401306180',
   BANNER:       'ca-app-pub-9316035916536420/4577955786',
   INTERSTITIAL: 'ca-app-pub-9316035916536420/2550558246',
+  APP_OPEN:     'ca-app-pub-9316035916536420/2550558246',
+};
+
+// Keywords centralizadas para todos los ad units
+export const AD_KEYWORDS = {
+  BANNER: [
+    'empleo gobierno mexico', 'convocatoria publica', 'plaza gobierno',
+    'servicio profesional carrera', 'curso preparacion', 'oposiciones mexico',
+    'empleo publico', 'trabajo gobierno', 'bolsa de trabajo',
+  ],
+  INTERSTITIAL: [
+    'curso preparacion oposiciones', 'maestria online', 'MBA ejecutivo',
+    'universidad en linea', 'prestamo personal', 'tarjeta de credito',
+    'cuenta digital', 'seguro de vida', 'afore', 'inversion cetes',
+    'empleo gobierno federal', 'servidor publico',
+  ],
+  REWARDED: [
+    'curso preparacion servicio profesional', 'maestria derecho',
+    'MBA finanzas', 'especializacion online', 'prestamo nomina',
+    'financiamiento', 'tarjeta platinum', 'seguro vida servidor publico',
+    'afore rendimiento', 'inversion cetes directo',
+    'convocatoria sat', 'convocatoria guardia nacional',
+  ],
+  APP_OPEN: [
+    'convocatoria publica 2026', 'empleo gobierno federal',
+    'maestria online', 'MBA online', 'cuenta digital',
+    'tarjeta de credito', 'seguro de vida', 'plan dental',
+    'universidad en linea', 'curso online', 'empleo publico federal',
+  ],
 };
 
 // ─── AdMob — ConcursosBrasil ─────────────────────────────────────────────────
