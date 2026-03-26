@@ -82,9 +82,9 @@ const CalendarioExamenesScreen = ({ navigation }) => {
 
   const getDaysColor = (days) => {
     if (days === null || days < 0) return '#999';
-    if (days <= 7) return '#c0392b';
-    if (days <= 30) return '#f0a500';
-    return '#1a5c2a';
+    if (days <= 7) return '#FF4F8E';
+    if (days <= 30) return '#FF8C40';
+    return '#FF8C40';
   };
 
   const getFilteredData = useCallback(() => {
@@ -281,7 +281,7 @@ const CalendarioExamenesScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container} edges={['top']}>
-      <StatusBar backgroundColor="#1a5c2a" barStyle="light-content" />
+      <StatusBar backgroundColor="#FF8C40" barStyle="light-content" />
 
       <View style={styles.header}>
         <TouchableOpacity
@@ -296,7 +296,7 @@ const CalendarioExamenesScreen = ({ navigation }) => {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1a5c2a" />
+          <ActivityIndicator size="large" color="#FF8C40" />
           <Text style={styles.loadingText}>Cargando calendario...</Text>
         </View>
       ) : (
@@ -318,10 +318,10 @@ const CalendarioExamenesScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#f0f0f0',
   },
   chipSelected: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   chipText: {
     fontSize: 13,
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   resultsText: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   loadingContainer: {
     flex: 1,
@@ -433,7 +433,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 56,
     borderRadius: 10,
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -467,7 +467,7 @@ const styles = StyleSheet.create({
   badgeText: {
     fontSize: 10,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     textTransform: 'uppercase',
   },
   daysLabel: {
@@ -477,7 +477,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 6,
     lineHeight: 19,
   },

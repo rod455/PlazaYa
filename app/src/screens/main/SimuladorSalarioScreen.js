@@ -401,7 +401,7 @@ const SimuladorSalarioScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1a5c2a" barStyle="light-content" />
+      <StatusBar backgroundColor="#FF8C40" barStyle="light-content" />
 
       <View style={styles.header}>
         <TouchableOpacity
@@ -447,10 +447,10 @@ const SimuladorSalarioScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
   introTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginTop: 12,
     textAlign: 'center',
   },
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   cargoCardSelected: {
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
     backgroundColor: '#f0f8f2',
   },
   cargoIconContainer: {
@@ -539,7 +539,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
   },
   cargoIconContainerSelected: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   cargoEmoji: {
     fontSize: 20,
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
   cargoTitulo: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
   },
   cargoOrgano: {
     fontSize: 12,
@@ -563,7 +563,7 @@ const styles = StyleSheet.create({
   cargoSalarioValue: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   cargoSalarioLabel: {
     fontSize: 10,
@@ -582,7 +582,7 @@ const styles = StyleSheet.create({
   detailsTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
   },
   detailsOrgano: {
     fontSize: 14,
@@ -627,7 +627,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   salarioBoxValueNet: {
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   salarioBoxPeriod: {
     fontSize: 11,
@@ -650,7 +650,7 @@ const styles = StyleSheet.create({
   },
   descuentosValue: {
     fontWeight: '700',
-    color: '#c0392b',
+    color: '#FF4F8E',
   },
   benefitsSection: {
     backgroundColor: '#fff',
@@ -666,7 +666,7 @@ const styles = StyleSheet.create({
   benefitsSectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 16,
   },
   benefitItem: {
@@ -694,10 +694,10 @@ const styles = StyleSheet.create({
   benefitValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   benefitValueHighlight: {
-    color: '#f0a500',
+    color: '#FF8C40',
   },
   jubilacionBox: {
     backgroundColor: '#fff',
@@ -713,7 +713,7 @@ const styles = StyleSheet.create({
   jubilacionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 8,
   },
   jubilacionText: {
@@ -746,10 +746,10 @@ const styles = StyleSheet.create({
   competenciaValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   anualBox: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',

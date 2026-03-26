@@ -151,7 +151,7 @@ const styles = StyleSheet.create({
   starText: { fontSize: 40, color: '#D1D5DB' },
   starSelected: { color: '#F59E0B' },
   ratingLabel: { fontSize: 14, color: '#6B7280', fontWeight: '600', marginBottom: 16 },
-  primaryBtn: { backgroundColor: '#1a5c2a', borderRadius: 14, paddingVertical: 15, paddingHorizontal: 32, width: '100%', alignItems: 'center', marginBottom: 8, elevation: 3 },
+  primaryBtn: { backgroundColor: '#FF8C40', borderRadius: 14, paddingVertical: 15, paddingHorizontal: 32, width: '100%', alignItems: 'center', marginBottom: 8, elevation: 3 },
   primaryBtnDisabled: { backgroundColor: '#D1D5DB', elevation: 0 },
   primaryBtnText: { color: '#FFF', fontSize: 16, fontWeight: '800' },
   primaryBtnTextDisabled: { color: '#9CA3AF' },

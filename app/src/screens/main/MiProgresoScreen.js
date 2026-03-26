@@ -94,9 +94,9 @@ const MiProgresoScreen = ({ navigation }) => {
   );
 
   const StatCard = ({ icon, value, label, color }) => (
-    <View style={[styles.statCard, { borderLeftColor: color || '#1a5c2a' }]}>
+    <View style={[styles.statCard, { borderLeftColor: color || '#FF8C40' }]}>
       <Text style={styles.statIcon}>{icon}</Text>
-      <Text style={[styles.statValue, { color: color || '#1a5c2a' }]}>{value}</Text>
+      <Text style={[styles.statValue, { color: color || '#FF8C40' }]}>{value}</Text>
       <Text style={styles.statLabel}>{label}</Text>
     </View>
   );
@@ -104,7 +104,7 @@ const MiProgresoScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1a5c2a" />
+        <ActivityIndicator size="large" color="#FF8C40" />
         <Text style={styles.loadingText}>Cargando tu progreso...</Text>
       </View>
     );
@@ -137,7 +137,7 @@ const MiProgresoScreen = ({ navigation }) => {
             icon="📝"
             value={stats.quizzesDone}
             label="Quizzes realizados"
-            color="#1a5c2a"
+            color="#FF8C40"
           />
           <StatCard
             icon="🎯"
@@ -170,7 +170,7 @@ const MiProgresoScreen = ({ navigation }) => {
             <View style={styles.detailDivider} />
             <View style={styles.detailRow}>
               <Text style={styles.detailLabel}>Respuestas correctas</Text>
-              <Text style={[styles.detailValue, { color: '#1a5c2a' }]}>
+              <Text style={[styles.detailValue, { color: '#FF8C40' }]}>
                 {stats.totalCorrect}
               </Text>
             </View>
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   subtitle: {
     fontSize: 14,
@@ -386,12 +386,12 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 4,
   },
   progressBarText: {
     fontSize: 13,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '500',
     textAlign: 'right',
   },

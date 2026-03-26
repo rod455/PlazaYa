@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   modalEmoji: { fontSize: 48, marginBottom: 12 },
   modalTitle: { fontSize: 20, fontWeight: '900', color: '#1A2332', marginBottom: 10, textAlign: 'center' },
   modalMsg: { fontSize: 14, color: '#4B5563', textAlign: 'center', lineHeight: 22, marginBottom: 24 },
-  modalBtn: { backgroundColor: '#1a5c2a', borderRadius: 32, paddingVertical: 14, paddingHorizontal: 32, width: '100%', alignItems: 'center', marginBottom: 10 },
+  modalBtn: { backgroundColor: '#FF8C40', borderRadius: 32, paddingVertical: 14, paddingHorizontal: 32, width: '100%', alignItems: 'center', marginBottom: 10 },
   modalBtnText: { color: '#fff', fontSize: 15, fontWeight: '800' },
   modalSkip: { paddingVertical: 8 },
   modalSkipText: { color: '#9CA3AF', fontSize: 13 },

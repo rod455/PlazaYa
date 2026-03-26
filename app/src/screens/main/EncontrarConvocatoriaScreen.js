@@ -417,8 +417,8 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
   if (loading) {
     return (
       <SafeAreaView style={styles.loadingContainer}>
-        <StatusBar backgroundColor="#1a5c2a" barStyle="light-content" />
-        <ActivityIndicator size="large" color="#1a5c2a" />
+        <StatusBar backgroundColor="#FF8C40" barStyle="light-content" />
+        <ActivityIndicator size="large" color="#FF8C40" />
         <Text style={styles.loadingText}>
           Buscando convocatorias ideales para ti...
         </Text>
@@ -428,7 +428,7 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1a5c2a" barStyle="light-content" />
+      <StatusBar backgroundColor="#FF8C40" barStyle="light-content" />
 
       <View style={styles.header}>
         <TouchableOpacity
@@ -508,11 +508,11 @@ const EncontrarConvocatoriaScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
   },
   loadingContainer: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -523,7 +523,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   header: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -575,10 +575,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   stepCircleActive: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   stepCircleCompleted: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   checkMark: {
     fontSize: 16,
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   stepLineActive: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   stepLabels: {
     flexDirection: 'row',
@@ -613,7 +613,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   stepLabelActive: {
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '700',
   },
   stepContent: {
@@ -622,7 +622,7 @@ const styles = StyleSheet.create({
   stepTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 8,
   },
   stepSubtitle: {
@@ -647,7 +647,7 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   optionCardSelected: {
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
     backgroundColor: '#f0f8f2',
   },
   optionRadio: {
@@ -664,7 +664,7 @@ const styles = StyleSheet.create({
     width: 12,
     height: 12,
     borderRadius: 6,
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   optionLabel: {
     fontSize: 15,
@@ -673,7 +673,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   optionLabelSelected: {
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '700',
   },
   areasGrid: {
@@ -697,8 +697,8 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
   },
   areaCardSelected: {
-    borderColor: '#1a5c2a',
-    backgroundColor: '#1a5c2a',
+    borderColor: '#FF8C40',
+    backgroundColor: '#FF8C40',
   },
   areaEmoji: {
     fontSize: 28,
@@ -742,19 +742,19 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
     paddingHorizontal: 20,
     borderWidth: 2,
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
   },
   backBtnText: {
     fontSize: 15,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   nextBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 20,
@@ -785,7 +785,7 @@ const styles = StyleSheet.create({
   resultsTitle: {
     fontSize: 22,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginTop: 12,
     textAlign: 'center',
   },
@@ -808,7 +808,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     borderLeftWidth: 4,
-    borderLeftColor: '#1a5c2a',
+    borderLeftColor: '#FF8C40',
   },
   convocatoriaHeader: {
     flexDirection: 'row',
@@ -825,18 +825,18 @@ const styles = StyleSheet.create({
   convocatoriaBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     textTransform: 'uppercase',
   },
   convocatoriaSalario: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#f0a500',
+    color: '#FF8C40',
   },
   convocatoriaTitulo: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 10,
     lineHeight: 22,
   },
@@ -867,12 +867,12 @@ const styles = StyleSheet.create({
   },
   convocatoriaFecha: {
     fontSize: 12,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '600',
   },
   chevron: {
     fontSize: 24,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '700',
   },
   emptyContainer: {
@@ -894,7 +894,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 12,
     paddingVertical: 16,
     marginTop: 20,
@@ -924,7 +924,7 @@ const styles = StyleSheet.create({
   resetBtnText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
 });
 

@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   fallbackScroll:  { flex: 1, backgroundColor: '#f9fafb' },
   fallbackContent: { padding: 20 },
   fallbackNotice:  { flexDirection: 'row', backgroundColor: '#FFF8E1', borderRadius: 10, padding: 12,
-                     borderLeftWidth: 4, borderLeftColor: '#f0a500', marginBottom: 20, gap: 8 },
+                     borderLeftWidth: 4, borderLeftColor: '#FF8C40', marginBottom: 20, gap: 8 },
   fallbackNoticeIcon: { fontSize: 16 },
   fallbackNoticeTxt:  { flex: 1, fontSize: 13, color: '#78350f', lineHeight: 19 },
   fallbackSection: { marginBottom: 20 },

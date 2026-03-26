@@ -191,7 +191,7 @@ const QuizDiarioScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1a5c2a" />
+        <ActivityIndicator size="large" color="#FF8C40" />
         <Text style={styles.loadingText}>Cargando pregunta del día...</Text>
       </View>
     );
@@ -371,7 +371,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   subtitle: {
     fontSize: 14,
@@ -431,7 +431,7 @@ const styles = StyleSheet.create({
     padding: 14,
     marginBottom: 10,
     borderWidth: 2,
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
   },
   optionWrong: {
     backgroundColor: '#FFEBEE',
@@ -458,7 +458,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#FF6B35',
   },
   optionLetterCorrect: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   optionLetterWrong: {
     backgroundColor: '#D32F2F',
@@ -490,7 +490,7 @@ const styles = StyleSheet.create({
   },
   optionTextCorrect: {
     fontSize: 15,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     flex: 1,
     fontWeight: '500',
   },
@@ -501,7 +501,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   confirmButton: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 10,
     padding: 16,
     alignItems: 'center',
@@ -537,7 +537,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   resultTitleCorrect: {
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   resultTitleWrong: {
     color: '#D32F2F',
@@ -558,7 +558,7 @@ const styles = StyleSheet.create({
   explanationTitle: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     marginBottom: 6,
   },
   explanationText: {
@@ -567,7 +567,7 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   primaryButton: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 10,
     padding: 16,
     alignItems: 'center',
@@ -597,7 +597,7 @@ const styles = StyleSheet.create({
   alreadyAnsweredTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     marginBottom: 8,
   },
   alreadyAnsweredText: {

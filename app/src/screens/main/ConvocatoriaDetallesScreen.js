@@ -63,7 +63,7 @@ export default function ConvocatoriaDetallesScreen({ route, navigation }) {
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F4F6F9' }}>
         <Text style={{ fontSize: 16, color: '#6B7280' }}>Convocatoria no encontrada.</Text>
         <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginTop: 16, padding: 12 }}>
-          <Text style={{ color: '#1a5c2a', fontWeight: '700', fontSize: 15 }}>← Volver</Text>
+          <Text style={{ color: '#FF8C40', fontWeight: '700', fontSize: 15 }}>← Volver</Text>
         </TouchableOpacity>
       </View>
     );
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#F4F6F9' },
   header: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingHorizontal: 16, paddingVertical: 12, backgroundColor: '#FFF', borderBottomWidth: 1, borderBottomColor: '#E5E7EB' },
   backBtn: { paddingVertical: 4, paddingRight: 8 },
-  backText: { fontSize: 15, color: '#1a5c2a', fontWeight: '700' },
+  backText: { fontSize: 15, color: '#FF8C40', fontWeight: '700' },
   headerTitle: { fontSize: 16, fontWeight: '800', color: '#111827', flex: 1, textAlign: 'center' },
   scroll: { flex: 1 },
   content: { padding: 16 },
@@ -180,9 +180,9 @@ const styles = StyleSheet.create({
   resumoTexto: { fontSize: 14, color: '#4B5563', lineHeight: 22 },
   tagRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: 12 },
   tag: { backgroundColor: '#ECFDF5', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  tagText: { fontSize: 12, color: '#1a5c2a', fontWeight: '600' },
+  tagText: { fontSize: 12, color: '#FF8C40', fontWeight: '600' },
   fonteText: { fontSize: 12, color: '#9CA3AF', marginBottom: 8 },
-  disclaimerBox: { backgroundColor: '#FFF8E1', borderRadius: 12, padding: 14, borderLeftWidth: 4, borderLeftColor: '#f0a500', marginBottom: 8 },
+  disclaimerBox: { backgroundColor: '#FFF8E1', borderRadius: 12, padding: 14, borderLeftWidth: 4, borderLeftColor: '#FF8C40', marginBottom: 8 },
   disclaimerTitle: { fontSize: 13, fontWeight: '800', color: '#92400E', marginBottom: 6 },
   disclaimer: { fontSize: 11, color: '#78350F', lineHeight: 17 },
   footer: { paddingHorizontal: 16, paddingTop: 12, paddingBottom: 16, backgroundColor: '#FFF', borderTopWidth: 1, borderTopColor: '#EAECF0' },

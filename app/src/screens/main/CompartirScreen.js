@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   subtitle: {
     fontSize: 14,
@@ -315,7 +315,7 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   statIcon: {
     fontSize: 32,
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   referralTitle: {
     fontSize: 14,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '500',
     marginBottom: 8,
   },
@@ -351,20 +351,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderWidth: 1,
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
     borderStyle: 'dashed',
   },
   referralCode: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     letterSpacing: 2,
   },
   shareButtonsContainer: {
     marginBottom: 24,
   },
   shareButtonPrimary: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     borderRadius: 12,
     padding: 16,
     flexDirection: 'row',
@@ -401,10 +401,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 2,
-    borderColor: '#1a5c2a',
+    borderColor: '#FF8C40',
   },
   shareButtonSecondaryText: {
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontSize: 16,
     fontWeight: 'bold',
     marginLeft: 8,

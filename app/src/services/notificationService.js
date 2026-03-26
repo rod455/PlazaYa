@@ -44,7 +44,7 @@ export async function registerForPushNotifications() {
         name: 'PlazaYa',
         importance: Notifications.AndroidImportance.MAX,
         vibrationPattern: [0, 250, 250, 250],
-        lightColor: '#1a5c2a',
+        lightColor: '#FF8C40',
       });
     }
 

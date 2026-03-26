@@ -1,5 +1,6 @@
 // src/screens/main/HomeScreen.js
 // Pantalla principal - 10 tarjetas con funcionalidades del app
+// Branding: orange #FF8C40, pink #FF4F8E, purple #7A5CFF, blue #3B82F6
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar,
@@ -18,8 +19,8 @@ const MENU_ITEMS = [
     emoji: '🎯',
     title: 'Encontrar la convocatoria ideal',
     subtitle: 'Responde algunas preguntas y descubre las mejores plazas para ti',
-    color: '#1a5c2a',
-    bgColor: '#ECFDF5',
+    color: '#FF8C40',
+    bgColor: '#FFF7ED',
   },
   {
     id: 'todas',
@@ -27,8 +28,8 @@ const MENU_ITEMS = [
     emoji: '📋',
     title: 'Ver todas las convocatorias',
     subtitle: 'Cientos de plazas abiertas en todo México con filtros',
-    color: '#065F46',
-    bgColor: '#ECFDF5',
+    color: '#3B82F6',
+    bgColor: '#EFF6FF',
   },
   {
     id: 'simulador',
@@ -36,8 +37,8 @@ const MENU_ITEMS = [
     emoji: '💰',
     title: 'Simulador de Salario',
     subtitle: 'Descubre cuánto ganarías como servidor público',
-    color: '#B45309',
-    bgColor: '#FFFBEB',
+    color: '#FF8C40',
+    bgColor: '#FFF7ED',
   },
   {
     id: 'calendario',
@@ -45,8 +46,8 @@ const MENU_ITEMS = [
     emoji: '📅',
     title: 'Calendario de Exámenes',
     subtitle: 'Fechas de inscripción, exámenes y resultados organizados',
-    color: '#92400E',
-    bgColor: '#FEF3C7',
+    color: '#7A5CFF',
+    bgColor: '#F5F3FF',
   },
   {
     id: 'quiz_diario',
@@ -54,8 +55,8 @@ const MENU_ITEMS = [
     emoji: '🔥',
     title: 'Quiz del Día',
     subtitle: '1 pregunta por día, mantén tu racha y evoluciona diariamente',
-    color: '#DC2626',
-    bgColor: '#FEF2F2',
+    color: '#FF4F8E',
+    bgColor: '#FFF1F5',
   },
   {
     id: 'quiz',
@@ -63,8 +64,8 @@ const MENU_ITEMS = [
     emoji: '🧠',
     title: 'Probar mis conocimientos',
     subtitle: 'Quiz con 5 preguntas reales y competencia contra la IA',
-    color: '#991B1B',
-    bgColor: '#FEF2F2',
+    color: '#7A5CFF',
+    bgColor: '#F5F3FF',
   },
   {
     id: 'materiales',
@@ -72,7 +73,7 @@ const MENU_ITEMS = [
     emoji: '📚',
     title: 'Exámenes y Respuestas',
     subtitle: 'PDFs de exámenes anteriores de las principales instituciones',
-    color: '#1D4ED8',
+    color: '#3B82F6',
     bgColor: '#EFF6FF',
   },
   {
@@ -81,8 +82,8 @@ const MENU_ITEMS = [
     emoji: '📊',
     title: 'Mi progreso',
     subtitle: 'Acompaña tu evolución, tasa de acierto y convocatorias guardadas',
-    color: '#6B21A8',
-    bgColor: '#F3E8FF',
+    color: '#7A5CFF',
+    bgColor: '#F5F3FF',
   },
   {
     id: 'compartir',
@@ -90,7 +91,7 @@ const MENU_ITEMS = [
     emoji: '🔗',
     title: 'Compartir con Amigos',
     subtitle: 'Recomienda a un amigo y gana desbloqueos gratis',
-    color: '#059669',
+    color: '#10B981',
     bgColor: '#ECFDF5',
   },
   {
@@ -99,8 +100,8 @@ const MENU_ITEMS = [
     emoji: '❓',
     title: 'Preguntas Frecuentes',
     subtitle: 'Cómo funciona el servicio público, convocatorias, tips para principiantes',
-    color: '#374151',
-    bgColor: '#F0F4F8',
+    color: '#64748B',
+    bgColor: '#F8FAFC',
   },
 ];
 
@@ -129,9 +130,7 @@ export default function HomeScreen() {
   const { user } = useAuth();
   const [npsVisible, setNpsVisible] = useState(false);
 
-  useEffect(() => {
-    incrementNPSSession();
-  }, []);
+  useEffect(() => { incrementNPSSession(); }, []);
 
   useEffect(() => {
     if (route.params?.triggerNPS) {
@@ -141,20 +140,12 @@ export default function HomeScreen() {
     }
   }, [route.params?.triggerNPS]);
 
-  function handlePress(item) {
-    navigation.navigate(item.screen);
-  }
-
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F4F6F9" />
+      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
       <AdBanner />
       <GovSourcesBanner />
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView style={styles.scroll} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <View style={styles.headerLeft}>
             <View style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -163,11 +154,7 @@ export default function HomeScreen() {
             </View>
             <Text style={styles.headerSub}>¿Qué quieres hacer hoy?</Text>
           </View>
-          <TouchableOpacity
-            style={styles.userBtn}
-            onPress={() => navigation.navigate('Cuenta')}
-            activeOpacity={0.8}
-          >
+          <TouchableOpacity style={styles.userBtn} onPress={() => navigation.navigate('Cuenta')} activeOpacity={0.8}>
             {user ? (
               <View style={styles.avatarCircle}>
                 <Text style={styles.avatarText}>{(user.email || '?')[0].toUpperCase()}</Text>
@@ -182,7 +169,7 @@ export default function HomeScreen() {
         </View>
 
         {MENU_ITEMS.map(item => (
-          <MenuCard key={item.id} item={item} onPress={() => handlePress(item)} />
+          <MenuCard key={item.id} item={item} onPress={() => navigation.navigate(item.screen)} />
         ))}
 
         <View style={styles.footerDisclaimer}>
@@ -198,38 +185,38 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#F4F6F9' },
+  safe: { flex: 1, backgroundColor: '#FFFFFF' },
   scroll: { flex: 1 },
   content: { paddingHorizontal: 16, paddingTop: 8 },
   header: { marginTop: 12, marginBottom: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   headerLeft: { flex: 1 },
-  headerTitleP: { fontSize: 26, fontWeight: '900', color: '#1a5c2a' },
-  headerTitleYa: { fontSize: 26, fontWeight: '900', color: '#c0392b' },
-  headerSub: { fontSize: 15, color: '#6B7280', fontWeight: '500' },
+  headerTitleP: { fontSize: 28, fontWeight: '700', color: '#0F172A' },
+  headerTitleYa: { fontSize: 28, fontWeight: '700', color: '#FF4F8E' },
+  headerSub: { fontSize: 15, color: '#64748B', fontWeight: '400', marginTop: 2 },
   userBtn: {},
   avatarCircle: {
-    width: 44, height: 44, borderRadius: 22, backgroundColor: '#1a5c2a',
+    width: 44, height: 44, borderRadius: 22, backgroundColor: '#FF8C40',
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { fontSize: 18, fontWeight: '900', color: '#FFF' },
+  avatarText: { fontSize: 18, fontWeight: '700', color: '#FFF' },
   loginBtn: {
     flexDirection: 'row', alignItems: 'center', gap: 6,
-    backgroundColor: '#ECFDF5', borderRadius: 22, paddingHorizontal: 14, paddingVertical: 10,
-    borderWidth: 1, borderColor: '#1a5c2a',
+    backgroundColor: '#FFF7ED', borderRadius: 22, paddingHorizontal: 14, paddingVertical: 10,
+    borderWidth: 1.5, borderColor: '#FF8C40',
   },
   loginIcon: { fontSize: 16 },
-  loginText: { fontSize: 13, fontWeight: '700', color: '#1a5c2a' },
+  loginText: { fontSize: 13, fontWeight: '600', color: '#FF8C40' },
   card: {
     borderRadius: 14, padding: 16, marginBottom: 12, borderLeftWidth: 4,
-    elevation: 2, shadowColor: '#000', shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 2 }, shadowRadius: 4,
+    elevation: 2, shadowColor: '#000', shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 2 }, shadowRadius: 8,
   },
   cardContent: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   cardEmoji: { fontSize: 32 },
   cardTextArea: { flex: 1 },
-  cardTitle: { fontSize: 16, fontWeight: '800', marginBottom: 3, lineHeight: 20 },
-  cardSubtitle: { fontSize: 12, color: '#6B7280', lineHeight: 17 },
+  cardTitle: { fontSize: 16, fontWeight: '700', marginBottom: 3, lineHeight: 20 },
+  cardSubtitle: { fontSize: 12, color: '#64748B', lineHeight: 17, fontWeight: '400' },
   cardArrow: { fontSize: 28, fontWeight: '300' },
   footerDisclaimer: { paddingVertical: 12 },
-  footerDisclaimerText: { fontSize: 11, color: '#9CA3AF', textAlign: 'center', lineHeight: 16 },
+  footerDisclaimerText: { fontSize: 11, color: '#94A3B8', textAlign: 'center', lineHeight: 16 },
 });

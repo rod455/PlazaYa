@@ -99,7 +99,7 @@ function TelaGateAd({ onAssistir, onSkip, adReady, showing }) {
         <Text style={styles.gateSub}>Mira un video corto para descubrir qué tan preparado estás.</Text>
         {!adReady && !showing && !showSkip && (
           <View style={{ alignItems: 'center', padding: 16 }}>
-            <ActivityIndicator color="#1a5c2a" size="small" />
+            <ActivityIndicator color="#FF8C40" size="small" />
             <Text style={styles.gateLoadingTexto}>Preparando tu resultado...</Text>
           </View>
         )}
@@ -115,7 +115,7 @@ function TelaGateAd({ onAssistir, onSkip, adReady, showing }) {
         )}
         {showing && (
           <View style={{ alignItems: 'center', padding: 16 }}>
-            <ActivityIndicator color="#1a5c2a" size="small" />
+            <ActivityIndicator color="#FF8C40" size="small" />
             <Text style={styles.gateLoadingTexto}>Mostrando video...</Text>
           </View>
         )}

@@ -276,7 +276,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
     if (!loadingMore) return null;
     return (
       <View style={styles.footerLoader}>
-        <ActivityIndicator size="small" color="#1a5c2a" />
+        <ActivityIndicator size="small" color="#FF8C40" />
         <Text style={styles.footerLoaderText}>Cargando m\u00e1s...</Text>
       </View>
     );
@@ -295,7 +295,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar backgroundColor="#1a5c2a" barStyle="light-content" />
+      <StatusBar backgroundColor="#FF8C40" barStyle="light-content" />
 
       <View style={styles.header}>
         <TouchableOpacity
@@ -330,7 +330,7 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#1a5c2a" />
+          <ActivityIndicator size="large" color="#FF8C40" />
           <Text style={styles.loadingText}>Cargando convocatorias...</Text>
         </View>
       ) : (
@@ -348,8 +348,8 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={handleRefresh}
-              colors={['#1a5c2a']}
-              tintColor="#1a5c2a"
+              colors={['#FF8C40']}
+              tintColor="#FF8C40"
             />
           }
         />
@@ -363,10 +363,10 @@ const TodasConvocatoriasScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
   },
   header: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -400,7 +400,7 @@ const styles = StyleSheet.create({
   searchInputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    backgroundColor: '#FFFFFF',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -434,7 +434,7 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
   },
   filterChipText: {
     fontSize: 13,
@@ -469,7 +469,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 4,
     borderLeftWidth: 4,
-    borderLeftColor: '#1a5c2a',
+    borderLeftColor: '#FF8C40',
   },
   cardLocked: {
     borderLeftColor: '#ccc',
@@ -510,11 +510,11 @@ const styles = StyleSheet.create({
   cardBadgeText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#1a5c2a',
+    color: '#FF8C40',
     textTransform: 'uppercase',
   },
   newBadge: {
-    backgroundColor: '#c0392b',
+    backgroundColor: '#FF4F8E',
     borderRadius: 6,
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -527,7 +527,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1a1a1a',
+    color: '#0F172A',
     marginBottom: 10,
     lineHeight: 22,
   },
@@ -569,7 +569,7 @@ const styles = StyleSheet.create({
   salarioValue: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#f0a500',
+    color: '#FF8C40',
   },
   fechaContainer: {
     flexDirection: 'row',
@@ -581,7 +581,7 @@ const styles = StyleSheet.create({
   },
   fechaText: {
     fontSize: 12,
-    color: '#c0392b',
+    color: '#FF4F8E',
     fontWeight: '600',
   },
   inlineAd: {

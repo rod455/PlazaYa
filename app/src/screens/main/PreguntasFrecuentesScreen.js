@@ -13,12 +13,12 @@ import {
 import { useVoltarComAdENPS } from '../../hooks/useVoltarComNPS';
 
 const CORES = {
-  primary: '#1a5c2a',
+  primary: '#FF8C40',
   primaryDark: '#0e3d1a',
   primaryLight: '#2d8a42',
   background: '#f5f9f6',
   card: '#ffffff',
-  text: '#1a1a1a',
+  text: '#0F172A',
   textSecondary: '#555555',
   border: '#e0e8e2',
   accent: '#d4edda',

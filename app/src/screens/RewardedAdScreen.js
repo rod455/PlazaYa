@@ -12,8 +12,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ADMOB_IDS } from '../constants/data';
 
 const C = {
-  primary: '#1a5c2a', primaryMid: '#2d8a3e',
-  gold: '#f0a500', red: '#c0392b', white: '#ffffff',
+  primary: '#FF8C40', primaryMid: '#2d8a3e',
+  gold: '#FF8C40', red: '#FF4F8E', white: '#ffffff',
 };
 
 // ✅ FIX: Sempre usa o ID real — sem fallback para ID de teste

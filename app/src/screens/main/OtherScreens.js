@@ -142,6 +142,6 @@ const styles = StyleSheet.create({
 
   // ✅ FIX: Disclaimer en español
   disclaimerBox: { marginTop: 24, backgroundColor: '#FFF8E1', borderRadius: 10, padding: 12,
-                   borderLeftWidth: 4, borderLeftColor: '#f0a500' },
+                   borderLeftWidth: 4, borderLeftColor: '#FF8C40' },
   disclaimerTxt: { fontSize: 11, color: '#78350f', lineHeight: 17 },
 });

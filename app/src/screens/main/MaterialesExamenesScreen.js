@@ -175,7 +175,7 @@ const MaterialesExamenesScreen = ({ navigation }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#1a5c2a" />
+        <ActivityIndicator size="large" color="#FF8C40" />
         <Text style={styles.loadingText}>Cargando materiales...</Text>
       </View>
     );
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   subtitle: {
     fontSize: 14,
@@ -289,8 +289,8 @@ const styles = StyleSheet.create({
     marginRight: 8,
   },
   filterChipActive: {
-    backgroundColor: '#1a5c2a',
-    borderColor: '#1a5c2a',
+    backgroundColor: '#FF8C40',
+    borderColor: '#FF8C40',
   },
   filterChipText: {
     fontSize: 14,
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
   bancaBadgeText: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#1a5c2a',
+    color: '#FF8C40',
   },
   materialYear: {
     fontSize: 13,
@@ -359,7 +359,7 @@ const styles = StyleSheet.create({
   },
   materialAction: {
     fontSize: 14,
-    color: '#1a5c2a',
+    color: '#FF8C40',
     fontWeight: '600',
   },
   materialQuestions: {

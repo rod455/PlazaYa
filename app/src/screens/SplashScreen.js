@@ -10,10 +10,10 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const C = {
-  bgTop:    '#f0a500',  // dourado/laranja topo (igual ao ícone)
-  bgBottom: '#1a5c2a',  // verde escuro base
+  bgTop:    '#FF8C40',  // laranja topo (gradiente da logo)
+  bgBottom: '#7A5CFF',  // roxo base (gradiente da logo)
   white:    '#ffffff',
-  red:      '#c0392b',
+  pink:     '#FF4F8E',
 };
 
 export default function SplashScreen() {
@@ -203,7 +203,7 @@ const s = StyleSheet.create({
   nameYa: {
     fontSize: 42,
     fontWeight: '900',
-    color: C.red,
+    color: C.pink,
     letterSpacing: -1,
     textShadowColor: 'rgba(0,0,0,0.3)',
     textShadowOffset: { width: 0, height: 2 },
