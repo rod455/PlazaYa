@@ -13,7 +13,7 @@
       "backgroundColor": "#FF4F8E"
     },
     "android": {
-      "package": "com.plazaya.mexico",
+      "package": "com.mycompany.concursosmx",
       "versionCode": 3,
       "compileSdkVersion": 35,
       "targetSdkVersion": 35,

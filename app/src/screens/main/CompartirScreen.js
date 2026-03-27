@@ -22,7 +22,7 @@ const STORAGE_KEYS = {
 };
 
 const PLAY_STORE_URL =
-  'https://play.google.com/store/apps/details?id=com.plazaya.mexico';
+  'https://play.google.com/store/apps/details?id=com.mycompany.concursosmx';
 
 const SHARE_MESSAGE =
   '¡Prepárate para tus exámenes y oposiciones con PlazaYa! ' +

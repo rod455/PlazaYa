@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.plazaya.mexico';
+const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.mycompany.concursosmx';
 const MIN_SESSIONS = 2;
 const COOLDOWN_DAYS = 3;
 const STORAGE_KEY_LAST = '@nps:last_shown';
