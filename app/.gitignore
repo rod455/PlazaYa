@@ -1,0 +1,13 @@
+# ⚠️  NUNCA COMMIT ESSES ARQUIVOS — dupla proteção
+*.keystore
+*.jks
+*.pk8
+*.pem
+google-services.json
+.env
+.env.*
+!.env.example
+pc-api-key.json
+service-account*.json
+keystore.properties
+key.properties

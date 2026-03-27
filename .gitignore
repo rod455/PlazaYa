@@ -12,27 +12,61 @@ android/app/build/
 android/.gradle/
 android/local.properties
 
-# ─── Chaves e credenciais — NUNCA subir! ─────────────────────
+# ══════════════════════════════════════════════════════════════
+# ⚠️  CHAVES E CREDENCIAIS — NUNCA SUBIR AO GITHUB!
+# ⚠️  Se você perder a keystore, NÃO poderá atualizar o app
+#     na Play Store. Faça backup em local seguro!
+# ══════════════════════════════════════════════════════════════
+
+# Keystores (qualquer localização, qualquer extensão)
 *.keystore
 *.jks
-upload_certificate.pem
+*.pk8
+*.pem
+**/*.keystore
+**/*.jks
+**/release.keystore
+**/upload.keystore
+**/debug.keystore
+
+# Keystore properties (contém senhas da keystore)
+**/keystore.properties
+**/key.properties
+**/signing.properties
+**/release-signing.properties
+
+# Google Services (Firebase credentials)
+**/google-services.json
+**/GoogleService-Info.plist
+
+# Play Store service account key
+**/pc-api-key.json
+**/play-store-key.json
+**/service-account*.json
+
+# Expo/EAS credentials
 credentials.json
 credentials/
-google-services.json
+eas-credentials/
 
-# ─── Arquivos locais com senhas — NUNCA subir! ───────────────
-app/android/keystore.properties
-app/android/gradle.properties
-app/plazaya.keystore
+# Upload certificate
+upload_certificate.pem
+**/upload_certificate.pem
 
 # ─── Variáveis de ambiente — NUNCA subir! ────────────────────
 .env
+.env.*
 .env.local
-.env*.local
+.env.production
+.env.staging
+!.env.example
 
 # ─── iOS ─────────────────────────────────────────────────────
 ios/build/
 ios/Pods/
+*.p12
+*.mobileprovision
+*.cer
 
 # ─── OS ──────────────────────────────────────────────────────
 .DS_Store
@@ -42,3 +76,7 @@ Thumbs.db
 npm-debug.log*
 yarn-error.log*
 *.log
+
+# ─── Build outputs ───────────────────────────────────────────
+*.aab
+*.apk
