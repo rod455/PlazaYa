@@ -1,5 +1,5 @@
 // src/screens/SplashScreen.js
-// Splash animada — logo vibra (swing left/right) + pulsa + fade in
+// Splash animada — novo ícone (sem checkmark) + swing + fade in
 // Navega para o fluxo principal após 2.5s
 
 import React, { useEffect, useRef } from 'react';
@@ -141,7 +141,7 @@ export default function SplashScreen() {
 
       {/* Versão */}
       <Animated.Text style={[s.version, { opacity: txtOpacity }]}>
-        v1.0.0
+        v2.0.0
       </Animated.Text>
     </View>
   );
