@@ -2,7 +2,7 @@
   "expo": {
     "name": "PlazaYa",
     "slug": "plazaya",
-    "version": "1.0.1",
+    "version": "2.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "icon": "./assets/icon.png",
@@ -14,7 +14,7 @@
     },
     "android": {
       "package": "com.mycompany.concursosmx",
-      "versionCode": 2,
+      "versionCode": 4,
       "compileSdkVersion": 35,
       "targetSdkVersion": 35,
       "buildToolsVersion": "35.0.0",
