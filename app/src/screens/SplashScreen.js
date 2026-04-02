@@ -10,7 +10,7 @@ import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const C = {
-  bgTop:    '#FF8C40',  // laranja topo (gradiente da logo)
+  bgTop:    '#FF4F8E',  // rosa topo (gradiente da logo)
   bgBottom: '#7A5CFF',  // roxo base (gradiente da logo)
   white:    '#ffffff',
   pink:     '#FF4F8E',
@@ -141,7 +141,7 @@ export default function SplashScreen() {
 
       {/* Versão */}
       <Animated.Text style={[s.version, { opacity: txtOpacity }]}>
-        v1.0.0
+        v2.0.0
       </Animated.Text>
     </View>
   );
